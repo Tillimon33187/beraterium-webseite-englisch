@@ -711,9 +711,17 @@
     var main = article.querySelector(".brt-article__main");
     if (!bar || !hero) return;
 
+    var header = document.querySelector(".site-header");
+
+    function syncStickyBarTop() {
+      if (!header) return;
+      bar.style.top = Math.round(header.getBoundingClientRect().bottom) + "px";
+    }
+
     var ticking = false;
     function update() {
       ticking = false;
+      syncStickyBarTop();
       var scrollY = window.pageYOffset;
       var heroBottom = hero.getBoundingClientRect().bottom + scrollY;
       var pastHero = scrollY > heroBottom - 80;
@@ -723,7 +731,6 @@
         var mainRect = main.getBoundingClientRect();
         var mainTop = mainRect.top + scrollY;
         var mainBottom = mainTop + main.offsetHeight;
-        var header = document.querySelector(".site-header");
         var headerH = header ? header.getBoundingClientRect().height : 84;
         var readStart = scrollY + headerH + 48;
         inText = mainBottom > readStart && mainTop < scrollY + window.innerHeight;
