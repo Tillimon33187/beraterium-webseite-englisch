@@ -1,0 +1,10 @@
+Upload your Beraterium logo files here (English site).
+
+Required filenames:
+  logo-white.png  — header on dark/transparent backgrounds (homepage hero)
+  logo-black.png  — header on solid/light backgrounds (inner pages)
+
+After uploading, rebuild pages:
+  cd Webseite/site-en && .venv/bin/python _gen_pages.py
+
+Browser tab icon (favicon) is separate — see img/favicon/UPLOAD_HERE.txt

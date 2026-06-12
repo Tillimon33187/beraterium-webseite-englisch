@@ -1,0 +1,19 @@
+{
+  "short_name": "Beraterium",
+  "name": "Beraterium – Risk management & consulting",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0E1116",
+  "theme_color": "#0E1116"
+}

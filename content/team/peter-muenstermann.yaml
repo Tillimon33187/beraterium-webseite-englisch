@@ -1,0 +1,22 @@
+slug: peter-muenstermann
+name: Peter Münstermann
+role_tag: "DEVELOPER OF THE RISK MANAGEMENT APPROACH"
+order: 2
+profile_type: full
+layout: reversed
+image: img/team/peter-muenstermann.webp
+image_alt: "Peter Münstermann, Developer of the Risk Management Approach at Beraterium"
+approach: "I bring people together — leaders and employees alike — and facilitate open discussions about risks, opportunities and solutions. With my structured yet human approach, we create clarity, prioritise what matters most and develop individual measures that work in everyday practice. I focus on honesty, equality and lasting impact rather than off-the-shelf solutions."
+goal: "With 20 years of experience in large companies, I want to help SMEs, family businesses and start-ups see risks not as something to fear but as an opportunity for sustainable success and a secure future. My aim is to make risk management tangible, understandable and practically implementable — for greater security, confidence and collaboration within the company."
+extended:
+  - text: "Risks are unavoidable. My job is to ensure they never become an obstacle to progress."
+  - text: "During my time as a risk manager in large companies and as a consultant for SMEs, I learned that business success is achieved when responsibility is shared, clarity is created and risks are viewed as opportunities to shape the future. With over 20 years of experience in the corporate world and broad industry knowledge, I am able to simplify complex connections and develop effective solutions together with my clients."
+  - label: "What drives me"
+    text: "I have found that many business owners lie awake at night not because of the numbers but because of their responsibility for their team and their company. My aim is to ease that burden by listening to them and their employees and fostering understanding and collaboration. I focus on people, not just functions. I believe that real security can only be achieved when everyone involved is included and works together on clear, actionable strategies."
+teaser_bio: "20 years of corporate experience — makes risk management tangible and practically implementable."
+email: p.muenstermann@beraterium.de
+phone: ""
+linkedin: https://www.linkedin.com/in/peter-münstermann-46a380156/
+active: true
+show_on_home: true
+show_on_ueber_uns: true

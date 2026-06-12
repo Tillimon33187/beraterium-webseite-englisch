@@ -1,0 +1,689 @@
+    .brt-css-fallback-mode {
+      --color-accent: #0b5fff;
+      --color-ink: #0e1116;
+      --color-muted: #6b7280;
+      --color-line: #e4e7ec;
+      --color-bg: #ffffff;
+      --color-bg-alt: #f7f8fa;
+      --color-dark: #0e1116;
+      --color-on-dark: #ffffff;
+    }
+    .brt-css-fallback-mode body.brt-page {
+      margin: 0;
+      font-family: Inter, "Helvetica Neue", Arial, system-ui, sans-serif;
+      color: #3a424e;
+      background: #fff;
+    }
+    .brt-css-fallback-mode .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--color-line);
+    }
+    .brt-css-fallback-mode .site-header__inner {
+      width: 100%;
+      max-width: 1440px;
+      margin-inline: auto;
+      min-height: 4.75rem;
+      padding-inline: clamp(1.5rem, 4vw, 4rem);
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+    }
+    .brt-css-fallback-mode .site-header__logo {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .brt-css-fallback-mode .site-header__logo-img {
+      display: block;
+      height: calc(var(--header-height, 5rem) - 0.625rem);
+      width: auto;
+      max-width: 30rem;
+    }
+
+    .brt-css-fallback-mode .site-header__logo-img--dark {
+      display: none;
+    }
+
+    .brt-css-fallback-mode .site-header--solid .site-header__logo-img--light {
+      display: none;
+    }
+
+    .brt-css-fallback-mode .site-header--solid .site-header__logo-img--dark {
+      display: block;
+    }
+    .brt-css-fallback-mode .site-header__nav {
+      display: none;
+    }
+    .brt-css-fallback-mode .site-header__nav.is-open {
+      display: grid;
+      gap: 1rem;
+    }
+    .brt-css-fallback-mode .site-header__nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .brt-css-fallback-mode .site-header__nav a {
+      color: var(--color-ink);
+      text-decoration: none;
+    }
+    .brt-css-fallback-mode .brt-container {
+      width: min(100% - 2rem, 1200px);
+      margin-inline: auto;
+    }
+    .brt-css-fallback-mode .brt-section {
+      padding-block: clamp(2.5rem, 6vw, 5rem);
+    }
+    .brt-css-fallback-mode .brt-section--alt {
+      background: var(--color-bg-alt);
+    }
+    .brt-css-fallback-mode .brt-section--dark,
+    .brt-css-fallback-mode .brt-hero--dark,
+    .brt-css-fallback-mode .brt-cta-band--dark {
+      background: var(--color-dark);
+      color: var(--color-on-dark);
+    }
+    .brt-css-fallback-mode .brt-tag {
+      margin: 0 0 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.75rem;
+      color: var(--color-accent);
+      font-weight: 700;
+    }
+    .brt-css-fallback-mode .brt-h1 {
+      margin: 0 0 1.25rem;
+      font-size: clamp(2rem, 6vw, 4rem);
+      line-height: 1.05;
+      color: var(--color-ink);
+    }
+    .brt-css-fallback-mode .brt-hero .brt-h1,
+    .brt-css-fallback-mode .brt-page-hero--dark .brt-h1,
+    .brt-css-fallback-mode .brt-page-hero .brt-h1 {
+      color: #fff;
+    }
+    .brt-css-fallback-mode .brt-h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.75rem, 4vw, 2.8rem);
+      line-height: 1.1;
+      color: var(--color-ink);
+    }
+    .brt-css-fallback-mode .brt-h2--on-dark {
+      color: #fff;
+    }
+    .brt-css-fallback-mode .brt-h3 {
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.2rem, 2vw, 1.6rem);
+      color: var(--color-ink);
+    }
+    .brt-css-fallback-mode .brt-body,
+    .brt-css-fallback-mode .brt-lead {
+      margin: 0 0 1rem;
+      max-width: 65ch;
+    }
+    .brt-css-fallback-mode .brt-body--on-dark,
+    .brt-css-fallback-mode .brt-lead--on-dark {
+      color: rgba(255, 255, 255, 0.84);
+    }
+    .brt-css-fallback-mode .brt-hero__grid,
+    .brt-css-fallback-mode .brt-split {
+      display: grid;
+      gap: 2rem;
+      align-items: center;
+    }
+    .brt-css-fallback-mode .brt-image-placeholder,
+    .brt-css-fallback-mode .brt-card__thumb,
+    .brt-css-fallback-mode .brt-card__media {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: linear-gradient(145deg, #e8f0ff, #cfdaf4);
+      border: 1px solid var(--color-line);
+      border-radius: 16px;
+      display: grid;
+      place-content: center;
+    }
+    .brt-css-fallback-mode .brt-image-placeholder--hero {
+      background: linear-gradient(145deg, #2b3340, #54607a);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .brt-css-fallback-mode .brt-image-placeholder__label {
+      color: rgba(255, 255, 255, 0.92);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .brt-css-fallback-mode .brt-cards-3col,
+    .brt-css-fallback-mode .brt-guarantee-duo,
+    .brt-css-fallback-mode .brt-team-duo,
+    .brt-css-fallback-mode .brt-blog-grid,
+    .brt-css-fallback-mode .brt-method-steps,
+    .brt-css-fallback-mode .brt-stat-row__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 1.25rem;
+    }
+    .brt-css-fallback-mode .brt-card,
+    .brt-css-fallback-mode .brt-method-step {
+      background: #fff;
+      border: 1px solid var(--color-line);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+    .brt-css-fallback-mode .brt-card--profile,
+    .brt-css-fallback-mode .brt-card--blog {
+      padding: 0;
+      overflow: hidden;
+    }
+    .brt-css-fallback-mode .brt-card--profile .brt-card__body,
+    .brt-css-fallback-mode .brt-card--blog .brt-card__body {
+      padding: 1.25rem;
+    }
+    .brt-css-fallback-mode .brt-card--featured {
+      border-top: 3px solid var(--color-accent);
+    }
+    .brt-css-fallback-mode .brt-stat {
+      text-align: center;
+      padding: 1rem;
+    }
+    .brt-css-fallback-mode .brt-stat__number {
+      display: block;
+      color: var(--color-accent);
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1;
+      font-weight: 700;
+    }
+    .brt-css-fallback-mode .brt-stat__label {
+      font-size: 0.875rem;
+      color: var(--color-muted);
+    }
+    .brt-css-fallback-mode .brt a:not(.brt-btn) {
+      color: var(--color-accent);
+    }
+    .brt-css-fallback-mode .brt a:not(.brt-btn):hover {
+      color: var(--color-accent-midnight);
+    }
+    .brt-css-fallback-mode .brt a.brt-btn.brt-btn--ghost:hover {
+      background: transparent;
+      color: var(--color-accent-midnight);
+    }
+    .brt-css-fallback-mode .brt a.brt-btn {
+      color: #fff;
+    }
+    .brt-css-fallback-mode .brt-btn {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 1.4rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      font-weight: 700;
+      background: var(--color-accent);
+      color: #fff;
+    }
+    .brt-css-fallback-mode .brt-btn.brt-btn--outline,
+    .brt-css-fallback-mode .brt-btn--ghost {
+      background: transparent;
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+    }
+    .brt-css-fallback-mode .brt-btn.brt-btn--outline:hover,
+    .brt-css-fallback-mode .brt-btn--outline:hover {
+      background: var(--color-accent-hover);
+      color: #fff;
+      border-color: var(--color-accent-hover);
+    }
+    .brt-css-fallback-mode .brt-page-hero--dark .brt-btn.brt-btn--outline,
+    .brt-css-fallback-mode .brt-section--dark .brt-btn.brt-btn--outline,
+    .brt-css-fallback-mode .brt-cta-band--dark .brt-btn.brt-btn--outline,
+    .brt-css-fallback-mode .brt-hero .brt-btn.brt-btn--outline {
+      background: transparent;
+      color: #fff;
+      border-color: var(--color-accent);
+    }
+    .brt-css-fallback-mode .brt-btn--on-dark {
+      background: #fff;
+      color: var(--color-accent);
+      border-color: #fff;
+    }
+    .brt-css-fallback-mode .brt-btn.brt-btn--on-dark:hover,
+    .brt-css-fallback-mode .brt-btn--on-dark:hover,
+    .brt-css-fallback-mode .brt a.brt-btn.brt-btn--on-dark:hover {
+      background: var(--color-accent-hover);
+      color: #fff;
+    }
+    .brt-css-fallback-mode .site-footer {
+      border-top: 1px solid var(--color-line);
+      background: var(--color-bg-alt);
+    }
+    .brt-css-fallback-mode .site-footer__inner {
+      width: min(100% - 2rem, 1200px);
+      margin-inline: auto;
+      padding-block: 2.5rem 1.5rem;
+      display: grid;
+      gap: 1.5rem;
+    }
+    .brt-css-fallback-mode .site-footer ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+    .brt-css-fallback-mode .site-footer h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      color: var(--color-ink);
+    }
+    .brt-css-fallback-mode .site-footer__legal {
+      text-align: center;
+      margin: 0;
+      padding: 0 1rem 1.5rem;
+      color: var(--color-muted);
+      font-size: 0.875rem;
+    }
+    @media (min-width: 768px) {
+      .brt-css-fallback-mode .brt-cards-3col,
+      .brt-css-fallback-mode .brt-blog-grid,
+      .brt-css-fallback-mode .brt-team-duo,
+      .brt-css-fallback-mode .brt-method-steps,
+      .brt-css-fallback-mode .brt-stat-row__list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .brt-css-fallback-mode .brt-guarantee-duo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .brt-css-fallback-mode .site-footer__inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (min-width: 1024px) {
+      .brt-css-fallback-mode .brt-cards-3col,
+      .brt-css-fallback-mode .brt-blog-grid,
+      .brt-css-fallback-mode .brt-method-steps {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .brt-css-fallback-mode .site-footer__inner {
+        grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      }
+    }
+    @media (max-width: 1023px) {
+      .brt-css-fallback-mode .site-header__inner {
+        flex-wrap: nowrap;
+        justify-content: space-between;
+      }
+      .brt-css-fallback-mode .site-header__toggle {
+        order: 2;
+        margin-left: auto;
+        width: 44px;
+        padding: 0;
+        font-size: 0;
+        line-height: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .brt-css-fallback-mode .site-header__toggle::before {
+        content: "";
+        display: block;
+        width: 1.25rem;
+        height: 2px;
+        background: currentColor;
+        box-shadow: 0 -6px 0 currentColor, 0 6px 0 currentColor;
+      }
+      .brt-css-fallback-mode .site-header__logo {
+        order: 1;
+        flex: 1;
+      }
+      .brt-css-fallback-mode .site-header__nav {
+        position: fixed;
+        top: 4.75rem;
+        right: 0;
+        left: auto;
+        width: min(20rem, 88vw);
+        height: calc(100dvh - 4.75rem);
+        padding: 1rem clamp(1rem, 4vw, 1.5rem);
+        overflow-x: hidden;
+        overflow-y: auto;
+        background: rgba(14, 17, 22, 0.92);
+        border-left: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: none;
+        box-sizing: border-box;
+        z-index: 25;
+      }
+      .brt-css-fallback-mode .site-header__nav:not(.is-open) {
+        display: none;
+      }
+      .brt-css-fallback-mode .site-header--solid .site-header__nav.is-open {
+        background: rgba(255, 255, 255, 0.95);
+        border-left-color: var(--color-line);
+      }
+      .brt-css-fallback-mode .site-header--menu-open {
+        backdrop-filter: none;
+      }
+      .brt-css-fallback-mode .site-header__cta.brt-btn--outline {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        white-space: normal;
+        text-align: center;
+      }
+    }
+    @media (min-width: 1024px) {
+      .brt-css-fallback-mode .site-header__toggle {
+        display: none;
+      }
+      .brt-css-fallback-mode .site-header__nav {
+        display: flex;
+        position: static;
+        left: auto;
+        right: auto;
+        top: auto;
+        width: auto;
+        margin-left: auto;
+        justify-content: flex-end;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        gap: clamp(1.25rem, 2vw, 2rem);
+        align-items: center;
+      }
+      .brt-css-fallback-mode .site-header__nav ul {
+        display: flex;
+        align-items: center;
+        gap: clamp(1rem, 2vw, 2rem);
+      }
+      .brt-css-fallback-mode .site-header:not(.site-header--solid) .site-header__nav {
+        background: transparent;
+        border-bottom: 0;
+      }
+      .brt-css-fallback-mode .site-header__cta {
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .brt-css-fallback-mode .brt-hero__grid {
+        grid-template-columns: 55fr 45fr;
+      }
+      .brt-css-fallback-mode .brt-split {
+        grid-template-columns: 1fr 1fr;
+      }
+      .brt-css-fallback-mode .site-footer__inner {
+        grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      }
+    }
+
+    /* Design enhancement overrides (hero slider + melting header) */
+    .brt-css-fallback-mode .site-header {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      border-bottom: 1px solid transparent;
+      background: transparent;
+      transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease, backdrop-filter 220ms ease;
+    }
+    .brt-css-fallback-mode .site-header__logo,
+    .brt-css-fallback-mode .site-header__nav a {
+      color: #fff;
+      transition: color 220ms ease;
+    }
+    .brt-css-fallback-mode .site-header__toggle {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+    .brt-css-fallback-mode .site-header.site-header--solid {
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom-color: var(--color-line);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 1px 3px rgba(14, 17, 22, 0.08);
+    }
+    .brt-css-fallback-mode .site-header.site-header--solid .site-header__logo,
+    .brt-css-fallback-mode .site-header.site-header--solid .site-header__nav a {
+      color: var(--color-ink);
+    }
+    .brt-css-fallback-mode .site-header.site-header--solid .site-header__toggle {
+      color: var(--color-ink);
+      background: #fff;
+      border-color: var(--color-line);
+    }
+    @media (min-width: 1024px) {
+      .brt-css-fallback-mode .site-header.site-header--solid .site-header__nav {
+        background: transparent;
+        border-bottom-color: var(--color-line);
+      }
+    }
+    .brt-css-fallback-mode .brt-hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 100vh;
+      min-height: 100dvh;
+      height: 100vh;
+      height: 100dvh;
+      max-height: 100vh;
+      max-height: 100dvh;
+    }
+    .brt-css-fallback-mode .brt-hero__slides,
+    .brt-css-fallback-mode .brt-hero__overlay {
+      position: absolute;
+      inset: 0;
+    }
+    .brt-css-fallback-mode .brt-hero__slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: scale(1.04);
+      transition: opacity 900ms ease, transform 900ms ease;
+    }
+    .brt-css-fallback-mode .brt-hero__slide.is-active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .brt-css-fallback-mode .brt-hero__slide--one {
+      background: radial-gradient(circle at 70% 30%, rgba(11, 95, 255, 0.45), rgba(14, 17, 22, 0.1) 42%), linear-gradient(135deg, #111827 0%, #0b5fff 50%, #030712 100%);
+    }
+    .brt-css-fallback-mode .brt-hero__slide--two {
+      background: radial-gradient(circle at 25% 35%, rgba(56, 189, 248, 0.35), rgba(14, 17, 22, 0.08) 44%), linear-gradient(120deg, #172554 0%, #164e63 52%, #020617 100%);
+    }
+    .brt-css-fallback-mode .brt-hero__slide--three {
+      background: radial-gradient(circle at 55% 30%, rgba(11, 95, 255, 0.32), rgba(14, 17, 22, 0.12) 38%), linear-gradient(130deg, #0f172a 5%, #1e293b 46%, #111827 100%);
+    }
+    .brt-css-fallback-mode .brt-hero__slide--four {
+      background: radial-gradient(circle at 80% 24%, rgba(56, 189, 248, 0.26), rgba(14, 17, 22, 0.08) 40%), linear-gradient(132deg, #082f49 0%, #1e3a8a 48%, #020617 100%);
+    }
+    .brt-css-fallback-mode .brt-hero__overlay {
+      background: linear-gradient(180deg, rgba(9, 11, 17, 0.35) 0%, rgba(9, 11, 17, 0.2) 35%, rgba(9, 11, 17, 0.55) 72%, rgba(9, 11, 17, 0.88) 100%);
+    }
+    .brt-css-fallback-mode .brt-hero__frame {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      width: 100%;
+      padding: clamp(5.5rem, 11vh, 7rem) clamp(1.25rem, 4vw, 4rem) clamp(1.25rem, 2.5vh, 2rem);
+      display: grid;
+      grid-template-rows: 1fr auto;
+      align-content: end;
+      gap: clamp(1.5rem, 4vh, 3rem);
+    }
+    .brt-css-fallback-mode .brt-hero__content {
+      align-self: end;
+      max-width: min(42rem, 55vw);
+    }
+    .brt-css-fallback-mode .brt-hero__text-slot {
+      min-height: clamp(14rem, 30vh, 18rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .brt-css-fallback-mode .brt-tag--hero {
+      color: rgba(255, 255, 255, 0.88);
+    }
+    .brt-css-fallback-mode .brt-hero .brt-h1 {
+      min-height: clamp(5.5rem, 11vh, 7.5rem);
+    }
+    .brt-css-fallback-mode .brt-hero .brt-lead {
+      min-height: clamp(4.5rem, 10vh, 6rem);
+      max-width: 38ch;
+      font-size: clamp(1rem, 1.6vw, 1.2rem);
+    }
+    .brt-css-fallback-mode .brt-hero__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      color: var(--color-accent);
+      text-decoration: none;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .brt-css-fallback-mode .brt-hero__cta::after {
+      content: "→";
+    }
+    .brt-css-fallback-mode .brt-hero__scroll {
+      position: absolute;
+      right: clamp(1.25rem, 4vw, 4rem);
+      bottom: clamp(1.25rem, 2.5vh, 2rem);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      border: 0;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .brt-css-fallback-mode .brt-hero .brt-tag,
+    .brt-css-fallback-mode .brt-hero .brt-h1,
+    .brt-css-fallback-mode .brt-hero .brt-lead {
+      transition: opacity 320ms ease, transform 320ms ease;
+    }
+    .brt-css-fallback-mode .brt-hero.is-transitioning .brt-tag,
+    .brt-css-fallback-mode .brt-hero.is-transitioning .brt-h1,
+    .brt-css-fallback-mode .brt-hero.is-transitioning .brt-lead {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    .brt-css-fallback-mode .brt-hero__topics {
+      display: grid;
+      gap: 0.75rem;
+      width: 100%;
+      padding-right: clamp(3rem, 8vw, 6rem);
+    }
+    .brt-css-fallback-mode .brt-hero__topic {
+      --topic-line-height: 3px;
+      position: relative;
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.62);
+      padding: calc(0.85rem + var(--topic-line-height)) 0 0;
+      text-align: left;
+      font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+      font-weight: 600;
+      cursor: pointer;
+      overflow: hidden;
+      transition: color 220ms ease;
+    }
+    .brt-css-fallback-mode .brt-hero__topic::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--topic-line-height);
+      background: rgba(255, 255, 255, 0.22);
+      pointer-events: none;
+    }
+    .brt-css-fallback-mode .brt-hero__topic-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      width: 100%;
+      height: var(--topic-line-height);
+      background: var(--color-accent);
+      transform: scaleX(0);
+      transform-origin: left center;
+      pointer-events: none;
+    }
+    .brt-css-fallback-mode .brt-hero__topic.is-active .brt-hero__topic-progress {
+      animation: brt-hero-topic-progress 6.5s linear forwards;
+    }
+    @keyframes brt-hero-topic-progress {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+    .brt-css-fallback-mode .brt-hero__topic.is-active {
+      color: #fff;
+    }
+    .brt-css-fallback-mode .brt-hero__topic:hover,
+    .brt-css-fallback-mode .brt-hero__topic:focus-visible {
+      color: #fff;
+    }
+    @media (max-width: 899px) {
+      .brt-css-fallback-mode .brt-hero {
+        height: auto;
+        min-height: max(100dvh, 36rem);
+        max-height: none;
+      }
+      .brt-css-fallback-mode .brt-hero__frame {
+        min-height: max(100dvh, 36rem);
+        padding-top: max(clamp(5rem, 12vw, 6.5rem), 5.75rem);
+        gap: clamp(1rem, 3vh, 2rem);
+      }
+      .brt-css-fallback-mode .brt-hero__content {
+        max-width: none;
+        width: 100%;
+      }
+      .brt-css-fallback-mode .brt-hero__text-slot,
+      .brt-css-fallback-mode .brt-hero .brt-h1,
+      .brt-css-fallback-mode .brt-hero .brt-lead {
+        min-height: auto;
+      }
+      .brt-css-fallback-mode .brt-hero .brt-lead {
+        max-width: none;
+      }
+      .brt-css-fallback-mode .brt-hero__scroll {
+        display: none;
+      }
+      .brt-css-fallback-mode .brt-hero__topics {
+        padding-right: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+      }
+    }
+    @media (max-width: 479px) {
+      .brt-css-fallback-mode .brt-hero__topics {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (min-width: 900px) {
+      .brt-css-fallback-mode .brt-hero__topics {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: clamp(1rem, 3vw, 2rem);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .brt-css-fallback-mode .brt-hero__slide,
+      .brt-css-fallback-mode .brt-hero .brt-tag,
+      .brt-css-fallback-mode .brt-hero .brt-h1,
+      .brt-css-fallback-mode .brt-hero .brt-lead {
+        transition: none;
+      }
+    }

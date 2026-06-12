@@ -1,0 +1,14 @@
+Browser tab icon (favicon) — separate from header logos in img/logo-en/
+
+Upload ONE file here:
+  fav.png         — preferred filename (your browser tab icon)
+  favicon.png     — alternative filename
+
+Min. 192×192 px recommended. Transparent background OK.
+
+Then regenerate:
+  cd Webseite/site-en
+  .venv/bin/python _gen_favicon.py
+  .venv/bin/python _gen_pages.py
+
+This creates favicon.ico, icon.png and apple-touch-icon.png in the site root.

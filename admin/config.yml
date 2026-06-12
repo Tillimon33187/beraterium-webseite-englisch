@@ -1,0 +1,98 @@
+# Decap CMS — Beraterium English content backend
+
+backend:
+  name: github
+  repo: your-org/beraterium-site-en
+  branch: main
+  base_url: https://en.beraterium.de
+  site_url: https://en.beraterium.de
+
+media_folder: img
+public_folder: img
+
+locale: en
+
+collections:
+  - name: blog
+    label: Blog
+    label_singular: Article
+    folder: content/blog
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title}} — {{category}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Slug, name: slug, widget: string, hint: "URL segment: /blog/{slug}/" }
+      - { label: Date, name: date, widget: datetime, format: YYYY-MM-DD, date_format: YYYY-MM-DD, time_format: false }
+      - label: Category
+        name: category
+        widget: select
+        options:
+          - Risk management
+          - HR & culture
+          - Startup
+          - SME
+          - Solo
+      - label: Author
+        name: author
+        widget: relation
+        collection: team
+        search_fields: [name]
+        value_field: slug
+        display_fields: [name]
+      - { label: Excerpt, name: excerpt, widget: text }
+      - { label: Hero image, name: hero_image, widget: image, required: false }
+      - { label: Hero alt text, name: hero_alt, widget: string }
+      - { label: Draft, name: draft, widget: boolean, default: true }
+      - { label: Reading time (min.), name: reading_time_min, widget: number, required: false, hint: "Leave empty for auto from word count" }
+      - label: FAQ
+        name: faq
+        widget: list
+        required: false
+        fields:
+          - { label: Question, name: question, widget: string }
+          - { label: Answer, name: answer, widget: text }
+      - label: Related articles (slugs)
+        name: related_slugs
+        widget: list
+        required: false
+        field: { label: Slug, name: slug, widget: string }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: team
+    label: Team
+    label_singular: Profile
+    folder: content/team
+    create: true
+    slug: "{{slug}}"
+    extension: yaml
+    format: yaml
+    summary: "{{name}}"
+    fields:
+      - { label: Slug, name: slug, widget: string }
+      - { label: Name, name: name, widget: string }
+      - { label: Role tag, name: role_tag, widget: string }
+      - { label: Order, name: order, widget: number, default: 10 }
+      - label: Profile type
+        name: profile_type
+        widget: select
+        options:
+          - { label: Full profile (/team/), value: full }
+          - { label: Teaser card only, value: teaser }
+      - label: Layout
+        name: layout
+        widget: select
+        options:
+          - { label: Image left, value: normal }
+          - { label: Image right, value: reversed }
+      - { label: Image, name: image, widget: image, required: false }
+      - { label: Image alt text, name: image_alt, widget: string }
+      - { label: My approach, name: approach, widget: text, required: false }
+      - { label: My goal, name: goal, widget: text, required: false }
+      - { label: Teaser bio, name: teaser_bio, widget: text }
+      - { label: LinkedIn, name: linkedin, widget: string, required: false }
+      - { label: Active, name: active, widget: boolean, default: true }
+      - { label: On homepage, name: show_on_home, widget: boolean, default: false }
+      - { label: On About page, name: show_on_ueber_uns, widget: boolean, default: false }

@@ -1,0 +1,23 @@
+# Beraterium — English site (en.beraterium.de)
+
+> Risk management and business consulting for startups, SMBs and solo self-employed — enterprise methods made accessible.
+
+## Primary pages
+
+- [Home](https://en.beraterium.de/): Enterprise risk management for mid-market businesses
+- [Services](https://en.beraterium.de/services/): Risk checks for startups, SMBs and solo
+- [Method](https://en.beraterium.de/method/): 3-level hazard catalogue, euro-based risk assessment
+- [About](https://en.beraterium.de/about/): Why Beraterium exists
+- [Team](https://en.beraterium.de/team/): Founders and experts
+- [Risk Radar](https://en.beraterium.de/risk-radar/): Expert network for implementation
+- [Blog](https://en.beraterium.de/blog/): Practical risk management insights
+- [Contact](https://en.beraterium.de/contact/): Free 30-minute intro call
+
+## German site
+
+The authoritative German site is at [beraterium.de](https://www.beraterium.de/).
+
+## Contact
+
+- Email: kontakt@beraterium.de
+- LinkedIn: https://www.linkedin.com/company/beraterium

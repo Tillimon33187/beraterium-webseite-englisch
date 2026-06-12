@@ -1,0 +1,46 @@
+Beraterium – Bilder ablegen
+===========================
+
+Nach dem Einfügen:  python _optimize_images.py  (wandelt PNG/JPG in WebP um)
+Ausnahme Logo: PNG oder SVG direkt ablegen — kein WebP nötig (Transparenz).
+
+LOGO (img/logo/)
+----------------
+  logo-black.png   … dunkle Variante (Header mit weißem Hintergrund)
+  logo-white.png   … helle Variante (Header über Hero, weiße Navigation)
+
+STARTSEITE (img/home/)
+----------------------
+hero/
+  hero-slide-01.png   … Hero-Karussell, Folie 1
+  hero-slide-02.png   … Hero-Karussell, Folie 2
+  hero-slide-03.png   … Hero-Karussell, Folie 3
+  hero-slide-04.png   … Hero-Karussell, Folie 4
+  (nur 1 Bild? → als hero-slide-01.png ablegen)
+
+analyse-situation/
+  analyse-situation.png   … Abschnitt „Analyse-Situation“ (S4)
+
+TEAM (img/team/)
+----------------
+Dateien direkt in img/team/ ablegen (Portrait, Seitenverhältnis 4:5):
+
+  till-blania.png
+  peter-muenstermann.png
+  aleksandra-polosukhina.png
+  torsten-walter-helbig.png
+  joachim-lau.png
+
+ANGEBOTE (img/angebote/)
+------------------------
+startups/hero.png   … Gründerteam beim Risiko-Check
+kmu/hero.png        … Geschäftsführung Mittelstand
+solo/hero.png       … Solo-Selbstständige beim Risiko-Kompass
+
+METHODE (img/methode/)
+----------------------
+gefahrenkatalog-3-ebenen.png   … 3-Ebenen-Diagramm
+
+ÜBER UNS (img/ueber-uns/)
+-------------------------
+risikoradar.png   … Netzwerk und Zusammenarbeit (RisikoRadar-Abschnitt)

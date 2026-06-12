@@ -1,0 +1,6 @@
+# https://www.robotstxt.org/
+
+User-agent: *
+Disallow:
+
+Sitemap: https://en.beraterium.de/sitemap.xml
