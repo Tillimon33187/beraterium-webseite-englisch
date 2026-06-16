@@ -1,14 +1,17 @@
 Browser tab icon (favicon) — separate from header logos in img/logo-en/
 
-Upload ONE file here:
-  fav.png         — preferred filename (your browser tab icon)
-  favicon.png     — alternative filename
+Upload TWO files here:
+  fav.png         — black logo for light mode (browser tabs, light UI)
+  fav_white.png   — white logo for dark mode (browser tabs, dark UI)
 
 Min. 192×192 px recommended. Transparent background OK.
 
 Then regenerate:
   cd Webseite/site-en
-  .venv/bin/python _gen_favicon.py
-  .venv/bin/python _gen_pages.py
+  python3 _gen_favicon.py
+  python3 _gen_pages.py
 
-This creates favicon.ico, icon.png and apple-touch-icon.png in the site root.
+This creates favicon.ico, icon.png, apple-touch-icon.png (light)
+and favicon-dark.ico, icon-dark.png (dark) in the site root.
+
+HTML uses prefers-color-scheme so the browser picks the matching icon.

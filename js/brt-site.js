@@ -120,23 +120,44 @@
     return Math.max(0, scrollTarget.getBoundingClientRect().top + window.pageYOffset - (headerH + gap));
   }
 
+  function getTeamCardMediaScrollY(media) {
+    if (!media) return 0;
+    var header = document.querySelector(".site-header");
+    var headerH = header ? header.getBoundingClientRect().height : 84;
+    return Math.max(0, media.getBoundingClientRect().top + window.pageYOffset - headerH);
+  }
+
+  function scrollToTeamCardMedia(media) {
+    if (!media) return;
+    forceInstantScroll(getTeamCardMediaScrollY(media));
+    requestAnimationFrame(function () {
+      forceInstantScroll(getTeamCardMediaScrollY(media));
+    });
+  }
+
+  function getTeamListFirstMedia(list) {
+    if (!list) return null;
+    var card = list.querySelector("li:not(.brt-home-team__card--more)") || list.querySelector("li");
+    return card ? card.querySelector(".brt-card__media") : null;
+  }
+
   function scrollToTeamSectionHeaderInstant(section) {
     if (!section) return;
     revealHashTargetContent(section);
     forceInstantScroll(getTeamSectionScrollY(section));
   }
 
-  function collapseTeamExpand(section, more) {
+  function collapseTeamExpand(list, more) {
     var root = document.documentElement;
     var anchorPrev = root.style.overflowAnchor;
     root.style.overflowAnchor = "none";
-    scrollToTeamSectionHeaderInstant(section);
     more.forEach(function (item) {
       item.hidden = true;
     });
-    scrollToTeamSectionHeaderInstant(section);
+    var media = getTeamListFirstMedia(list);
+    scrollToTeamCardMedia(media);
     requestAnimationFrame(function () {
-      scrollToTeamSectionHeaderInstant(section);
+      scrollToTeamCardMedia(media);
       root.style.overflowAnchor = anchorPrev;
     });
   }
@@ -156,7 +177,7 @@
     });
     if (btn) {
       btn.setAttribute("aria-expanded", "true");
-      btn.textContent = btn.getAttribute("data-less-label") || "Weniger anzeigen";
+      btn.textContent = btn.getAttribute("data-less-label") || "Show less";
     }
   }
 
@@ -176,16 +197,17 @@
         var next = !expanded;
         btn.setAttribute("aria-expanded", next ? "true" : "false");
         btn.textContent = next
-          ? btn.getAttribute("data-less-label") || "Weniger anzeigen"
-          : btn.getAttribute("data-more-label") || "Mehr anzeigen";
+          ? btn.getAttribute("data-less-label") || "Show less"
+          : btn.getAttribute("data-more-label") || "Show more";
         if (next) {
           more.forEach(function (item) {
             item.hidden = false;
           });
-          more[0].scrollIntoView({ behavior: "smooth", block: "nearest" });
+          var media = more[0] ? more[0].querySelector(".brt-card__media") : null;
+          scrollToTeamCardMedia(media);
         } else if (scrollSection) {
           btn.blur();
-          collapseTeamExpand(scrollSection, more);
+          collapseTeamExpand(list, more);
         } else {
           more.forEach(function (item) {
             item.hidden = true;
@@ -208,8 +230,8 @@
         more.hidden = !next;
         btn.setAttribute("aria-expanded", next ? "true" : "false");
         btn.textContent = next
-          ? btn.getAttribute("data-less-label") || "Weniger anzeigen"
-          : btn.getAttribute("data-more-label") || "Mehr anzeigen";
+          ? btn.getAttribute("data-less-label") || "Show less"
+          : btn.getAttribute("data-more-label") || "Show more";
         if (!next) {
           scheduleTeamSectionScroll(section);
         }
@@ -217,9 +239,182 @@
     });
   }
 
+  function stepsFlowSvgPoint(svg, el, anchor) {
+    var svgRect = svg.getBoundingClientRect();
+    if (!svgRect.width || !svgRect.height) return null;
+    var vb = svg.viewBox.baseVal;
+    var vbW = vb.width || 640;
+    var vbH = vb.height || 400;
+    var r = el.getBoundingClientRect();
+    var x = r.left + r.width / 2 - svgRect.left;
+    var y = anchor === "top" ? r.top - svgRect.top + 3 : r.top + r.height / 2 - svgRect.top;
+    return {
+      x: (x / svgRect.width) * vbW,
+      y: (y / svgRect.height) * vbH
+    };
+  }
+
+  function buildStepsFlowPathD(p1, p2, p3, arcOffset) {
+    var offset = arcOffset || 72;
+    var arcY = Math.min(p1.y, p2.y, p3.y) - offset;
+    if (arcY < 20) arcY = 20;
+    var mid12 = (p1.x + p2.x) / 2;
+    var mid23 = (p2.x + p3.x) / 2;
+    return "M " + p1.x + " " + p1.y +
+      " C " + p1.x + " " + arcY + ", " + mid12 + " " + arcY + ", " + p2.x + " " + p2.y +
+      " S " + mid23 + " " + arcY + ", " + p3.x + " " + p3.y;
+  }
+
+  function stepsFlowPathHitsCopy(pathEl, copyRects, samples) {
+    var hits = 0;
+    var total = pathEl.getTotalLength();
+    for (var i = 0; i <= samples; i++) {
+      var pt = pathEl.getPointAtLength((total * i) / samples);
+      copyRects.forEach(function (rect) {
+        if (pt.x >= rect.left && pt.x <= rect.right && pt.y >= rect.top && pt.y <= rect.bottom) {
+          hits++;
+        }
+      });
+    }
+    return hits;
+  }
+
+  function layoutStepsFlowDiagram(diagram, state) {
+    var svg = diagram.querySelector(".brt-steps-flow__path");
+    var platforms = diagram.querySelectorAll(".brt-steps-flow__platform");
+    var basePath = diagram.querySelector(".brt-steps-flow__path-base");
+    var progressPath = diagram.querySelector(".brt-steps-flow__path-progress");
+    var softPath = diagram.querySelector(".brt-steps-flow__path-soft");
+    if (!svg || platforms.length < 3 || !basePath || !progressPath) return false;
+
+    if (softPath) {
+      softPath.style.display = "none";
+    }
+
+    var p1 = stepsFlowSvgPoint(svg, platforms[0], "top");
+    var p2 = stepsFlowSvgPoint(svg, platforms[1], "top");
+    var p3 = stepsFlowSvgPoint(svg, platforms[2], "top");
+    if (!p1 || !p2 || !p3) return false;
+
+    var svgRect = svg.getBoundingClientRect();
+    var vb = svg.viewBox.baseVal;
+    var copyRects = [];
+    diagram.querySelectorAll(".brt-steps-flow__copy").forEach(function (copy) {
+      var r = copy.getBoundingClientRect();
+      copyRects.push({
+        left: ((r.left - svgRect.left) / svgRect.width) * vb.width,
+        right: ((r.right - svgRect.left) / svgRect.width) * vb.width,
+        top: ((r.top - svgRect.top) / svgRect.height) * vb.height,
+        bottom: ((r.bottom - svgRect.top) / svgRect.height) * vb.height
+      });
+    });
+
+    var hitCount = 0;
+    var arcOffset = 72;
+    for (var attempt = 0; attempt < 5; attempt++) {
+      var d = buildStepsFlowPathD(p1, p2, p3, arcOffset);
+      basePath.setAttribute("d", d);
+      progressPath.setAttribute("d", d);
+      state.mainLength = progressPath.getTotalLength();
+      hitCount = stepsFlowPathHitsCopy(progressPath, copyRects, 40);
+      if (hitCount === 0) break;
+      arcOffset += 28;
+    }
+
+    progressPath.style.strokeDasharray = String(state.mainLength);
+
+    return true;
+  }
+
+  function initStepsFlowScroll() {
+    var diagrams = document.querySelectorAll(".brt-steps-flow__diagram");
+    if (!diagrams.length) return;
+
+    var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var states = [];
+
+    diagrams.forEach(function (diagram) {
+      var progressPath = diagram.querySelector(".brt-steps-flow__path-progress");
+      if (!progressPath) return;
+
+      var state = {
+        diagram: diagram,
+        section: diagram.closest(".brt-section--steps-flow") || diagram,
+        progressPath: progressPath,
+        mainLength: 0,
+        progress: 0
+      };
+
+      if (!layoutStepsFlowDiagram(diagram, state)) return;
+      progressPath.style.strokeDashoffset = String(state.mainLength);
+      states.push(state);
+    });
+
+    if (!states.length) return;
+
+    function stepsFlowScrollProgress(state) {
+      var sectionRect = state.section.getBoundingClientRect();
+      var diagramRect = state.diagram.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var isWide = window.matchMedia("(min-width: 1024px)").matches;
+      var progressStartTop = isWide ? vh * 0.56 : vh * 0.6;
+      var diagramOffset = diagramRect.top - sectionRect.top;
+      var sectionTopWhenFull = Math.max(0, vh - sectionRect.height);
+      var progressEndTop = sectionTopWhenFull + diagramOffset;
+      if (isWide) {
+        progressEndTop = Math.max(112, Math.min(progressEndTop, progressStartTop - 100));
+      } else {
+        progressEndTop = Math.max(128, Math.min(progressEndTop, progressStartTop - 80));
+      }
+      var range = progressStartTop - progressEndTop;
+      if (range <= 0) return diagramRect.top <= progressEndTop ? 1 : 0;
+      var progress = (progressStartTop - diagramRect.top) / range;
+      return Math.min(Math.max(progress, 0), 1);
+    }
+
+    function update() {
+      states.forEach(function (state) {
+        var progress = stepsFlowScrollProgress(state);
+        if (prefersReduced) {
+          progress = progress >= 0.4 ? 1 : 0;
+        }
+        state.progress = progress;
+        state.progressPath.style.strokeDashoffset = String(state.mainLength * (1 - progress));
+      });
+    }
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        update();
+        ticking = false;
+      });
+    }
+
+    function onResize() {
+      states.forEach(function (state) {
+        layoutStepsFlowDiagram(state.diagram, state);
+        state.progressPath.style.strokeDashoffset = String(state.mainLength * (1 - state.progress));
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        onResize();
+        update();
+      });
+    });
+    update();
+  }
+
   function initBerateriumSite() {
     initTeamExpandToggle();
     initTeamBioToggle();
+    initStepsFlowScroll();
 
     if (location.hash) {
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -453,13 +648,29 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  function getArticleStickyBarHeight(stickyBar) {
+    if (!stickyBar) return 0;
+    if (stickyBar.dataset.layoutHeight) return parseFloat(stickyBar.dataset.layoutHeight);
+    if (stickyBar.offsetHeight) return stickyBar.offsetHeight;
+    return 55;
+  }
+
+  function cacheArticleStickyBarHeight(stickyBar) {
+    if (!stickyBar || stickyBar.dataset.layoutHeight) return;
+    var wasHidden = stickyBar.hidden;
+    stickyBar.hidden = false;
+    stickyBar.dataset.layoutHeight = String(Math.round(stickyBar.getBoundingClientRect().height));
+    if (wasHidden) stickyBar.hidden = true;
+  }
+
   function scrollWithOffset(target, behavior) {
     if (!target) return;
     var header = document.querySelector(".site-header");
     var stickyBar = document.querySelector("[data-article-sticky-bar]");
+    var scrollMarginTop = parseFloat(window.getComputedStyle(target).scrollMarginTop);
     var headerH = header ? header.getBoundingClientRect().height : 84;
-    var stickyH = stickyBar && !stickyBar.hidden ? stickyBar.getBoundingClientRect().height : 0;
-    var offset = headerH + stickyH + 16;
+    var stickyH = getArticleStickyBarHeight(stickyBar);
+    var offset = scrollMarginTop > 0 ? scrollMarginTop : headerH + stickyH + 16;
     var y = target.getBoundingClientRect().top + window.pageYOffset - offset;
     window.scrollTo({
       top: Math.max(0, y),
@@ -638,6 +849,21 @@
     });
   }
 
+  function initKeypointsLinks(article) {
+    var links = (article || document).querySelectorAll(".brt-article__keypoints-link");
+    if (!links.length) return;
+
+    links.forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        var id = link.getAttribute("href").slice(1);
+        var target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        scrollWithOffset(target);
+      });
+    });
+  }
+
   function initArticlePage() {
     var article = document.querySelector("[data-article]");
     if (!article) return;
@@ -645,6 +871,7 @@
     initArticleProgress(article);
     initArticleBackTop(article);
     initArticleToc(article);
+    initKeypointsLinks(article);
   }
 
   function initYoutubeEmbeds() {
@@ -712,6 +939,8 @@
     if (!bar || !hero) return;
 
     var header = document.querySelector(".site-header");
+
+    cacheArticleStickyBarHeight(bar);
 
     function syncStickyBarTop() {
       if (!header) return;

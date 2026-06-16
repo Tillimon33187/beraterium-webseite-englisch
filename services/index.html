@@ -21,7 +21,9 @@
   <meta property="og:locale" content="en_GB">
 
   <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="icon" href="../favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../icon.png" type="image/png" sizes="192x192">
+  <link rel="icon" href="../icon-dark.png" type="image/png" sizes="192x192" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
   <meta name="theme-color" content="#0E1116">
   <link rel="manifest" href="../site.webmanifest">
@@ -93,7 +95,7 @@
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
           <p class="brt-tag">WHO IT&rsquo;S FOR</p>
-          <h2 id="paths-title" class="brt-h2">Choose your starting point</h2>
+          <h2 id="paths-title" class="brt-h2">Choose the right service for your company size</h2>
         </header>
         <ul class="brt-cards-3col brt-stagger">
           <li class="brt-card brt-card--target brt-hover-lift">
@@ -102,7 +104,7 @@
             <p class="brt-body">For founding teams up to 10 people. Spot early which risks could slow your growth – before they get expensive.</p>
             <a class="brt-btn brt-btn--ghost" href="../services/startups/">View startup service →</a>
           </li>
-          <li class="brt-card brt-card--target brt-card--featured brt-hover-lift">
+          <li class="brt-card brt-card--target brt-hover-lift">
             <h3 class="brt-h3">SME &amp; mid-market</h3>
             <p class="brt-meta brt-meta--accent">The 6-week clarity roadmap</p>
             <p class="brt-body">For businesses with 10–100+ employees. A complete risk picture, prioritised and valued in euros – plus HR analysis for culture and leadership.</p>
@@ -157,17 +159,68 @@
         </div>
       </div>
     </section>
-    <section class="brt-section" aria-labelledby="options-explainer">
+    <section class="brt-section brt-section--steps-flow" aria-labelledby="steps-explainer">
       <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">ALWAYS THREE LEVELS</p>
-          <h2 id="options-explainer" class="brt-h2">From risk picture to guided implementation</h2>
-        </header>
-        <ul class="brt-step-cards brt-stagger">
-          <li class="brt-step-card"><span class="brt-step-card__num">Option A</span><h3 class="brt-h3">Analysis</h3><p class="brt-body">You get clarity: the prioritised risk picture, valued in euros.</p></li>
-          <li class="brt-step-card"><span class="brt-step-card__num">Option B</span><h3 class="brt-h3">+ Roadmap</h3><p class="brt-body">Plus concrete measures, prioritised, with timeline and owners.</p></li>
-          <li class="brt-step-card"><span class="brt-step-card__num">Option C</span><h3 class="brt-h3">+ Guidance</h3><p class="brt-body">Plus implementation support and access to the Risk Radar expert network.</p></li>
-        </ul>
+        <div class="brt-steps-flow">
+          <header class="brt-steps-flow__intro brt-fade-up">
+            <p class="brt-tag">THREE STEPS</p>
+            <h2 id="steps-explainer" class="brt-h2">From risk picture to guided implementation</h2>
+            <p class="brt-steps-flow__lede">Three levels that build on each other – you choose the depth, we deliver clarity in euros.</p>
+          </header>
+          <div class="brt-steps-flow__diagram brt-fade-up">
+            <svg class="brt-steps-flow__path" viewBox="0 0 640 400" aria-hidden="true" focusable="false">
+              <path class="brt-steps-flow__path-soft" d="M48 318 C120 296, 188 276, 248 254"></path>
+              <path class="brt-steps-flow__path-base" d="M48 318 C48 155, 170 48, 318 40 S505 32, 592 72"></path>
+              <path class="brt-steps-flow__path-progress" d="M48 318 C48 155, 170 48, 318 40 S505 32, 592 72"></path>
+            </svg>
+            <ol class="brt-steps-flow__list brt-stagger">
+              <li class="brt-steps-flow__item brt-steps-flow__item--1">
+                <div class="brt-steps-flow__platform" aria-hidden="true">
+                  <svg class="brt-steps-flow__icon" viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                    <rect x="5" y="19" width="5" height="9" rx="1"></rect>
+                    <rect x="13.5" y="13" width="5" height="15" rx="1"></rect>
+                    <rect x="22" y="7" width="5" height="21" rx="1"></rect>
+                  </svg>
+                </div>
+                <div class="brt-steps-flow__copy">
+                  <span class="brt-steps-flow__label">Step 1</span>
+                  <h3 class="brt-h3">Analysis</h3>
+                  <p class="brt-body">You get clarity: the prioritised risk picture, valued in euros.</p>
+                </div>
+              </li>
+              <li class="brt-steps-flow__item brt-steps-flow__item--2">
+                <div class="brt-steps-flow__platform" aria-hidden="true">
+                  <svg class="brt-steps-flow__icon" viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                    <circle cx="8" cy="24" r="3"></circle>
+                    <circle cx="24" cy="8" r="3"></circle>
+                    <path d="M8 24 L16 16 L24 8" fill="none" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </div>
+                <div class="brt-steps-flow__copy">
+                  <span class="brt-steps-flow__label">Step 2</span>
+                  <h3 class="brt-h3">Roadmap</h3>
+                  <p class="brt-body">Plus concrete measures, prioritised, with timeline and owners.</p>
+                </div>
+              </li>
+              <li class="brt-steps-flow__item brt-steps-flow__item--3">
+                <div class="brt-steps-flow__platform" aria-hidden="true">
+                  <svg class="brt-steps-flow__icon" viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                    <circle cx="16" cy="16" r="3.5"></circle>
+                    <circle cx="8" cy="8" r="2.5"></circle>
+                    <circle cx="24" cy="8" r="2.5"></circle>
+                    <circle cx="8" cy="24" r="2.5"></circle>
+                    <path d="M16 16 L8 8 M16 16 L24 8 M16 16 L8 24" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                  </svg>
+                </div>
+                <div class="brt-steps-flow__copy">
+                  <span class="brt-steps-flow__label">Step 3</span>
+                  <h3 class="brt-h3">Guidance</h3>
+                  <p class="brt-body">Plus implementation support and access to the Risk Radar expert network.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
       </div>
     </section>
     <section class="brt-section brt-section--alt" aria-labelledby="hr-title">
@@ -185,30 +238,57 @@
         <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Pricing and scope depend on team size – we clarify what fits in the intro call.</p>
       </div>
     </section>
-    <section class="brt-section brt-section--alt" aria-labelledby="garantie-title">
+    <section class="brt-section brt-section--guarantee" aria-labelledby="garantie-title">
       <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
+        <header class="brt-section__header brt-section__header--center brt-fade-up">
           <p class="brt-tag">The risk is on us</p>
           <h2 id="garantie-title" class="brt-h2">Double guarantee</h2>
+          <p class="brt-body brt-section__lede">Two clear promises &mdash; if we don&rsquo;t deliver, you get a full refund.</p>
         </header>
         <ul class="brt-guarantee-duo brt-stagger">
-          <li class="brt-card brt-card--guarantee brt-hover-lift">
-            <div class="brt-card__icon" aria-hidden="true">
+        <li class="brt-card brt-card--guarantee brt-hover-lift">
+          <div class="brt-guarantee__visual">
+            <div class="brt-guarantee__icon" aria-hidden="true">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
             </div>
-            <h3 class="brt-h3">Relevance guarantee</h3>
-            <p class="brt-quote">&ldquo;No relevant risk found? Money back.&rdquo;</p>
-            <p class="brt-body">If the analysis does not identify a single risk with relevant financial impact (threshold agreed jointly in advance), we refund the full amount.</p>
-          </li>
-          <li class="brt-card brt-card--guarantee brt-hover-lift">
-            <div class="brt-card__icon" aria-hidden="true">
+            <span class="brt-guarantee__num" aria-hidden="true">01</span>
+          </div>
+          <h3 class="brt-h3">Relevance guarantee</h3>
+          <p class="brt-quote">&ldquo;No relevant risk found? Money back.&rdquo;</p>
+          <p class="brt-body">If the analysis does not identify a single risk with relevant financial impact (threshold agreed jointly in advance), we refund the full amount.</p>
+        </li>
+        <li class="brt-card brt-card--guarantee brt-hover-lift">
+          <div class="brt-guarantee__visual">
+            <div class="brt-guarantee__icon" aria-hidden="true">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             </div>
-            <h3 class="brt-h3">Value guarantee</h3>
-            <p class="brt-quote">&ldquo;No measurable value? Money back.&rdquo;</p>
-            <p class="brt-body">Before we start, we agree 3&ndash;5 value criteria together. If none are met at the end, you receive a full refund. No questions asked.</p>
-          </li>
+            <span class="brt-guarantee__num" aria-hidden="true">02</span>
+          </div>
+          <h3 class="brt-h3">Value guarantee</h3>
+          <p class="brt-quote">&ldquo;No measurable value? Money back.&rdquo;</p>
+          <p class="brt-body">Before we start, we agree 3&ndash;5 value criteria together. If none are met at the end, you receive a full refund. No questions asked.</p>
+        </li>
         </ul>
+        <aside class="brt-guarantee-cta brt-fade-up" aria-label="Book an intro call">
+          <div class="brt-guarantee-cta__icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="brt-guarantee-cta__copy">
+            <p class="brt-guarantee-cta__lead">Let&rsquo;s turn your risk into clarity.</p>
+            <p class="brt-guarantee-cta__sub">Book a free, no-obligation intro call today.</p>
+          </div>
+          <a class="brt-btn brt-btn--white" href="../contact/">Book an appointment now →</a>
+          <div class="brt-guarantee-cta__team">
+            <div class="brt-guarantee-cta__avatars" aria-hidden="true">
+              <img src="../img/team/till-blania.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
+              <img src="../img/team/peter-muenstermann.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
+            </div>
+            <div>
+              <p class="brt-guarantee-cta__team-name">Your Beraterium team</p>
+              <p class="brt-guarantee-cta__team-note">We&rsquo;re here for you.</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
     <section class="brt-cta-band brt-cta-band--dark brt-section" aria-labelledby="final-cta">
@@ -260,7 +340,7 @@
   <p class="site-footer__legal">© Beraterium 2026</p>
 </footer>
 
-<script src="../js/brt-site.js"></script>
+<script src="../js/brt-site.js?v=20260617-steps"></script>
 
 </body>
 </html>

@@ -249,6 +249,123 @@ def _unwrap_list_paragraphs(html: str) -> str:
     )
 
 
+_KEYPOINT_LINK_SKIP = re.compile(r"^(Sources|References|Conclusion|Summary)\b", re.IGNORECASE)
+_KEYPOINT_STOP_WORDS = frozenset(
+    {
+        "about", "after", "also", "and", "are", "because", "been", "before", "being",
+        "both", "but", "can", "could", "does", "each", "for", "from", "have", "has",
+        "here", "how", "into", "its", "just", "more", "most", "not", "only", "other",
+        "our", "out", "over", "should", "some", "such", "than", "that", "the", "their",
+        "them", "then", "there", "these", "they", "this", "through", "under", "very",
+        "was", "were", "what", "when", "where", "which", "while", "who", "will", "with",
+        "would", "your",
+    }
+)
+
+
+def _keypoint_match_words(text: str) -> set[str]:
+    cleaned = re.sub(r"<[^>]+>", " ", text or "")
+    cleaned = cleaned.lower()
+    cleaned = re.sub(r"[^\w\s]", " ", cleaned)
+    return {word for word in cleaned.split() if len(word) > 3 and word not in _KEYPOINT_STOP_WORDS}
+
+
+def _keypoint_heading_score(keypoint_html: str, title: str) -> int:
+    kp_words = _keypoint_match_words(keypoint_html)
+    title_words = _keypoint_match_words(title)
+    strong_words = set()
+    for strong in re.findall(r"<strong>(.*?)</strong>", keypoint_html, flags=re.DOTALL):
+        strong_words |= _keypoint_match_words(strong)
+
+    title_norm = title.lower()
+
+    score = len(kp_words & title_words) + (2 * len(strong_words & title_words))
+    for word in kp_words | strong_words:
+        for title_word in title_words:
+            if word == title_word:
+                score += 4 if word in strong_words else 2
+            elif len(word) >= 6 and (word in title_word or title_word in word):
+                score += 3 if word in strong_words else 1
+
+    if ("family" in strong_words or "families" in strong_words) and "business" in title_norm:
+        score += 4
+    if ("organization" in strong_words or "organisation" in strong_words) and "business" in title_norm:
+        score += 4
+    if ("staff" in strong_words or "employee" in strong_words or "employees" in strong_words) and (
+        "staff" in title_norm or "employee" in title_norm
+    ):
+        score += 5
+    if "worst" in strong_words and "cases" in strong_words and "worst" in title_norm:
+        score += 5
+    if ("practical" in strong_words or "practice" in strong_words) and "practical" in title_norm:
+        score += 5
+    if "psychological" in title_norm and ("ownership" in kp_words or "emotional" in kp_words):
+        score += 4
+    if "radical" in strong_words and "radical" in title_norm:
+        score += 5
+    if ("risks" in strong_words or "risk" in strong_words) and "risk" in title_norm:
+        score += 3
+    if "growth" in strong_words and "paradox" in title_norm:
+        score += 4
+    if "framework" in strong_words and "framework" in title_norm:
+        score += 5
+    if ("people" in strong_words or "human" in strong_words) and (
+        "people" in title_norm or "human" in title_norm
+    ):
+        score += 4
+    if ("tool" in strong_words or "instrument" in strong_words) and (
+        "instrument" in title_norm or "tool" in title_norm
+    ):
+        score += 4
+    if "threat" in strong_words and "threat" in title_norm:
+        score += 5
+    if "paradox" in strong_words and "paradox" in title_norm:
+        score += 5
+    if "overregulation" in strong_words and "paradox" in title_norm:
+        score += 4
+    if any(word.startswith("conflict") for word in strong_words) and "conflict" in title_norm:
+        score += 6
+    if "succession" in strong_words and "succession" in title_norm and "conflict" not in strong_words:
+        score += 4
+
+    return score
+
+
+def _link_keypoints_items(keypoints_html: str, body_html: str) -> str:
+    headings = [
+        item
+        for item in _extract_toc(body_html)
+        if not _KEYPOINT_LINK_SKIP.search(item["title"])
+    ]
+    if not headings:
+        return keypoints_html
+
+    def replacer(match: re.Match[str]) -> str:
+        inner = match.group(1)
+        if inner.strip().startswith('<a class="brt-article__keypoints-link"'):
+            return match.group(0)
+
+        best_id = None
+        best_score = -1
+        best_index = len(headings)
+        for index, heading in enumerate(headings):
+            score = _keypoint_heading_score(inner, heading["title"])
+            if score > best_score or (score == best_score and index < best_index):
+                best_score = score
+                best_id = heading["id"]
+                best_index = index
+
+        if best_score < 1 or not best_id:
+            return match.group(0)
+
+        return (
+            f'<li><a class="brt-article__keypoints-link" href="#{best_id}">'
+            f"{inner}</a></li>"
+        )
+
+    return re.sub(r"<li>(.*?)</li>", replacer, keypoints_html, flags=re.DOTALL)
+
+
 def _promote_keypoints(html: str) -> str:
     if re.search(r"<h2 class=\"brt-article__h2\"", html):
         before, _, after = html.partition('<h2 class="brt-article__h2"')
@@ -261,11 +378,20 @@ def _promote_keypoints(html: str) -> str:
     )
     if not match or len(re.findall(r"<li>", match.group(1))) < 2:
         return html
-    keypoints = match.group(1)
+    keypoints = match.group(1).replace(
+        '<ul class="brt-article__list">',
+        '<ul class="brt-article__list brt-article__keypoints-list">',
+        1,
+    )
     rest = before[match.end():] + ('<h2 class="brt-article__h2"' + after if after else "")
+    keypoints = _link_keypoints_items(keypoints, rest)
     return (
         '<aside class="brt-article__keypoints" aria-label="Key takeaways">'
+        '<div class="brt-article__keypoints-head">'
+        '<div class="brt-article__keypoints-head-copy">'
         '<p class="brt-article__keypoints-label">Key takeaways</p>'
+        '<p class="brt-article__keypoints-deck">The essentials at a glance</p>'
+        "</div></div>"
         f"{keypoints}"
         "</aside>"
         + rest
@@ -949,19 +1075,23 @@ def _home_team_card_media(member: TeamMember, depth: int) -> str:
 
 
 def home_team_card(member: TeamMember, depth: int, *, hidden: bool = False) -> str:
+    pre = pfx(depth)
     role, bio = HOME_TEAM_CARD_COPY.get(
         member.slug,
         (member.role_tag, member.teaser_bio or member.approach[:160]),
     )
     extra_cls = " brt-home-team__card--more" if hidden else ""
     hidden_attr = " hidden" if hidden else ""
+    href = team_member_url(pre, member.slug)
     return f"""        <li class="brt-card brt-card--profile brt-hover-lift{extra_cls}"{hidden_attr}>
+          <a class="brt-card__link" href="{escape(href)}">
 {_home_team_card_media(member, depth)}
           <div class="brt-card__body">
             <h3 class="brt-h3">{escape(member.name)}</h3>
             <p class="brt-meta brt-meta--accent">{escape(role)}</p>
             <p class="brt-body">{escape(bio)}</p>
           </div>
+          </a>
         </li>"""
 
 
@@ -1002,7 +1132,7 @@ def home_team_section_html(depth: int = 0) -> str:
       </ul>
 {toggle}
       <p class="brt-section__cta brt-fade-up">
-        <a class="brt-btn brt-btn--ghost" href="{pre}team/">More about the team →</a>
+        <a class="brt-btn brt-btn--outline" href="{pre}team/">More about the team →</a>
       </p>
     </div>
   </section>

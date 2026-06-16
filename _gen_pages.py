@@ -211,7 +211,9 @@ def shell(
   <meta property="og:locale" content="en_GB">
 
   <link rel="icon" href="{pre}favicon.ico" sizes="any">
+  <link rel="icon" href="{pre}favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="{pre}icon.png" type="image/png" sizes="192x192">
+  <link rel="icon" href="{pre}icon-dark.png" type="image/png" sizes="192x192" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" href="{pre}apple-touch-icon.png">
   <meta name="theme-color" content="#0E1116">
   <link rel="manifest" href="{pre}site.webmanifest">
@@ -315,32 +317,66 @@ def cta_band(pre: str, h2: str, body: str, btn: str = "Book a free intro call") 
     </section>"""
 
 
-def guarantee(pre: str, h2: str = "Double guarantee") -> str:
+def guarantee(
+    pre: str,
+    h2: str = "Double guarantee",
+    *,
+    tag: str = "The risk is on us",
+    subtitle: str = "Two clear promises &mdash; if we don&rsquo;t deliver, you get a full refund.",
+) -> str:
+    img = f"{pre}img/team/"
     return f"""
-    <section class="brt-section brt-section--alt" aria-labelledby="garantie-title">
+    <section class="brt-section brt-section--guarantee" aria-labelledby="garantie-title">
       <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">The risk is on us</p>
+        <header class="brt-section__header brt-section__header--center brt-fade-up">
+          <p class="brt-tag">{tag}</p>
           <h2 id="garantie-title" class="brt-h2">{h2}</h2>
+          <p class="brt-body brt-section__lede">{subtitle}</p>
         </header>
         <ul class="brt-guarantee-duo brt-stagger">
           <li class="brt-card brt-card--guarantee brt-hover-lift">
-            <div class="brt-card__icon" aria-hidden="true">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <div class="brt-guarantee__visual">
+              <div class="brt-guarantee__icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              </div>
+              <span class="brt-guarantee__num" aria-hidden="true">01</span>
             </div>
             <h3 class="brt-h3">Relevance guarantee</h3>
             <p class="brt-quote">&ldquo;No relevant risk found? Money back.&rdquo;</p>
             <p class="brt-body">If the analysis does not identify a single risk with relevant financial impact (threshold agreed jointly in advance), we refund the full amount.</p>
           </li>
           <li class="brt-card brt-card--guarantee brt-hover-lift">
-            <div class="brt-card__icon" aria-hidden="true">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            <div class="brt-guarantee__visual">
+              <div class="brt-guarantee__icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              </div>
+              <span class="brt-guarantee__num" aria-hidden="true">02</span>
             </div>
             <h3 class="brt-h3">Value guarantee</h3>
             <p class="brt-quote">&ldquo;No measurable value? Money back.&rdquo;</p>
             <p class="brt-body">Before we start, we agree 3&ndash;5 value criteria together. If none are met at the end, you receive a full refund. No questions asked.</p>
           </li>
         </ul>
+        <aside class="brt-guarantee-cta brt-fade-up" aria-label="Book an intro call">
+          <div class="brt-guarantee-cta__icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="brt-guarantee-cta__copy">
+            <p class="brt-guarantee-cta__lead">Let&rsquo;s turn your risk into clarity.</p>
+            <p class="brt-guarantee-cta__sub">Book a free, no-obligation intro call today.</p>
+          </div>
+          <a class="brt-btn brt-btn--white" href="{pre}contact/">Book an appointment now →</a>
+          <div class="brt-guarantee-cta__team">
+            <div class="brt-guarantee-cta__avatars" aria-hidden="true">
+              <img src="{img}till-blania.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
+              <img src="{img}peter-muenstermann.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
+            </div>
+            <div>
+              <p class="brt-guarantee-cta__team-name">Your Beraterium team</p>
+              <p class="brt-guarantee-cta__team-note">We&rsquo;re here for you.</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>"""
 
@@ -874,7 +910,7 @@ def gen_lp_startups() -> None:
       </div>
     </section>"""
         + pricing_cards(pre, opts)
-        + guarantee(pre)
+        + guarantee(pre, "Your risk is on us")
         + faq_section([
             ("How much time does it cost me?", "About 2 hours per session, 1–2 sessions plus kick-off in total. We handle the rest."),
             ("Is it worth it this early?", "Especially early: a key-person or cash risk can stop a young startup completely."),
@@ -939,7 +975,7 @@ def gen_lp_kmu() -> None:
       </div>
     </section>"""
         + pricing_cards(pre, opts)
-        + guarantee(pre)
+        + guarantee(pre, "Your risk is zero")
         + faq_section([
             ("How much time does it tie up in the team?", "2–3 hours per session, 2–3 sessions plus kick-off in total. We facilitate efficiently."),
             ("Is this suitable for family businesses too?", "Especially so. Topics such as succession or key people become visible in a structured way."),
@@ -997,7 +1033,7 @@ def gen_lp_solo() -> None:
       </div>
     </section>"""
         + pricing_cards(pre, opts)
-        + guarantee(pre)
+        + guarantee(pre, "Zero risk for you")
         + faq_section([
             ("Is it worth it when it is just me?", "Especially then. If you go down, there is no buffer."),
             ("How much time does it cost me?", "One session of 2–3 hours plus a short kick-off. That is it."),
@@ -1317,7 +1353,7 @@ def gen_home_team() -> None:
         path.write_text(before + section + after, encoding="utf-8")
     else:
         legacy_start = "  <!-- S7 — Die Köpfe -->"
-        legacy_end = '        <a class="brt-btn brt-btn--ghost" href="team/">Mehr über das Team →</a>\n      </p>\n    </div>\n  </section>'
+        legacy_end = '        <a class="brt-btn brt-btn--outline" href="team/">More about the team →</a>\n      </p>\n    </div>\n  </section>'
         if legacy_start not in html or legacy_end not in html:
             return
         before = html.split(legacy_start)[0]
@@ -1345,10 +1381,11 @@ def gen_home_blog_teaser() -> None:
     <div class="brt-container">
       <header class="brt-section__header brt-section__header--row brt-fade-up">
         <div>
-          <p class="brt-tag">Einblicke</p>
-          <h2 id="blog-title" class="brt-h2">Aus dem Beraterium-Blog</h2>
+          <p class="brt-tag">Insights</p>
+          <h2 id="blog-title" class="brt-h2">Expert insights from Beraterium</h2>
+          <p class="brt-body">Short, practical articles on risk, leadership, and decisions — from our team, for founders, SMEs, and solo operators.</p>
         </div>
-        <a class="brt-btn brt-btn--outline" href="blog/">Alle Artikel →</a>
+        <a class="brt-btn brt-btn--outline" href="blog/">All articles →</a>
       </header>
       <ul class="brt-blog-grid brt-stagger">
 {cards}
