@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 DE_SITE_URL = "https://www.beraterium.de"
-EN_SITE_URL = "https://en.beraterium.de"
+EN_SITE_URL = "https://www.beraterium.com"
 
 # Static page slug mapping: DE path (no leading/trailing slash) -> EN path
 STATIC_ROUTE_MAP: dict[str, str] = {
@@ -122,7 +122,7 @@ def language_switcher_html(*, current_locale: str, canonical: str, depth: int) -
         other_url = f"{DE_SITE_URL}/"
     else:
         other_locale = "en"
-        other_url = alternate_url(canonical, from_locale=current_locale, to_locale="en")
+        other_url = f"{EN_SITE_URL}/"
     current_label = "DE" if current_locale == "de" else "EN"
     other_label = "EN" if current_locale == "de" else "DE"
     return (
