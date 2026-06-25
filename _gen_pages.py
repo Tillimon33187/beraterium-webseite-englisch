@@ -107,25 +107,25 @@ def nav_html(depth: int, active: str | None) -> str:
 
     items = [
         f"""        <li class="site-header__item site-header__item--has-menu{" is-active" if services_active else ""}">
-          <a href="{pre}services/" class="site-header__parent-link"{services_cur} aria-expanded="false" aria-haspopup="true">
+          <a href="{pre}services/" class="site-header__parent-link"{services_cur} aria-expanded="false">
             Services
             {CARET_SVG}
           </a>
-          <ul class="site-header__submenu" role="menu" aria-label="Services">
-            <li role="none"><a href="{pre}services/startups/" role="menuitem"{service_sub_cur("startups")}>Startups</a></li>
-            <li role="none"><a href="{pre}services/smb/" role="menuitem"{service_sub_cur("smb")}>SME</a></li>
-            <li role="none"><a href="{pre}services/solo/" role="menuitem"{service_sub_cur("solo")}>Solo self-employed</a></li>
+          <ul class="site-header__submenu" aria-label="Services">
+            <li><a href="{pre}services/startups/"{service_sub_cur("startups")}>Startups</a></li>
+            <li><a href="{pre}services/smb/"{service_sub_cur("smb")}>SME</a></li>
+            <li><a href="{pre}services/solo/"{service_sub_cur("solo")}>Solo self-employed</a></li>
           </ul>
         </li>""",
         f'        <li><a href="{pre}method/"{nav_cur("method")}>Method</a></li>',
         f"""        <li class="site-header__item site-header__item--has-menu{" is-active" if about_active else ""}">
-          <a href="{pre}about/" class="site-header__parent-link" aria-expanded="false" aria-haspopup="true">
+          <a href="{pre}about/" class="site-header__parent-link" aria-expanded="false">
             About us
             {CARET_SVG}
           </a>
-          <ul class="site-header__submenu" role="menu" aria-label="About us">
-            <li role="none"><a href="{pre}about/" role="menuitem"{nav_cur("about")}>About the company</a></li>
-            <li role="none"><a href="{pre}team/" role="menuitem"{nav_cur("team")}>Our team</a></li>
+          <ul class="site-header__submenu" aria-label="About us">
+            <li><a href="{pre}about/"{nav_cur("about")}>About the company</a></li>
+            <li><a href="{pre}team/"{nav_cur("team")}>Our team</a></li>
           </ul>
         </li>""",
         f'        <li><a href="{pre}risk-radar/"{nav_cur("risk-radar")}>Risk Radar</a></li>',
@@ -142,6 +142,7 @@ def footer_html(depth: int) -> str:
       <h2>Beraterium</h2>
       <p>Enterprise risk management, translated for mid-market businesses.</p>
       <a href="https://www.linkedin.com/company/beraterium">LinkedIn</a>
+      <a href="https://www.youtube.com/@Beraterium">YouTube</a>
     </section>
     <section>
       <h2>Services</h2>
@@ -166,6 +167,7 @@ def footer_html(depth: int) -> str:
       <ul>
         <li><a href="{pre}contact/">Book a free intro call</a></li>
         <li><a href="{pre}contact-form/">Contact form</a></li>
+        <li><a href="{pre}accessibility/">Accessibility statement</a></li>
         <li><a href="{pre}legal-notice/">Legal notice</a></li>
         <li><a href="{pre}privacy/">Privacy</a></li>
         <li><a href="{pre}terms/">Terms</a></li>
@@ -250,7 +252,7 @@ def shell(
 
 {footer_html(depth)}
 
-<script src="{pre}js/brt-site.js"></script>
+<script src="{pre}js/brt-site.js?v=20260617-steps"></script>
 
 </body>
 </html>
@@ -313,6 +315,267 @@ def cta_band(pre: str, h2: str, body: str, btn: str = "Book a free intro call") 
         <h2 id="final-cta" class="brt-h2 brt-h2--on-dark">{h2}</h2>
         <p class="brt-body brt-body--on-dark">{body}</p>
         <a class="brt-btn brt-btn--on-dark brt-btn--lg" href="{pre}contact/">{btn}</a>
+      </div>
+    </section>"""
+
+
+def steps_flow_section(*, en: bool = False) -> str:
+    if en:
+        tag = "THREE STEPS"
+        h2 = "From risk picture to guided implementation"
+        lede = "Three levels that build on each other – you choose the depth, we deliver clarity in euros."
+        section_id = "steps-explainer"
+        steps = (
+            ("Step 1", "Analysis", "You get clarity: the prioritised risk picture, valued in euros."),
+            ("Step 2", "Roadmap", "Plus concrete measures, prioritised, with timeline and owners."),
+            ("Step 3", "Guidance", "Plus implementation support and access to the Risk Radar expert network."),
+        )
+    else:
+        tag = "IMMER DREI STUFEN"
+        h2 = "Vom Lagebild bis zur begleiteten Umsetzung"
+        lede = "Drei Stufen, die aufeinander aufbauen – Sie wählen die Tiefe, wir liefern Klarheit in Euro."
+        section_id = "options-explainer"
+        steps = (
+            ("Stufe 1", "Analyse", "Sie bekommen Klarheit: das priorisierte, in Euro bewertete Risiko-Lagebild."),
+            ("Stufe 2", "Fahrplan", "Plus konkrete Maßnahmen, priorisiert, mit Timeline und Verantwortlichkeiten."),
+            ("Stufe 3", "Begleitung", "Plus Umsetzungsbegleitung und Zugang zum RisikoRadar-Expertennetzwerk."),
+        )
+    icons = (
+        """<svg class="brt-steps-flow__icon" viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                    <rect x="5" y="19" width="5" height="9" rx="1"></rect>
+                    <rect x="13.5" y="13" width="5" height="15" rx="1"></rect>
+                    <rect x="22" y="7" width="5" height="21" rx="1"></rect>
+                  </svg>""",
+        """<svg class="brt-steps-flow__icon" viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                    <circle cx="8" cy="24" r="3"></circle>
+                    <circle cx="24" cy="8" r="3"></circle>
+                    <path d="M8 24 L16 16 L24 8" fill="none" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>""",
+        """<svg class="brt-steps-flow__icon" viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                    <circle cx="16" cy="16" r="3.5"></circle>
+                    <circle cx="8" cy="8" r="2.5"></circle>
+                    <circle cx="24" cy="8" r="2.5"></circle>
+                    <circle cx="8" cy="24" r="2.5"></circle>
+                    <path d="M16 16 L8 8 M16 16 L24 8 M16 16 L8 24" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                  </svg>""",
+    )
+    items = []
+    for i, ((label, title, body), icon) in enumerate(zip(steps, icons), 1):
+        items.append(
+            f"""              <li class="brt-steps-flow__item brt-steps-flow__item--{i}">
+                <div class="brt-steps-flow__platform" aria-hidden="true">
+                  {icon}
+                </div>
+                <div class="brt-steps-flow__copy">
+                  <span class="brt-steps-flow__label">{label}</span>
+                  <h3 class="brt-h3">{title}</h3>
+                  <p class="brt-body">{body}</p>
+                </div>
+              </li>"""
+        )
+    return f"""
+    <section class="brt-section brt-section--steps-flow" aria-labelledby="{section_id}">
+      <div class="brt-container">
+        <div class="brt-steps-flow">
+          <header class="brt-steps-flow__intro brt-fade-up">
+            <p class="brt-tag">{tag}</p>
+            <h2 id="{section_id}" class="brt-h2">{h2}</h2>
+            <p class="brt-steps-flow__lede">{lede}</p>
+          </header>
+          <div class="brt-steps-flow__diagram brt-fade-up">
+            <svg class="brt-steps-flow__path" viewBox="0 0 640 400" aria-hidden="true" focusable="false">
+              <path class="brt-steps-flow__path-soft" d="M48 318 C120 296, 188 276, 248 254"></path>
+              <path class="brt-steps-flow__path-base" d="M48 318 C48 155, 170 48, 318 40 S505 32, 592 72"></path>
+              <path class="brt-steps-flow__path-progress" d="M48 318 C48 155, 170 48, 318 40 S505 32, 592 72"></path>
+            </svg>
+            <ol class="brt-steps-flow__list brt-stagger">
+{chr(10).join(items)}
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>"""
+
+
+
+def case_studies_section(pre: str, *, en: bool = False) -> str:
+    if en:
+        return """
+    <section class="brt-section brt-case-studies" aria-labelledby="case-studies-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">FROM THE FIELD</p>
+          <h2 id="case-studies-title" class="brt-h2">Case studies from the field</h2>
+          <p class="brt-body">Two anonymised examples – how the BlindSpot Check works in different phases, and where Stage&nbsp;2 turns insight into action.</p>
+        </header>
+        <div class="brt-case-studies__widget brt-fade-up" data-case-studies>
+          <div class="brt-case-studies__tabs" role="tablist" aria-label="Case studies">
+            <button type="button" class="brt-case-studies__tab is-active" role="tab" id="case-tab-0" aria-selected="true" aria-controls="case-panel-0" data-case-study-tab>Financial services</button>
+            <button type="button" class="brt-case-studies__tab" role="tab" id="case-tab-1" aria-selected="false" aria-controls="case-panel-1" data-case-study-tab tabindex="-1">Creative crafts</button>
+          </div>
+          <div class="brt-case-studies__panels">
+            <article class="brt-case-study is-active" id="case-panel-0" role="tabpanel" aria-labelledby="case-tab-0" data-case-study-panel>
+              <div class="brt-case-study__grid">
+                <div class="brt-case-study__challenge">
+                  <p class="brt-case-study__label">Starting point</p>
+                  <h3 class="brt-case-study__title">Startup founder, pre-launch</h3>
+                  <ul class="brt-case-study__meta">
+                    <li><span>Industry</span> Financial services</li>
+                    <li><span>Phase</span> Pre-launch / structuring</li>
+                    <li><span>Team</span> 1 founder + external partners</li>
+                  </ul>
+                  <p class="brt-case-study__text">Financing and regulation were on his radar – but there was no shared framework to compare all risk fields and no portfolio with clear priorities. Topics were discussed in isolation, not as one picture.</p>
+                </div>
+                <div class="brt-case-study__body">
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">Approach</p>
+                    <h4 class="brt-case-study__headline">BlindSpot Check (Stage&nbsp;1)</h4>
+                    <p class="brt-body">We worked through the core hazard matrix systematically: guiding question, damage scenario, euro bands, likelihood and inventory – what already mitigates the risk.</p>
+                  </div>
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">Outcome</p>
+                    <ul class="brt-case-study__stats">
+                      <li class="brt-case-study__stat"><strong>1</strong><span>Top priority: quality of analysis &amp; decision models – not financing</span></li>
+                      <li class="brt-case-study__stat"><strong>4</strong><span>Equal second tier: cyber, capital providers, market, reputation</span></li>
+                      <li class="brt-case-study__stat"><strong>1</strong><span>Key partner exit scenario made explicit – redundancy question opened</span></li>
+                      <li class="brt-case-study__stat"><strong>✓</strong><span>Roadmap to revisit phase-dependent risks after launch</span></li>
+                    </ul>
+                  </div>
+                  <blockquote class="brt-case-study__quote"><p>&ldquo;I knew there were risks. I just didn&rsquo;t know which came first – and which I&rsquo;d need to reassess after launch.&rdquo;</p></blockquote>
+                </div>
+              </div>
+            </article>
+            <article class="brt-case-study" id="case-panel-1" role="tabpanel" aria-labelledby="case-tab-1" data-case-study-panel hidden>
+              <div class="brt-case-study__grid">
+                <div class="brt-case-study__challenge">
+                  <p class="brt-case-study__label">Starting point</p>
+                  <h3 class="brt-case-study__title">Solo self-employed, growing studio</h3>
+                  <ul class="brt-case-study__meta">
+                    <li><span>Industry</span> Creative crafts</li>
+                    <li><span>Phase</span> Running business, scaling offer</li>
+                    <li><span>Team</span> 1 person, project support</li>
+                  </ul>
+                  <p class="brt-case-study__text">Many open fronts, little time – but no shared priority. What to tackle first without spinning in circles was unclear. She carries every risk alone: customers, IT, premises, contracts, social media.</p>
+                </div>
+                <div class="brt-case-study__body">
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">Approach</p>
+                    <h4 class="brt-case-study__headline">Stage&nbsp;1 + Stage&nbsp;2</h4>
+                    <p class="brt-body">Stage&nbsp;1 revealed four equally weighted top risks. In Stage&nbsp;2 we turned each into action logic – cyber, reputation, physical total loss and organisation – with effort vs. impact trade-offs.</p>
+                  </div>
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">Outcome</p>
+                    <ul class="brt-case-study__stats">
+                      <li class="brt-case-study__stat"><strong>4</strong><span>Top risks: IT/cyber, reputation, physical total loss, missing processes</span></li>
+                      <li class="brt-case-study__stat"><strong>A–D</strong><span>Stage&nbsp;2 blocks with concrete next steps per area</span></li>
+                      <li class="brt-case-study__stat"><strong>3</strong><span>Phases: now, 1–3 months, follow-up sessions</span></li>
+                      <li class="brt-case-study__stat"><strong>↓</strong><span>Non-core work made measurable – capacity freed for top risks</span></li>
+                    </ul>
+                  </div>
+                  <blockquote class="brt-case-study__quote"><p>&ldquo;Stage&nbsp;1 showed which risks really carry the building – Stage&nbsp;2 how to tackle them without burning out.&rdquo;</p></blockquote>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="brt-case-studies__nav">
+            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--prev" data-case-study-prev aria-label="Previous case study">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--next" data-case-study-next aria-label="Next case study">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+        <p class="brt-meta brt-case-studies__note brt-fade-up">All details anonymised – no conclusions about individuals possible.</p>
+      </div>
+    </section>"""
+    return """
+    <section class="brt-section brt-case-studies" aria-labelledby="case-studies-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">AUS DER PRAXIS</p>
+          <h2 id="case-studies-title" class="brt-h2">Case Studies aus der Praxis</h2>
+          <p class="brt-body">Zwei anonymisierte Einblicke – wie der Blindspot Check in unterschiedlichen Phasen wirkt und wo Stufe&nbsp;2 aus Erkenntnis konkrete Bearbeitung macht.</p>
+        </header>
+        <div class="brt-case-studies__widget brt-fade-up" data-case-studies>
+          <div class="brt-case-studies__tabs" role="tablist" aria-label="Case Studies">
+            <button type="button" class="brt-case-studies__tab is-active" role="tab" id="case-tab-0" aria-selected="true" aria-controls="case-panel-0" data-case-study-tab>Finanzdienstleistungen</button>
+            <button type="button" class="brt-case-studies__tab" role="tab" id="case-tab-1" aria-selected="false" aria-controls="case-panel-1" data-case-study-tab tabindex="-1">Kreativhandwerk</button>
+          </div>
+          <div class="brt-case-studies__panels">
+            <article class="brt-case-study is-active" id="case-panel-0" role="tabpanel" aria-labelledby="case-tab-0" data-case-study-panel>
+              <div class="brt-case-study__grid">
+                <div class="brt-case-study__challenge">
+                  <p class="brt-case-study__label">Ausgangssituation</p>
+                  <h3 class="brt-case-study__title">Startup-Gründer vor der Auflage</h3>
+                  <ul class="brt-case-study__meta">
+                    <li><span>Branche</span> Finanzdienstleistungen</li>
+                    <li><span>Phase</span> Vorgründung / Strukturierung</li>
+                    <li><span>Team</span> 1 Gründer, externe Partner</li>
+                  </ul>
+                  <p class="brt-case-study__text">Finanzierung und Regulatorik waren im Blick – aber kein gemeinsames Raster, um alle Felder zu vergleichen, und kein Portfolio mit Prioritäten. Einzelthemen waren besprochen, nicht als ein Gesamtbild.</p>
+                </div>
+                <div class="brt-case-study__body">
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">Ansatz</p>
+                    <h4 class="brt-case-study__headline">Blindspot Check (Stufe&nbsp;1)</h4>
+                    <p class="brt-body">Systematische Kerngefahren-Matrix: Leitfrage, Schadenszenario, Euro-Stufen, Eintrittswahrscheinlichkeit und Inventar – was das Risiko bereits mindert.</p>
+                  </div>
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">Ergebnis</p>
+                    <ul class="brt-case-study__stats">
+                      <li class="brt-case-study__stat"><strong>1</strong><span>Top-Priorität: Qualität von Analyse- &amp; Entscheidungsmodellen – nicht Finanzierung</span></li>
+                      <li class="brt-case-study__stat"><strong>4</strong><span>Gleichrangige zweite Ebene: Cyber, Kapitalgeber, Markt, Reputation</span></li>
+                      <li class="brt-case-study__stat"><strong>1</strong><span>Schlüsselpartner-Ausstieg explizit – Redundanz-Frage eröffnet</span></li>
+                      <li class="brt-case-study__stat"><strong>✓</strong><span>Roadmap zur Fortschreibung phasenabhängiger Risiken nach Auflage</span></li>
+                    </ul>
+                  </div>
+                  <blockquote class="brt-case-study__quote"><p>&bdquo;Ich wusste, dass es Risiken gibt. Ich wusste nur nicht, welche zuerst – und welche ich nach dem Start neu bewerten muss.&ldquo;</p></blockquote>
+                </div>
+              </div>
+            </article>
+            <article class="brt-case-study" id="case-panel-1" role="tabpanel" aria-labelledby="case-tab-1" data-case-study-panel hidden>
+              <div class="brt-case-study__grid">
+                <div class="brt-case-study__challenge">
+                  <p class="brt-case-study__label">Ausgangssituation</p>
+                  <h3 class="brt-case-study__title">Solo-Selbstständige im laufenden Betrieb</h3>
+                  <ul class="brt-case-study__meta">
+                    <li><span>Branche</span> Kreativhandwerk</li>
+                    <li><span>Phase</span> Laufender Betrieb, Wachstum</li>
+                    <li><span>Team</span> 1 Person, projektweise Unterstützung</li>
+                  </ul>
+                  <p class="brt-case-study__text">Viele Baustellen, wenig Zeit – aber keine gemeinsame Priorität. Was zuerst angehen, ohne sich im Hamsterrad zu verlieren, war unklar. Alle Risiken trägt sie allein: Kunden, IT, Räume, Verträge, Social Media.</p>
+                </div>
+                <div class="brt-case-study__body">
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">Ansatz</p>
+                    <h4 class="brt-case-study__headline">Stufe&nbsp;1 + Stufe&nbsp;2</h4>
+                    <p class="brt-body">Stufe&nbsp;1 machte vier gleich gewichtete Top-Risiken sichtbar. In Stufe&nbsp;2 wurden daraus Bearbeitungslogiken – IT/Cyber, Reputation, physischer Totalausfall und Organisation – mit Aufwand-Wirkungs-Abwägung.</p>
+                  </div>
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">Ergebnis</p>
+                    <ul class="brt-case-study__stats">
+                      <li class="brt-case-study__stat"><strong>4</strong><span>Top-Risiken: IT/Cyber, Reputation, physischer Totalausfall, fehlende Prozesse</span></li>
+                      <li class="brt-case-study__stat"><strong>A–D</strong><span>Stufe-2-Blöcke mit konkreten nächsten Schritten pro Bereich</span></li>
+                      <li class="brt-case-study__stat"><strong>3</strong><span>Phasen: Sofort, 1–3 Monate, Folgetermine</span></li>
+                      <li class="brt-case-study__stat"><strong>↓</strong><span>Nicht-Kerngeschäft messbar reduzierbar – Kapazität für Top-Risiken</span></li>
+                    </ul>
+                  </div>
+                  <blockquote class="brt-case-study__quote"><p>&bdquo;Stufe&nbsp;1 hat gezeigt, welche wirklich das Gebäude tragen – Stufe&nbsp;2, wie ich sie ohne Selbstzerstörung angehen kann.&ldquo;</p></blockquote>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="brt-case-studies__nav">
+            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--prev" data-case-study-prev aria-label="Vorherige Case Study">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--next" data-case-study-next aria-label="Nächste Case Study">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+        <p class="brt-meta brt-case-studies__note brt-fade-up">Alle Angaben anonymisiert – ohne Rückschlüsse auf Personen möglich.</p>
       </div>
     </section>"""
 
@@ -791,24 +1054,24 @@ def gen_angebote() -> None:
               <thead>
                 <tr>
                   <th class="brt-compare__corner" scope="col"></th>
-                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-title">Startups</span><span class="brt-compare__head-meta">4-week check</span></th>
-                  <th class="brt-compare__head brt-compare__head--featured" scope="col"><span class="brt-compare__head-badge">Popular</span><span class="brt-compare__head-title">SME</span><span class="brt-compare__head-meta">6-week roadmap</span></th>
-                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-title">Solo</span><span class="brt-compare__head-meta">2-week compass</span></th>
+                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-icon" aria-hidden="true"><svg class="brt-compare__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span><span class="brt-compare__head-title">Startups</span><span class="brt-compare__head-meta">4-week check</span></th>
+                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-icon" aria-hidden="true"><svg class="brt-compare__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></span><span class="brt-compare__head-title">SME</span><span class="brt-compare__head-meta">6-week roadmap</span></th>
+                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-icon" aria-hidden="true"><svg class="brt-compare__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="brt-compare__head-title">Solo</span><span class="brt-compare__head-meta">2-week compass</span></th>
                 </tr>
               </thead>
               <tbody>
-                <tr><th class="brt-compare__row-label" scope="row">For whom</th><td>Founding teams up to 10</td><td class="brt-compare__cell--featured">10–100+ employees</td><td>Sole traders</td></tr>
-                <tr><th class="brt-compare__row-label" scope="row">Duration</th><td><strong>approx. 4</strong> weeks</td><td class="brt-compare__cell--featured"><strong>approx. 6</strong> weeks</td><td><strong>approx. 2</strong> weeks</td></tr>
-                <tr><th class="brt-compare__row-label" scope="row">Sessions</th><td>1–2 <span class="brt-compare__muted">(2h each)</span></td><td class="brt-compare__cell--featured">2–3 <span class="brt-compare__muted">(2–3h each)</span></td><td>1 <span class="brt-compare__muted">(2–3h)</span></td></tr>
-                <tr><th class="brt-compare__row-label" scope="row">Outcome</th><td>prioritised risk picture</td><td class="brt-compare__cell--featured">full risk portfolio + roadmap</td><td>personal risk picture</td></tr>
-                <tr><th class="brt-compare__row-label" scope="row">Options</th><td><span class="brt-compare__pill">A / B / C</span></td><td class="brt-compare__cell--featured"><span class="brt-compare__pill">A / B / C</span></td><td><span class="brt-compare__pill">A / B / C</span></td></tr>
-                <tr><th class="brt-compare__row-label" scope="row">Guarantee</th><td><span class="brt-compare__check">Double</span></td><td class="brt-compare__cell--featured"><span class="brt-compare__check">Double</span></td><td><span class="brt-compare__check">Double</span></td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="brt-compare__row-text">For whom</span></span></th><td>Founding teams up to 10</td><td>10–100+ employees</td><td>Solo entrepreneur</td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="brt-compare__row-text">Duration</span></span></th><td><strong>approx. 4</strong> weeks</td><td><strong>approx. 6</strong> weeks</td><td><strong>approx. 2</strong> weeks</td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></span><span class="brt-compare__row-text">Sessions</span></span></th><td>1–2 <span class="brt-compare__muted">(2h each)</span></td><td>2–3 <span class="brt-compare__muted">(2–3h each)</span></td><td>1 <span class="brt-compare__muted">(2–3h)</span></td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span class="brt-compare__row-text">Outcome</span></span></th><td>prioritised risk picture</td><td>full risk portfolio + roadmap</td><td>personal risk picture</td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.65-8.58 3.91a2 2 0 0 1-1.66 0L3.18 12.65"/><path d="m22 17.65-8.58 3.91a2 2 0 0 1-1.66 0L3.18 17.65"/></svg></span><span class="brt-compare__row-text">Steps</span></span></th><td><span class="brt-compare__pill">1 / 2 / 3</span></td><td><span class="brt-compare__pill">1 / 2 / 3</span></td><td><span class="brt-compare__pill">1 / 2 / 3</span></td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="brt-compare__row-text">Guarantee</span></span></th><td><span class="brt-compare__check">Double</span></td><td><span class="brt-compare__check">Double</span></td><td><span class="brt-compare__check">Double</span></td></tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td class="brt-compare__corner"></td>
                   <td><a class="brt-btn brt-btn--ghost" href="../services/startups/">View service →</a></td>
-                  <td class="brt-compare__cell--featured"><a class="brt-btn brt-btn--ghost" href="../services/smb/">View service →</a></td>
+                  <td><a class="brt-btn brt-btn--ghost" href="../services/smb/">View service →</a></td>
                   <td><a class="brt-btn brt-btn--ghost" href="../services/solo/">View service →</a></td>
                 </tr>
               </tfoot>
@@ -816,20 +1079,9 @@ def gen_angebote() -> None:
           </div>
         </div>
       </div>
-    </section>
-    <section class="brt-section" aria-labelledby="options-explainer">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">ALWAYS THREE LEVELS</p>
-          <h2 id="options-explainer" class="brt-h2">From risk picture to guided implementation</h2>
-        </header>
-        <ul class="brt-step-cards brt-stagger">
-          <li class="brt-step-card"><span class="brt-step-card__num">Option A</span><h3 class="brt-h3">Analysis</h3><p class="brt-body">You get clarity: the prioritised risk picture, valued in euros.</p></li>
-          <li class="brt-step-card"><span class="brt-step-card__num">Option B</span><h3 class="brt-h3">+ Roadmap</h3><p class="brt-body">Plus concrete measures, prioritised, with timeline and owners.</p></li>
-          <li class="brt-step-card"><span class="brt-step-card__num">Option C</span><h3 class="brt-h3">+ Guidance</h3><p class="brt-body">Plus implementation support and access to the Risk Radar expert network.</p></li>
-        </ul>
-      </div>
-    </section>
+    </section>"""
+        + steps_flow_section(en=True)
+        + """
     <section class="brt-section brt-section--alt" aria-labelledby="hr-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
@@ -845,6 +1097,7 @@ def gen_angebote() -> None:
         <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Pricing and scope depend on team size – we clarify what fits in the intro call.</p>
       </div>
     </section>"""
+        + case_studies_section(pre, en=True)
         + guarantee(pre)
         + cta_band(pre, "Not sure what fits?", "We clarify that in a free intro call – including a DIY guide you can use without us.")
     )
@@ -1482,8 +1735,8 @@ def gen_kontakt() -> None:
             active_nav=None,
             main=main,
         ).replace(
-            f'<script src="{pre}js/brt-site.js"></script>',
-            f'<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>\n<script src="{pre}js/brt-site.js"></script>',
+            f'<script src="{pre}js/brt-site.js?v=20260617-steps"></script>',
+            f'<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>\n<script src="{pre}js/brt-site.js?v=20260617-steps"></script>',
         ),
     )
 
@@ -1634,6 +1887,41 @@ def gen_agb() -> None:
     )
 
 
+def gen_accessibility() -> None:
+    main = """
+    <section class="brt-section" aria-labelledby="a11y-title">
+      <div class="brt-container brt-legal">
+        <h1 id="a11y-title" class="brt-h2">Accessibility statement</h1>
+        <p>We continuously work to make content and features on en.beraterium.de accessible and align implementation with WCAG 2.1 Level AA requirements.</p>
+        <h2 class="brt-h3">Compliance status</h2>
+        <p>This website is partially compliant with WCAG 2.1 AA. Some barriers still exist and are being resolved step by step.</p>
+        <h2 class="brt-h3">Assessment approach</h2>
+        <p>Our assessment combines automated checks (own Playwright + axe-core audit pipeline) with manual keyboard, focus-order and semantic-structure reviews across representative page types.</p>
+        <h2 class="brt-h3">Known limitations</h2>
+        <ul>
+          <li>Some legacy content blocks may still contain incomplete semantics or contrast-sensitive details.</li>
+          <li>Embedded third-party content (for example external widgets) is only partly under our direct control.</li>
+        </ul>
+        <h2 class="brt-h3">Feedback and contact</h2>
+        <p>If you encounter accessibility barriers or have improvement suggestions, contact us at <a href="mailto:kontakt@beraterium.de">kontakt@beraterium.de</a> or use our <a href="../contact-form/">contact form</a>.</p>
+        <p>We review your message and respond as quickly as possible.</p>
+        <h2 class="brt-h3">Statement date</h2>
+        <p>This statement was created on 2026-06-26 and is reviewed regularly.</p>
+      </div>
+    </section>"""
+    write(
+        "accessibility/index.html",
+        shell(
+            depth=1,
+            title="Accessibility statement | Beraterium",
+            description="Information about digital accessibility on en.beraterium.de, our audit approach and contact options for accessibility feedback.",
+            canonical="/accessibility/",
+            active_nav=None,
+            main=main,
+        ),
+    )
+
+
 def gen_legal(slug: str, title: str, h1: str, sections: str, noindex: bool = False) -> None:
     pre = "../"
     main = f"""
@@ -1709,6 +1997,7 @@ if __name__ == "__main__":
     gen_impressum()
     gen_datenschutz()
     gen_agb()
+    gen_accessibility()
     gen_danke()
     gen_404()
     write_sitemap()

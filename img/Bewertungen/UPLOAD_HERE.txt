@@ -1,0 +1,4 @@
+Square image for BlindSpot / testimonials section (1:1).
+Drop your file here as bewertungen.png (or .jpg), then run from site root:
+
+  python _optimize_images.py

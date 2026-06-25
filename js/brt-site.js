@@ -181,6 +181,119 @@
     }
   }
 
+  function initCaseStudies() {
+    document.querySelectorAll("[data-case-studies]").forEach(function (root) {
+      var panels = Array.prototype.slice.call(root.querySelectorAll("[data-case-study-panel]"));
+      var tabs = Array.prototype.slice.call(root.querySelectorAll("[data-case-study-tab]"));
+      var prevBtn = root.querySelector("[data-case-study-prev]");
+      var nextBtn = root.querySelector("[data-case-study-next]");
+      if (!panels.length) return;
+
+      var current = 0;
+
+      function show(index) {
+        current = (index + panels.length) % panels.length;
+        panels.forEach(function (panel, i) {
+          var active = i === current;
+          panel.hidden = !active;
+          panel.classList.toggle("is-active", active);
+        });
+        tabs.forEach(function (tab, i) {
+          var active = i === current;
+          tab.classList.toggle("is-active", active);
+          tab.setAttribute("aria-selected", active ? "true" : "false");
+          tab.tabIndex = active ? 0 : -1;
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener("click", function () {
+          show(i);
+        });
+      });
+
+      if (prevBtn) {
+        prevBtn.addEventListener("click", function () {
+          show(current - 1);
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener("click", function () {
+          show(current + 1);
+        });
+      }
+
+      root.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          show(current - 1);
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          show(current + 1);
+        }
+      });
+
+      show(0);
+    });
+  }
+
+  function initTestimonialsCarousel() {
+    document.querySelectorAll("[data-testimonials-carousel]").forEach(function (carousel) {
+      var viewport = carousel.querySelector(".brt-testimonials__viewport");
+      var track = carousel.querySelector(".brt-testimonials__track");
+      var prevBtn = carousel.querySelector(".brt-testimonials__btn--prev");
+      var nextBtn = carousel.querySelector(".brt-testimonials__btn--next");
+      if (!viewport || !track) return;
+
+      function scrollStep() {
+        var card = track.querySelector(".brt-testimonial-card");
+        if (!card) return viewport.clientWidth;
+        var gap = parseFloat(getComputedStyle(track).gap) || 24;
+        return card.offsetWidth + gap;
+      }
+
+      function scrollBy(direction) {
+        viewport.scrollBy({
+          left: direction * scrollStep(),
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
+      }
+
+      function updateButtons() {
+        if (!prevBtn || !nextBtn) return;
+        var maxScroll = viewport.scrollWidth - viewport.clientWidth;
+        prevBtn.disabled = viewport.scrollLeft <= 1;
+        nextBtn.disabled = viewport.scrollLeft >= maxScroll - 1;
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener("click", function () {
+          scrollBy(-1);
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener("click", function () {
+          scrollBy(1);
+        });
+      }
+
+      viewport.addEventListener("scroll", updateButtons, { passive: true });
+      viewport.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          scrollBy(-1);
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          scrollBy(1);
+        }
+      });
+      window.addEventListener("resize", updateButtons);
+      updateButtons();
+    });
+  }
+
   function initTeamExpandToggle() {
     document.querySelectorAll(".brt-home-team__toggle").forEach(function (btn) {
       if (btn.dataset.teamExpandBound) return;
@@ -411,10 +524,41 @@
     update();
   }
 
+  function initCompareColumnHover() {
+    var table = document.querySelector(".brt-compare__table");
+    if (!table || !window.matchMedia("(hover: hover)").matches) return;
+
+    function highlightCol(col) {
+      table.querySelectorAll(".brt-compare__col-hover").forEach(function (el) {
+        el.classList.remove("brt-compare__col-hover");
+      });
+      if (col < 2 || col > 4) return;
+      table.querySelectorAll(
+        "thead .brt-compare__head:nth-child(" + col + "), tbody td:nth-child(" + col + "), tfoot td:nth-child(" + col + ")"
+      ).forEach(function (el) {
+        el.classList.add("brt-compare__col-hover");
+      });
+    }
+
+    table.addEventListener("mouseover", function (e) {
+      var cell = e.target.closest("th, td");
+      if (!cell || !table.contains(cell)) return;
+      var col = cell.cellIndex + 1;
+      highlightCol(col);
+    });
+
+    table.addEventListener("mouseleave", function () {
+      highlightCol(0);
+    });
+  }
+
   function initBerateriumSite() {
     initTeamExpandToggle();
     initTeamBioToggle();
+    initCaseStudies();
+    initTestimonialsCarousel();
     initStepsFlowScroll();
+    initCompareColumnHover();
 
     if (location.hash) {
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";

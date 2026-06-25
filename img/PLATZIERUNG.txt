@@ -21,6 +21,10 @@ hero/
 analyse-situation/
   analyse-situation.png   … Abschnitt „Analyse-Situation“ (S4)
 
+BEWERTUNGEN (img/Bewertungen/)
+--------------------------------
+  bewertungen.png   … Portrait (2:3), BlindSpot Check / “From the field” section (homepage, left of example cards)
+
 TEAM (img/team/)
 ----------------
 Dateien direkt in img/team/ ablegen (Portrait, Seitenverhältnis 4:5):

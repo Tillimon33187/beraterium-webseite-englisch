@@ -237,6 +237,8 @@ def _render_markdown(body: str) -> str:
     html = re.sub(r"<blockquote>", '<blockquote class="brt-article__quote">', html)
     html = re.sub(r"<ul>", '<ul class="brt-article__list">', html)
     html = re.sub(r"<ol>", '<ol class="brt-article__list brt-article__list--ordered">', html)
+    html = re.sub(r"<table>", '<div class="brt-table-wrap brt-article__table" tabindex="0"><table class="brt-table">', html)
+    html = re.sub(r"</table>", "</table></div>", html)
     return html
 
 

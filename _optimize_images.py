@@ -29,6 +29,8 @@ def process_image(path: Path) -> None:
         return
     if re_suffix_width(path.stem):
         return
+    if path.parent.name in ("logo", "logo-en"):
+        return
     quality = DIAGRAM_QUALITY if "methode" in path.parts else QUALITY
     try:
         with Image.open(path) as im:
