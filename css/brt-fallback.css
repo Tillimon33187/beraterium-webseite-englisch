@@ -687,3 +687,29 @@
         transition: none;
       }
     }
+    .brt-css-fallback-mode .brt-case-studies__tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .brt-css-fallback-mode .brt-case-studies__tab {
+      padding: 0.65rem 1.15rem;
+      border: 1px solid var(--color-line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--color-ink);
+      font: inherit;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .brt-css-fallback-mode .brt-case-studies__tab.is-active {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: #fff;
+    }
+    .brt-css-fallback-mode .brt-case-study[hidden],
+    .brt-css-fallback-mode .brt-case-study:not(.is-active) {
+      display: none !important;
+    }

@@ -36,6 +36,7 @@ from _cms import (
 )
 
 SITE = Path(__file__).parent
+BRT_ASSET_VERSION = "20260626-case-studies"
 
 IMG_HOME_ANALYSE = "img/home/analyse-situation.webp"
 IMG_METHODE_GEFAHRENKATALOG = "img/methode/gefahrenkatalog-3-ebenen.webp"
@@ -221,8 +222,8 @@ def shell(
   <link rel="manifest" href="{pre}site.webmanifest">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
-  <link rel="stylesheet" href="{pre}css/brt.css" data-brt-css>
-  <link rel="stylesheet" href="{pre}css/brt-fallback.css">
+  <link rel="stylesheet" href="{pre}css/brt.css?v={BRT_ASSET_VERSION}" data-brt-css>
+  <link rel="stylesheet" href="{pre}css/brt-fallback.css?v={BRT_ASSET_VERSION}">
   <script src="{pre}js/brt-init.js"></script>{ld}
 </head>
 
@@ -252,7 +253,7 @@ def shell(
 
 {footer_html(depth)}
 
-<script src="{pre}js/brt-site.js?v=20260617-steps"></script>
+<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>
 
 </body>
 </html>
@@ -1735,8 +1736,8 @@ def gen_kontakt() -> None:
             active_nav=None,
             main=main,
         ).replace(
-            f'<script src="{pre}js/brt-site.js?v=20260617-steps"></script>',
-            f'<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>\n<script src="{pre}js/brt-site.js?v=20260617-steps"></script>',
+            f'<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
+            f'<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>\n<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
         ),
     )
 

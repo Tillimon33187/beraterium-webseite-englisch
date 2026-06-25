@@ -6142,3 +6142,8 @@
     gap: 0.15rem;
   }
 }
+/* ponytail: inactive panels stay hidden even with stale JS */
+.brt-case-study[hidden],
+.brt-case-study:not(.is-active) {
+  display: none !important;
+}
