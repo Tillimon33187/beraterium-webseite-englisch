@@ -29,9 +29,34 @@
   <link rel="manifest" href="../site.webmanifest">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
-  <link rel="stylesheet" href="../css/brt.css?v=20260626-case-studies" data-brt-css>
-  <link rel="stylesheet" href="../css/brt-fallback.css?v=20260626-case-studies">
+  <link rel="stylesheet" href="../css/brt.css?v=20260626-header-hero" data-brt-css>
+  <link rel="stylesheet" href="../css/brt-fallback.css?v=20260626-header-hero">
+  <link rel="stylesheet" href="../css/brt-layout-fix.css?v=20260626-header-hero">
   <script src="../js/brt-init.js"></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is Beraterium's mission?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "To make corporate risk management accessible to SMEs, startups, and solo self-employed professionals — understandable, affordable, and ready to implement."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Beraterium's vision?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Businesses where people enjoy working, spot risks early, and grow together."
+      }
+    }
+  ]
+}
+  </script>
 </head>
 
 <body class="brt-page brt-page--inner">
@@ -120,6 +145,35 @@
         </ul>
       </div>
     </section>
+    <section id="faq" class="brt-section brt-section--alt" aria-labelledby="faq-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <h2 id="faq-title" class="brt-h2">Frequently asked questions about mission &amp; vision</h2>
+        </header>
+        <div class="brt-faq brt-fade-up">
+          <details class="brt-faq__item">
+            <summary class="brt-faq__summary">
+              <span class="brt-faq__toggle" aria-hidden="true"></span>
+              <span class="brt-faq__question">What is Beraterium&#x27;s mission?</span>
+              <span class="brt-faq__chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="brt-faq__answer">
+              <p class="brt-body">To make corporate risk management accessible to SMEs, startups, and solo self-employed professionals — understandable, affordable, and ready to implement.</p>
+            </div>
+          </details>
+          <details class="brt-faq__item">
+            <summary class="brt-faq__summary">
+              <span class="brt-faq__toggle" aria-hidden="true"></span>
+              <span class="brt-faq__question">What is Beraterium&#x27;s vision?</span>
+              <span class="brt-faq__chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="brt-faq__answer">
+              <p class="brt-body">Businesses where people enjoy working, spot risks early, and grow together.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
     <section class="brt-cta-band brt-cta-band--dark brt-section" aria-labelledby="final-cta">
       <div class="brt-container brt-cta-band__inner brt-fade-up">
         <h2 id="final-cta" class="brt-h2 brt-h2--on-dark">Share our approach?</h2>
@@ -171,7 +225,7 @@
   <p class="site-footer__legal">© Beraterium 2026</p>
 </footer>
 
-<script src="../js/brt-site.js?v=20260626-case-studies"></script>
+<script src="../js/brt-site.js?v=20260626-header-hero"></script>
 
 </body>
 </html>

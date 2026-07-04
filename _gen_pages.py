@@ -22,7 +22,11 @@ from _cms import (
     blog_card_html,
     blog_filters_html,
     blog_posting_schema,
+    combine_jsonld,
+    faq_page_schema,
     format_date_en,
+    service_schema,
+    speakable_webpage_schema,
     header_logo_html,
     home_team_section_html,
     img_html,
@@ -36,7 +40,7 @@ from _cms import (
 )
 
 SITE = Path(__file__).parent
-BRT_ASSET_VERSION = "20260626-case-studies"
+BRT_ASSET_VERSION = "20260626-header-hero"
 
 IMG_HOME_ANALYSE = "img/home/analyse-situation.webp"
 IMG_METHODE_GEFAHRENKATALOG = "img/methode/gefahrenkatalog-3-ebenen.webp"
@@ -224,6 +228,7 @@ def shell(
 
   <link rel="stylesheet" href="{pre}css/brt.css?v={BRT_ASSET_VERSION}" data-brt-css>
   <link rel="stylesheet" href="{pre}css/brt-fallback.css?v={BRT_ASSET_VERSION}">
+  <link rel="stylesheet" href="{pre}css/brt-layout-fix.css?v={BRT_ASSET_VERSION}">
   <script src="{pre}js/brt-init.js"></script>{ld}
 </head>
 
@@ -649,6 +654,10 @@ def faq_section(items: list[tuple[str, str]], *, alt: bool = False, title: str =
     return faq_section_html(items, title=title, alt=alt)
 
 
+def page_schema(*blocks: str) -> str:
+    return combine_jsonld(*[b for b in blocks if b and b.strip()])
+
+
 def write(rel: str, html: str) -> None:
     path = SITE / rel
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -724,6 +733,12 @@ def gen_ueber_uns() -> None:
         + about_team_section_html(1)
     )
     main = main.replace("{radar_media}", radar_media)
+    about_faq = [
+        ("What is Beraterium?", "Beraterium makes professional risk management accessible to SMEs, startups, and solo self-employed professionals — understandable, practical, and without corporate bureaucracy."),
+        ("Who is Beraterium for?", "For managing directors, founders, and solo self-employed professionals who want to know which risks could really hit their business — before they become expensive."),
+        ("What sets Beraterium apart from classic consulting?", "We do not deliver PowerPoint to file away: structured risk analysis in euros, facilitated with your team, with clear implementation — yourself, with partners, or via Risk Radar."),
+    ]
+    main += faq_section_html(about_faq, title="Frequently asked questions about Beraterium", section_id="faq", alt=True)
     main += cta_band(
         pre,
         "Let's get to know each other.",
@@ -738,6 +753,7 @@ def gen_ueber_uns() -> None:
             canonical="/about/",
             active_nav="about",
             main=main,
+            json_ld=page_schema(faq_page_schema(about_faq)),
         ),
     )
 
@@ -844,12 +860,20 @@ def gen_mission_vision() -> None:
         </ul>
       </div>
     </section>"""
+        + faq_section_html([
+            ("What is Beraterium's mission?", "To make corporate risk management accessible to SMEs, startups, and solo self-employed professionals — understandable, affordable, and ready to implement."),
+            ("What is Beraterium's vision?", "Businesses where people enjoy working, spot risks early, and grow together."),
+        ], title="Frequently asked questions about mission & vision", section_id="faq", alt=True)
         + cta_band(
             pre,
             "Share our approach?",
             "Then let&rsquo;s talk. 30 minutes, free, no obligation.",
         )
     )
+    mission_faq = [
+        ("What is Beraterium's mission?", "To make corporate risk management accessible to SMEs, startups, and solo self-employed professionals — understandable, affordable, and ready to implement."),
+        ("What is Beraterium's vision?", "Businesses where people enjoy working, spot risks early, and grow together."),
+    ]
     write(
         "mission-vision/index.html",
         shell(
@@ -859,6 +883,7 @@ def gen_mission_vision() -> None:
             canonical="/mission-vision/",
             active_nav=None,
             main=main,
+            json_ld=page_schema(faq_page_schema(mission_faq)),
         ),
     )
 
@@ -898,12 +923,27 @@ def pricing_cards(pre: str, options: list[dict]) -> str:
 def gen_methode() -> None:
     pre = "../"
     faq = [
-        ("How long does a risk analysis take?", "Depending on audience and scope, typically 2 weeks (solo) to 4 weeks (startup). For SMEs, duration depends on team size and depth. We agree the exact timeline at kick-off."),
+        ("What is a hazard catalog in risk management?", "A hazard catalog is a structured, judgment-free list of everything that could harm a business. Beraterium's 3-level hazard catalog keeps the number manageable. Only when the catalog is complete does assessment begin."),
+        ("What is the difference between a hazard and a risk?", "A hazard is anything that can cause harm – collected neutrally. It becomes a risk only when we assess how likely it is and what financial damage it would cause in euros."),
+        ("Why does Beraterium assess risks in euros instead of traffic-light colours?", "Traffic-light colours are subjective. Damage in euros is concrete, negotiable, and enables objective prioritisation — biggest damage first, regardless of gut feeling or hierarchy."),
+        ("What is a risk management process and how does Beraterium's work?", "Three phases: (1) collect hazards in the 3-level catalog, (2) assess risks — damage in euros × likelihood, minus existing measures, (3) implement the few measures with the greatest impact."),
+        ("How long does a risk analysis take?", "Depending on audience, typically 2 weeks (solo) to 6 weeks (SME). We agree the exact timeline at kick-off."),
         ("Do I need prior knowledge or preparation?", "No. You bring your knowledge of your business – we bring the structure and the method."),
-        ("What is the difference between a hazard and a risk?", "A hazard is anything that can cause harm – collected neutrally. It becomes a risk only when we assess how relevant it is for your business (damage in euros × likelihood, minus existing measures)."),
         ("What if I work alone?", "Two facilitators and an AI sparring partner replace the missing team so the assessment stays balanced."),
         ("Do you implement the measures too?", "You choose the path: yourself, with your own suppliers, or through our coordination via the Risk Radar network. Beraterium stays your single point of contact."),
     ]
+    method_title = "Risk management method: 3-level catalog | Beraterium"
+    method_desc = "How does risk management work without corporate bureaucracy? 3-level hazard catalog, assessment in euros, measure prioritisation. Learn more for free."
+    method_ld = page_schema(
+        service_schema(
+            name="Beraterium risk management method",
+            description=method_desc,
+            url="/method/",
+            audience="SMEs, startups and solo self-employed professionals",
+        ),
+        faq_page_schema(faq),
+        speakable_webpage_schema("/method/"),
+    )
     main = (
         hero(
             pre,
@@ -994,19 +1034,57 @@ def gen_methode() -> None:
         <p class="brt-quote" style="margin-top: var(--space-8);">&ldquo;We look for not the most measures – but the right ones.&rdquo;</p>
       </div>
     </section>"""
+        + f"""
+    <section class="brt-section brt-section--alt" aria-labelledby="methoden-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="methoden-title" class="brt-h2">Which methods and processes does Beraterium use?</h2>
+        <p class="brt-body">Our risk management process follows three clear phases: collect hazards, assess risks in euros, prioritise measures. No corporate framework — but a repeatable flow that SMEs, startups, and solo operators complete in 2–6 weeks.</p>
+        <p class="brt-body">The methods are deliberately lean: structured workshops, guiding questions instead of spreadsheet monsters, assessment through multiple perspectives. The result is a risk picture you can act on — not a folder for the drawer.</p>
+      </div>
+    </section>
+    <section class="brt-section" aria-labelledby="iso-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="iso-title" class="brt-h2">ISO 31000 and the Beraterium method</h2>
+        <p class="brt-body">ISO 31000 describes the framework for risk management — context, identification, analysis, treatment. Beraterium is not an ISO certifier, but follows the same principles: collect systematically, assess transparently, prioritise measures by impact.</p>
+        <p class="brt-body">The difference: we translate the standard into euros, timeframes, and concrete steps for businesses without their own risk office — understandable, practical, without bureaucracy.</p>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="matrix-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="matrix-title" class="brt-h2">Risks and opportunities in the matrix</h2>
+        <p class="brt-body">Classic risk-opportunity matrices sort by likelihood and impact — often as traffic lights. Beraterium replaces colours with euros: damage × likelihood, minus existing measures. You immediately see which three risks would really become expensive.</p>
+        <p class="brt-body">We do not treat opportunities as the opposite pole, but as measures with a positive effect — for example diversification that reduces concentration risk. Prioritisation stays the same: biggest lever first.</p>
+      </div>
+    </section>
+    <section class="brt-section" aria-labelledby="services-link-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="services-link-title" class="brt-h2">Matching services by audience</h2>
+        <p class="brt-body">The method is the same everywhere — scope adapts to your situation:</p>
+        <ul class="brt-list-check">
+          <li><a href="{pre}services/smb/">Risk management for SMEs →</a> — 6-week roadmap for mid-market businesses</li>
+          <li><a href="{pre}services/startups/">Risk management for startups →</a> — 4-week check, investor-ready</li>
+          <li><a href="{pre}services/solo/">Risk management for solo self-employed →</a> — 2-week compass with AI sparring partner</li>
+        </ul>
+      </div>
+    </section>"""
         + faq_section_html(faq, title="Frequently asked questions about the method", section_id="faq", alt=True)
-        + cta_band(pre, "Make your risks visible now", "In a free intro call, we show you what the method looks like for your business.")
+        + cta_band(pre, "Make your risks visible now", "In a free intro call, we show you what the method looks like for your business.", "Book a free intro call")
     )
     write(
         "method/index.html",
-        shell(depth=1, title="Our method – risk analysis step by step | Beraterium",
-              description="How the Beraterium method works: hazard catalog in 3 levels, damage assessed in euros, the right measures identified. Clear and practical.",
-              canonical="/method/", active_nav="method", main=main),
+        shell(depth=1, title=method_title, description=method_desc,
+              canonical="/method/", active_nav="method", main=main, json_ld=method_ld),
     )
 
 
 def gen_angebote() -> None:
     pre = "../"
+    services_faq = [
+        ("Which service fits me – startup, SME or solo?", "Startups (4 weeks) for founding teams, SMEs (6 weeks) for a full picture from around 10 employees, solo (2 weeks) for sole traders. We clarify what fits in the intro call."),
+        ("What does risk management consulting cost at Beraterium?", "Scope depends on business size and chosen option. We discuss pricing transparently in the free intro call — before any proposal."),
+        ("Is there a guarantee?", "Yes: double guarantee — relevance and value. No relevant risk found or no measurable value? Money back."),
+        ("Do I need ISO certification or corporate methodology?", "No. Beraterium translates corporate methodology into practical steps for SMEs, startups, and solo operators — without bureaucracy overhead."),
+    ]
     main = (
         hero(pre, "OUR SERVICES", "The right risk check for your situation",
              "Whether you are a founding team, mid-market business or solo self-employed: you get enterprise methodology, translated to your reality – with a clear outcome and double guarantee.",
@@ -1100,11 +1178,13 @@ def gen_angebote() -> None:
     </section>"""
         + case_studies_section(pre, en=True)
         + guarantee(pre)
+        + faq_section_html(services_faq, title="Frequently asked questions about our services", section_id="faq", alt=True)
         + cta_band(pre, "Not sure what fits?", "We clarify that in a free intro call – including a DIY guide you can use without us.")
     )
     write("services/index.html", shell(depth=1, title="Services – risk analysis for startups, SMEs & solo | Beraterium",
           description="Choose the right risk check: 4 weeks for startups, 6 weeks for SMEs, 2 weeks for solo self-employed. Plus HR analysis. With double guarantee.",
-          canonical="/services/", active_nav="services", main=main))
+          canonical="/services/", active_nav="services", main=main,
+          json_ld=page_schema(faq_page_schema(services_faq))))
 
 
 def lp_shell(depth: int, slug: str, title: str, desc: str, du: bool, main: str) -> None:
@@ -1357,11 +1437,20 @@ def gen_risikoradar() -> None:
         </div>
       </div>
     </section>"""
+        + faq_section_html([
+            ("What is Risk Radar?", "Risk Radar is the protected expert network behind Beraterium — vetted specialists who implement measures from your risk analysis."),
+            ("How do I get access to Risk Radar?", "As a Beraterium client, you receive access. Experts join through referral or application — not an open forum."),
+        ], title="Frequently asked questions about Risk Radar", section_id="faq", alt=True)
         + cta_band(pre, "From clarity to decisive action", "You decide how implementation runs – we make sure it works.")
     )
+    risk_radar_faq = [
+        ("What is Risk Radar?", "Risk Radar is the protected expert network behind Beraterium — vetted specialists who implement measures from your risk analysis."),
+        ("How do I get access to Risk Radar?", "As a Beraterium client, you receive access. Experts join through referral or application — not an open forum."),
+    ]
     write("risk-radar/index.html", shell(depth=1, title="Risk Radar – The expert network behind Beraterium | Beraterium",
           description="Risk Radar is a protected network of vetted experts. Implement measures with one point of contact instead of coordination chaos.",
-          canonical="/risk-radar/", active_nav="risk-radar", main=main))
+          canonical="/risk-radar/", active_nav="risk-radar", main=main,
+          json_ld=page_schema(faq_page_schema(risk_radar_faq))))
 
 
 def gen_blog() -> None:
@@ -1725,7 +1814,17 @@ def gen_kontakt() -> None:
         <p class="brt-body">No sales pitch. Free. And if we work together later: with our double guarantee – relevance and value, or your money back.</p>
       </div>
     </section>"""
+        + faq_section_html([
+            ("What does the intro call cost?", "Nothing. 30 minutes, free and no obligation — not a sales pitch."),
+            ("How long is the intro call?", "About 30 minutes. You get the method explained and leave with concrete first steps."),
+            ("Do I have to decide afterwards?", "No. You decide in your own time — with a DIY guide in hand, however you choose to proceed."),
+        ], title="Frequently asked questions about the intro call", section_id="faq", alt=True)
     )
+    contact_faq = [
+        ("What does the intro call cost?", "Nothing. 30 minutes, free and no obligation — not a sales pitch."),
+        ("How long is the intro call?", "About 30 minutes. You get the method explained and leave with concrete first steps."),
+        ("Do I have to decide afterwards?", "No. You decide in your own time — with a DIY guide in hand, however you choose to proceed."),
+    ]
     write(
         "contact/index.html",
         shell(
@@ -1735,6 +1834,7 @@ def gen_kontakt() -> None:
             canonical="/contact/",
             active_nav=None,
             main=main,
+            json_ld=page_schema(faq_page_schema(contact_faq)),
         ).replace(
             f'<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
             f'<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>\n<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',

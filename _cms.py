@@ -1356,6 +1356,92 @@ def blog_posting_schema(post: BlogPost, author: TeamMember | None) -> str:
     return json.dumps(graph, ensure_ascii=False, indent=2)
 
 
+def _faq_pairs(items: list[dict[str, str] | tuple[str, str]]) -> list[tuple[str, str]]:
+    """Normalise FAQ items (dict OR (question, answer) tuple) to (q, a) pairs."""
+    pairs: list[tuple[str, str]] = []
+    for it in items:
+        if isinstance(it, dict):
+            q = it.get("question") or it.get("frage") or it.get("q") or ""
+            a = it.get("answer") or it.get("antwort") or it.get("a") or ""
+        else:
+            q, a = it[0], it[1]
+        q, a = (q or "").strip(), (a or "").strip()
+        if q and a:
+            pairs.append((q, a))
+    return pairs
+
+
+def faq_page_schema(items: list[dict[str, str] | tuple[str, str]]) -> str:
+    pairs = _faq_pairs(items)
+    if not pairs:
+        return ""
+    graph = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": q,
+                "acceptedAnswer": {"@type": "Answer", "text": a},
+            }
+            for q, a in pairs
+        ],
+    }
+    return json.dumps(graph, ensure_ascii=False, indent=2)
+
+
+def service_schema(
+    *,
+    name: str,
+    description: str,
+    url: str,
+    audience: str | None = None,
+    service_type: str = "Risk management consulting",
+    area_served: str = "DE",
+) -> str:
+    graph: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": service_type,
+        "name": name,
+        "description": description,
+        "url": f"{SITE_URL}{url}",
+        "provider": {"@id": f"{SITE_URL}/#organization"},
+        "areaServed": {"@type": "Country", "name": area_served},
+    }
+    if audience:
+        graph["audience"] = {"@type": "Audience", "audienceType": audience}
+    return json.dumps(graph, ensure_ascii=False, indent=2)
+
+
+def speakable_webpage_schema(
+    url: str,
+    *,
+    selectors: list[str] | None = None,
+) -> str:
+    sels = selectors or [".brt-faq__answer", ".brt-highlight-box", ".brt-body"]
+    graph: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": f"{SITE_URL}{url}#webpage",
+        "url": f"{SITE_URL}{url}",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": sels,
+        },
+    }
+    return json.dumps(graph, ensure_ascii=False, indent=2)
+
+
+def combine_jsonld(*blocks: str) -> str:
+    parsed = [json.loads(b) for b in blocks if b and b.strip()]
+    if not parsed:
+        return ""
+    if len(parsed) == 1:
+        return json.dumps(parsed[0], ensure_ascii=False, indent=2)
+    return json.dumps(parsed, ensure_ascii=False, indent=2)
+
+
 def gen_sitemap_urls() -> list[str]:
     static_routes = [
         "/",

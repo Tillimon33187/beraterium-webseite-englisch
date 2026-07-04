@@ -29,9 +29,34 @@
   <link rel="manifest" href="../site.webmanifest">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
-  <link rel="stylesheet" href="../css/brt.css?v=20260626-case-studies" data-brt-css>
-  <link rel="stylesheet" href="../css/brt-fallback.css?v=20260626-case-studies">
+  <link rel="stylesheet" href="../css/brt.css?v=20260626-header-hero" data-brt-css>
+  <link rel="stylesheet" href="../css/brt-fallback.css?v=20260626-header-hero">
+  <link rel="stylesheet" href="../css/brt-layout-fix.css?v=20260626-header-hero">
   <script src="../js/brt-init.js"></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is Risk Radar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Risk Radar is the protected expert network behind Beraterium — vetted specialists who implement measures from your risk analysis."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I get access to Risk Radar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "As a Beraterium client, you receive access. Experts join through referral or application — not an open forum."
+      }
+    }
+  ]
+}
+  </script>
 </head>
 
 <body class="brt-page brt-page--inner">
@@ -140,6 +165,35 @@
         </div>
       </div>
     </section>
+    <section id="faq" class="brt-section brt-section--alt" aria-labelledby="faq-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <h2 id="faq-title" class="brt-h2">Frequently asked questions about Risk Radar</h2>
+        </header>
+        <div class="brt-faq brt-fade-up">
+          <details class="brt-faq__item">
+            <summary class="brt-faq__summary">
+              <span class="brt-faq__toggle" aria-hidden="true"></span>
+              <span class="brt-faq__question">What is Risk Radar?</span>
+              <span class="brt-faq__chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="brt-faq__answer">
+              <p class="brt-body">Risk Radar is the protected expert network behind Beraterium — vetted specialists who implement measures from your risk analysis.</p>
+            </div>
+          </details>
+          <details class="brt-faq__item">
+            <summary class="brt-faq__summary">
+              <span class="brt-faq__toggle" aria-hidden="true"></span>
+              <span class="brt-faq__question">How do I get access to Risk Radar?</span>
+              <span class="brt-faq__chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="brt-faq__answer">
+              <p class="brt-body">As a Beraterium client, you receive access. Experts join through referral or application — not an open forum.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
     <section class="brt-cta-band brt-cta-band--dark brt-section" aria-labelledby="final-cta">
       <div class="brt-container brt-cta-band__inner brt-fade-up">
         <h2 id="final-cta" class="brt-h2 brt-h2--on-dark">From clarity to decisive action</h2>
@@ -191,7 +245,7 @@
   <p class="site-footer__legal">© Beraterium 2026</p>
 </footer>
 
-<script src="../js/brt-site.js?v=20260626-case-studies"></script>
+<script src="../js/brt-site.js?v=20260626-header-hero"></script>
 
 </body>
 </html>

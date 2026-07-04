@@ -164,7 +164,7 @@
 
   function resolveTeamExpandScrollSection(list) {
     if (!list) return null;
-    return list.closest("#home-team") || list.closest("#ueber-uns-team") || list.closest("#about-team") || list.closest("section");
+    return list.closest("#home-team") || list.closest("#ueber-uns-team") || list.closest("section");
   }
 
   function revealTeamExpandForTarget(target) {
@@ -177,7 +177,7 @@
     });
     if (btn) {
       btn.setAttribute("aria-expanded", "true");
-      btn.textContent = btn.getAttribute("data-less-label") || "Show less";
+      btn.textContent = btn.getAttribute("data-less-label") || "Weniger anzeigen";
     }
   }
 
@@ -310,8 +310,8 @@
         var next = !expanded;
         btn.setAttribute("aria-expanded", next ? "true" : "false");
         btn.textContent = next
-          ? btn.getAttribute("data-less-label") || "Show less"
-          : btn.getAttribute("data-more-label") || "Show more";
+          ? btn.getAttribute("data-less-label") || "Weniger anzeigen"
+          : btn.getAttribute("data-more-label") || "Mehr anzeigen";
         if (next) {
           more.forEach(function (item) {
             item.hidden = false;
@@ -343,8 +343,8 @@
         more.hidden = !next;
         btn.setAttribute("aria-expanded", next ? "true" : "false");
         btn.textContent = next
-          ? btn.getAttribute("data-less-label") || "Show less"
-          : btn.getAttribute("data-more-label") || "Show more";
+          ? btn.getAttribute("data-less-label") || "Weniger anzeigen"
+          : btn.getAttribute("data-more-label") || "Mehr anzeigen";
         if (!next) {
           scheduleTeamSectionScroll(section);
         }
@@ -424,8 +424,9 @@
 
     var hitCount = 0;
     var arcOffset = 72;
+    var d;
     for (var attempt = 0; attempt < 5; attempt++) {
-      var d = buildStepsFlowPathD(p1, p2, p3, arcOffset);
+      d = buildStepsFlowPathD(p1, p2, p3, arcOffset);
       basePath.setAttribute("d", d);
       progressPath.setAttribute("d", d);
       state.mainLength = progressPath.getTotalLength();
@@ -575,7 +576,9 @@
 
     function syncHeaderHeight() {
       if (!header) return;
-      document.documentElement.style.setProperty("--header-height", header.offsetHeight + "px");
+      var measured = header.offsetHeight;
+      var synced = menuMq.matches ? Math.min(measured, 96) : measured;
+      document.documentElement.style.setProperty("--header-height", synced + "px");
     }
 
     function updateHeaderState() {
