@@ -313,6 +313,62 @@
     });
   }
 
+  function initCardsSlider() {
+    document.querySelectorAll("[data-cards-slider]").forEach(function (slider) {
+      var viewport = slider.querySelector(".brt-cards-slider__viewport");
+      var track = slider.querySelector(".brt-cards-slider__track");
+      var prevBtn = slider.querySelector(".brt-cards-slider__btn--prev");
+      var nextBtn = slider.querySelector(".brt-cards-slider__btn--next");
+      if (!viewport || !track) return;
+
+      function scrollStep() {
+        var card = track.querySelector("li");
+        if (!card) return viewport.clientWidth;
+        var gap = parseFloat(getComputedStyle(track).gap) || 24;
+        return card.offsetWidth + gap;
+      }
+
+      function scrollByCards(direction) {
+        viewport.scrollBy({
+          left: direction * scrollStep(),
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
+      }
+
+      function updateButtons() {
+        if (!prevBtn || !nextBtn) return;
+        var maxScroll = viewport.scrollWidth - viewport.clientWidth;
+        prevBtn.disabled = viewport.scrollLeft <= 1;
+        nextBtn.disabled = viewport.scrollLeft >= maxScroll - 1;
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener("click", function () {
+          scrollByCards(-1);
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener("click", function () {
+          scrollByCards(1);
+        });
+      }
+
+      viewport.addEventListener("scroll", updateButtons, { passive: true });
+      viewport.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          scrollByCards(-1);
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          scrollByCards(1);
+        }
+      });
+      window.addEventListener("resize", updateButtons);
+      updateButtons();
+    });
+  }
+
   function initTeamExpandToggle() {
     document.querySelectorAll(".brt-home-team__toggle").forEach(function (btn) {
       if (btn.dataset.teamExpandBound) return;
@@ -577,6 +633,7 @@
     initTeamBioToggle();
     initCaseStudies();
     initTestimonialsCarousel();
+    initCardsSlider();
     initStepsFlowScroll();
     initCompareColumnHover();
 
@@ -805,6 +862,7 @@
 
     initArticlePage();
     initYoutubeEmbeds();
+    initMapEmbeds();
     initAnchorNav();
     initCalendlyEmbed();
     initContactForm();
@@ -1096,6 +1154,37 @@
       params.push("origin=" + encodeURIComponent(origin));
     }
     return "https://www.youtube.com/embed/" + videoId + "?" + params.join("&");
+  }
+
+  /* Klick-to-load Google Maps (DSGVO: kein Google-Request vor Nutzer-Klick). */
+  function initMapEmbeds() {
+    var wraps = document.querySelectorAll("[data-map-embed]");
+    if (!wraps.length) return;
+
+    wraps.forEach(function (wrap) {
+      if (wrap.dataset.mapReady) return;
+      wrap.dataset.mapReady = "true";
+
+      var poster = wrap.querySelector(".brt-map-embed__poster");
+      var query = wrap.getAttribute("data-map-query");
+      var title = wrap.getAttribute("data-map-title") || "Google Maps Karte";
+      if (!poster || !query) return;
+
+      poster.addEventListener("click", function () {
+        if (wrap.querySelector("iframe")) return;
+
+        var iframe = document.createElement("iframe");
+        iframe.src =
+          "https://www.google.com/maps?q=" + encodeURIComponent(query) + "&hl=de&z=11&output=embed";
+        iframe.title = title;
+        iframe.loading = "lazy";
+        iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+        iframe.setAttribute("allowfullscreen", "");
+
+        wrap.classList.add("brt-map-embed--loaded");
+        wrap.replaceChild(iframe, poster);
+      });
+    });
   }
 
   function initArticleStickyBar(article) {

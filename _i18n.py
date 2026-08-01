@@ -17,7 +17,25 @@ STATIC_ROUTE_MAP: dict[str, str] = {
     "angebote/startups": "services/startups",
     "angebote/kmu": "services/smb",
     "angebote/solo": "services/solo",
+    "preise": "pricing",
+    "schulungen": "training",
+    "schulungen/risikoexperte": "training/risk-expert",
+    "schulungen/risk-awareness-kultur": "training/risk-awareness-culture",
+    "schulungen/risikobewusster-manager": "training/risk-aware-manager",
+    "schulungen/risikomanagement-praktisch": "training/practical-risk-management",
+    "schulungen/innovationsmanagement": "training/innovation-management",
+    "schulungen/feedbackkultur": "training/feedback-culture",
+    "schulungen/kulturelles-management": "training/cultural-management",
     "risikoradar": "risk-radar",
+    "loesungen/nis2": "solutions/nis2",
+    "loesungen/nachfolge": "solutions/succession",
+    "loesungen/cyberangriff": "solutions/cyber-attack",
+    "loesungen/selbststaendig-absichern": "solutions/self-employed-protection",
+    "loesungen/schluesselperson-risiko": "solutions/key-person-risk",
+    "loesungen/investor-due-diligence": "solutions/investor-due-diligence",
+    "standort/muenchen": "locations/munich",
+    "standort/sachsen": "locations/saxony",
+    "standort/nrw": "locations/nrw",
     "blog": "blog",
     "kontakt": "contact",
     "kontaktformular": "contact-form",
@@ -46,9 +64,18 @@ BLOG_SLUG_MAP: dict[str, str] = {
     "risk-radar-episode-1-who-is-beraterium": "risk-radar-episode-1-who-is-beraterium",
     "sicherheit-unternehmen-risikomanagement-kmu": "business-security-risk-management-smb",
     "startup-fehler-vermeiden-risikomanagement": "startup-mistakes-avoid-risk-management",
+    "theorie-praxis-risikomanagement-standards-kmu": "theory-practice-risk-management-standards-smb",
     "ubernimm-die-kontrolle-uber-deine-risiken-bevor-sie-dich-kontrollieren": "take-control-of-your-risks-before-they-control-you",
     "warum-mitarbeiter-riskante-entscheidungen-treffen": "why-employees-make-risky-decisions",
     "what-is-risk-management": "what-is-risk-management",
+    "zeit-als-risikofaktor-unternehmer-risikomanagement": "time-as-risk-factor-entrepreneurs-risk-management",
+    "cashflow-analyse-risikomanagement-kmu": "cashflow-analysis-risk-management-smb",
+    "cyberangriff-was-tun-kmu": "cyber-attack-what-to-do-smb",
+    "risiken-selbststaendige-freelancer": "risks-self-employed-freelancers",
+    "risikomanagement-beratung-kmu-anbieter": "risk-management-consulting-smb-providers",
+    "scheinselbststaendigkeit-pruefen": "false-self-employment-check",
+    "schluesselpersonrisiko-erkennen-absichern": "key-person-risk-identify-mitigate",
+    "unternehmensnachfolge-uebersehene-risiken": "business-succession-overlooked-risks",
 }
 
 EN_STATIC_ROUTE_MAP: dict[str, str] = {v: k for k, v in STATIC_ROUTE_MAP.items()}
@@ -121,10 +148,9 @@ def language_switcher_html(*, current_locale: str, canonical: str, depth: int) -
     """Compact DE | EN switcher for header/footer."""
     if current_locale == "en":
         other_locale = "de"
-        other_url = f"{DE_SITE_URL}/"
     else:
         other_locale = "en"
-        other_url = f"{EN_SITE_URL}/"
+    other_url = alternate_url(canonical, from_locale=current_locale, to_locale=other_locale)
     current_label = "DE" if current_locale == "de" else "EN"
     other_label = "EN" if current_locale == "de" else "DE"
     return (

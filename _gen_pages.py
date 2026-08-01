@@ -8,7 +8,17 @@ from pathlib import Path
 
 from _blindspot import blindspot_config_json
 from _blindspot import selfcheck as blindspot_selfcheck
-from _i18n import hreflang_links, language_switcher_html
+from _i18n import EN_SITE_URL, hreflang_links, language_switcher_html
+
+from _pricing import PRICE_CATEGORIES, format_eur, offer_price_text
+from _pricing_geo import (
+    PREISE_GEO_FAQ,
+    SCHULUNGEN_GEO_FAQ,
+    pricing_compare_section,
+    schulungen_value_section,
+    schulung_geo_note,
+)
+from _schulungen import SCHULUNG_CONFIGS
 
 from _cms import (
     SITE_URL,
@@ -26,8 +36,11 @@ from _cms import (
     blog_filters_html,
     blog_posting_schema,
     combine_jsonld,
+    course_schema,
     faq_page_schema,
     format_date_en,
+    local_business_schema,
+    offer_catalog_schema,
     service_schema,
     speakable_webpage_schema,
     header_logo_html,
@@ -37,7 +50,10 @@ from _cms import (
     load_team_members,
     person_schema,
     team_by_slug,
+    team_contact_icons,
+    team_profile_bio_html,
     team_profile_section,
+    team_section_id,
     team_teaser_card,
     write_sitemap,
 )
@@ -53,6 +69,9 @@ IMG_ANGEBOT_KMU_HERO = "img/angebote/kmu/hero.webp"
 IMG_ANGEBOT_SOLO_HERO = "img/angebote/solo/hero.webp"
 IMG_RELEVANZ_SCHWELLE = "img/garantie/relevanz-schwelle.webp"
 IMG_NUTZEN_KRITERIEN = "img/garantie/nutzen-kriterien.webp"
+
+ALT_TILL = "Till Manfred Blania, Managing Director Beraterium"
+ALT_PETER = "Peter Münstermann, Beraterium"
 
 
 def _depth_from_pre(pre: str) -> int:
@@ -117,8 +136,12 @@ CARET_SVG = (
 
 def nav_html(depth: int, active: str | None) -> str:
     pre = pfx(depth)
-    services_active = bool(active and active.startswith("services"))
+    services_active = bool(
+        active and (active.startswith("services") or active in ("pricing", "training"))
+    )
     services_cur = ' aria-current="page"' if active == "services" else ""
+    pricing_cur = ' aria-current="page"' if active == "pricing" else ""
+    training_cur = ' aria-current="page"' if active == "training" else ""
     about_active = active in ("about", "team")
     tools_active = bool(active and active.startswith("tools"))
     tools_cur = ' aria-current="page"' if active == "tools" else ""
@@ -139,6 +162,8 @@ def nav_html(depth: int, active: str | None) -> str:
             <li><a href="{pre}services/startups/"{service_sub_cur("startups")}>Startups</a></li>
             <li><a href="{pre}services/smb/"{service_sub_cur("smb")}>SME</a></li>
             <li><a href="{pre}services/solo/"{service_sub_cur("solo")}>Solo self-employed</a></li>
+            <li><a href="{pre}training/"{training_cur}>Training</a></li>
+            <li><a href="{pre}pricing/"{pricing_cur}>Pricing</a></li>
           </ul>
         </li>""",
         f'        <li><a href="{pre}method/"{nav_cur("method")}>Method</a></li>',
@@ -169,6 +194,25 @@ def nav_html(depth: int, active: str | None) -> str:
 
 def footer_html(depth: int) -> str:
     pre = pfx(depth)
+    lp_links = "\n".join(
+        f'        <li><a href="{pre}solutions/{cfg["slug"]}/">{cfg["breadcrumb_name"]}</a></li>'
+        for cfg in LP_CONFIGS
+    )
+    standort_items = "\n".join(
+        f'        <li><a href="{pre}locations/{cfg["slug"]}/">{cfg["breadcrumb_name"]}</a></li>'
+        for cfg in STANDORT_CONFIGS
+    )
+    standort_section = (
+        f"""    <section>
+      <h2>Beraterium on location</h2>
+      <ul>
+{standort_items}
+      </ul>
+    </section>
+"""
+        if STANDORT_CONFIGS
+        else ""
+    )
     return f"""<footer class="site-footer" aria-label="Footer">
   <div class="site-footer__inner">
     <section>
@@ -184,15 +228,25 @@ def footer_html(depth: int) -> str:
         <li><a href="{pre}services/smb/">SME</a></li>
         <li><a href="{pre}services/solo/">Solo self-employed</a></li>
         <li><a href="{pre}services/">Overview</a></li>
+        <li><a href="{pre}pricing/">Pricing &amp; services</a></li>
+        <li><a href="{pre}training/">Training</a></li>
       </ul>
     </section>
     <section>
+      <h2>Solutions</h2>
+      <ul>
+{lp_links}
+      </ul>
+    </section>
+{standort_section}    <section>
       <h2>Company</h2>
       <ul>
         <li><a href="{pre}about/">About us</a></li>
         <li><a href="{pre}team/">Team</a></li>
         <li><a href="{pre}mission-vision/">Mission &amp; Vision</a></li>
         <li><a href="{pre}method/">Method</a></li>
+        <li><a href="{pre}benefit-guarantee/">Value guarantee</a></li>
+        <li><a href="{pre}relevance-guarantee/">Relevance guarantee</a></li>
       </ul>
     </section>
     <section>
@@ -221,6 +275,8 @@ def shell(
     main: str,
     json_ld: str = "",
     noindex: bool = False,
+    og_type: str = "website",
+    og_image: str = "",
     extra_css: str = "",
     extra_scripts: str = "",
 ) -> str:
@@ -229,9 +285,10 @@ def shell(
     robots = '\n  <meta name="robots" content="noindex">' if noindex else ""
     ld = f"\n  <script type=\"application/ld+json\">\n{json_ld}\n  </script>" if json_ld else ""
     hreflang = hreflang_links(canonical, current_locale="en")
+    og_image_tag = f'\n  <meta property="og:image" content="{og_image}">' if og_image else ""
     lang_switch = language_switcher_html(current_locale="en", canonical=canonical, depth=depth)
     return f"""<!doctype html>
-<html lang="en">
+<html lang="en-GB">
 
 <head>
 {COOKIEYES_HEAD}
@@ -240,13 +297,13 @@ def shell(
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content="{description}">
-  <link rel="canonical" href="https://en.beraterium.de{canonical}">{robots}{hreflang}
+  <link rel="canonical" href="{EN_SITE_URL}{canonical}">{robots}{hreflang}
 
   <meta property="og:title" content="{title}">
   <meta property="og:description" content="{description}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://en.beraterium.de{canonical}">
-  <meta property="og:locale" content="en_GB">
+  <meta property="og:type" content="{og_type}">
+  <meta property="og:url" content="{EN_SITE_URL}{canonical}">
+  <meta property="og:locale" content="en_GB">{og_image_tag}
 
   <link rel="icon" href="{pre}favicon.ico" sizes="any">
   <link rel="icon" href="{pre}favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
@@ -2791,6 +2848,2009 @@ def gen_danke() -> None:
           description="Thank you for your enquiry. We will get back to you shortly.", canonical="/thank-you/",
           active_nav=None, main=main, noindex=True))
 
+# --- EN parity generators (from DE site) ---
+def _offer_details_block(o: dict) -> str:
+    """Ausklappbarer Detail-Teaser fuer jedes Angebot; verlinkt zusaetzlich auf die
+    Schulungsseite, falls vorhanden (Schulungen SCH-*)."""
+    if not o.get("details_html"):
+        return ""
+    link = (
+        f'<p class="brt-meta"><a href="../training/{o["slug"]}/">Zur Schulungsseite mit allen Details \u2192</a></p>'
+        if o.get("slug")
+        else ""
+    )
+    return (
+        '<details class="brt-faq__item brt-price-details">'
+        '<summary class="brt-faq__summary">'
+        '<span class="brt-faq__toggle" aria-hidden="true"></span>'
+        '<span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span>'
+        '<span class="brt-faq__chevron" aria-hidden="true"></span>'
+        "</summary>"
+        f'<div class="brt-faq__answer">{o["details_html"]}{link}</div>'
+        "</details>"
+    )
+
+
+def price_table_html(cat: dict) -> str:
+    """Preistabelle einer Kategorie aus _pricing.py (sichtbar == Schema-Quelle)."""
+    rows = "\n".join(
+        f'              <tr id="{o["nr"].lower()}">'
+        f'<th scope="row">{o["name"]}<br><span class="brt-compare__muted">{o["desc"]}</span>'
+        + _offer_details_block(o)
+        + "</th>"
+        f'<td><strong>{offer_price_text(o)}</strong>'
+        + (f'<br><span class="brt-compare__muted">{o["price_detail"]}</span>' if o.get("price_detail") else "")
+        + f'</td><td>{o["duration"]}</td></tr>'
+        for o in cat["offers"]
+    )
+    return f"""
+    <section class="brt-section" id="{cat["id"]}" aria-labelledby="preise-{cat["id"]}-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">{cat["tag"]}</p>
+          <h2 id="preise-{cat["id"]}-title" class="brt-h2">{cat["title"]}</h2>
+          <p class="brt-body">{cat["lede"]}</p>
+        </header>
+        <div class="brt-table-wrap brt-fade-up">
+          <table class="brt-table">
+            <caption class="brt-sr-only">Preise: {cat["title"]}</caption>
+            <thead>
+              <tr><th scope="col">Angebot</th><th scope="col">Preis (netto)</th><th scope="col">Dauer &amp; Umfang</th></tr>
+            </thead>
+            <tbody>
+{rows}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>"""
+
+
+def gen_pricing() -> None:
+    pre = "../"
+    preise_faq = [
+        ("Was kostet eine Risikoanalyse bei Beraterium?", "Die Risiko-Analyse 360° ist das Komplettpaket für 3.475 € (Analyse + Strategie + Budgetplanung). Einzeln kosten die drei Module 1.725 €, 2.175 € und 1.250 € — zusammen 5.150 €. Das Gesamtpaket XL mit kompletter Begleitung kostet 9.675 €."),
+        ("Was kosten die Workshops?", "Workshops werden pro Person berechnet, mit Mengenstaffel: der Einstiegs-Workshop „Risiken allgemein“ kostet einzeln 127 €, ab 8 Personen 57 € pro Person. Spezial-Workshops wie „Globale Risiken“ liegen bei bis zu 347 € pro Person."),
+        ("Was kosten die Schulungen?", "Die Ausbildung zum Risikoexperten (Kombi aus drei Modulen) kostet 9.875 € für eine Person, 14.315 € für zwei. Die drei Einzelschulungen im Intensivformat (1:1 oder Kleinstgruppe) liegen bei 3.475–4.975 € — deutlich tiefer und persönlicher als in der Kombi. Innovations- und Feedback-Schulungen ab 2.875 €, interkulturelles Management ab 3.475 € — Risiko-Schulungen im Intensivformat ab 3.475 € (Materialien, Tools, Gefahrenkatalog). Alle Preise netto zzgl. USt."),
+        ("Gibt es einen kostenlosen Einstieg?", "Ja. Der Risiko-Check für Startups (1 Stunde) ist für Neugründer bis 10.000 € Umsatz kostenlos. Kompakte Kurz-Checks gibt es ab 47 €."),
+        ("Sind das Festpreise oder Stundensätze?", "Die Analysepakete sind Festpreise — Sie wissen vorher genau, was es kostet. Workshops und HR-Module werden pro Person bzw. pro Interview berechnet, mit Mengenstaffel. Alle Preise verstehen sich netto zuzüglich Umsatzsteuer."),
+        ("Warum veröffentlicht Beraterium seine Preise?", "Transparenz gehört zu unserer Haltung: Sie sollen Angebote vergleichen können, bevor Sie mit uns sprechen. Im kostenlosen Erstgespräch klären wir dann, welches Paket zu Ihrer Situation passt."),
+        ("Gilt die doppelte Garantie auch für diese Angebote?", "Ja. Für die Analysepakete gelten Relevanz- und Nutzen-Garantie: Finden wir kein relevantes Risiko oder erfüllen wir die vereinbarten Nutzen-Kriterien nicht, erstatten wir den vollen Betrag."),
+    ] + list(PREISE_GEO_FAQ)
+    tables = "".join(price_table_html(cat) for cat in PRICE_CATEGORIES)
+    main = (
+        hero(pre, "PREISE & LEISTUNGEN", "Was kostet Risikomanagement-Beratung bei Beraterium?",
+             "Alle Preise transparent: vom kostenlosen Startup-Erst-Check über Team-Workshops ab 57 € pro Person und Ausbildung zum Risikoexperten ab 9.875 €, Einzelschulungen Intensivformat ab 3.475 € bis zum Kernpaket Risiko-Analyse 360° für 3.475 € (Einzelmodule ab 1.250 €) und Gesamtpaket XL für 9.675 €. Alle Preise netto zzgl. USt.",
+             compact=True,
+             actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a>')
+        + pricing_compare_section(pre=pre)
+        + tables
+        + f"""
+    <section class="brt-section brt-section--alt" aria-labelledby="preise-erklaert-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">SO SETZEN SICH DIE PREISE ZUSAMMEN</p>
+          <h2 id="preise-erklaert-title" class="brt-h2">Preismodelle erklärt</h2>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Festpreis-Pakete</h3><p class="brt-body">Analyse- und Strategiepakete haben einen Festpreis (1.250–9.675 €). Das Kernpaket Risiko-Analyse 360° bündelt Analyse, Strategie und Budgetplanung für 3.475 € — abgesichert durch die doppelte Garantie.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Pro-Kopf-Staffeln</h3><p class="brt-body">Workshops und HR-Module werden pro Person bzw. pro Interview berechnet — je größer die Gruppe, desto günstiger pro Kopf. Schulungen kombinieren Basispreis, Aufpreis je weiterem Teilnehmer und eine gedeckelte Team-Pauschale: ab der Deckel-Gruppengröße kostet das ganze Team nicht mehr.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Doppelte Garantie</h3><p class="brt-body">Analysepakete sind durch Relevanz- und Nutzen-Garantie abgesichert: kein relevantes Risiko oder kein vereinbarter Nutzen — volle Erstattung. Details auf den <a href="{pre}benefit-guarantee/">Garantie-Seiten</a>.</p></li>
+        </ul>
+        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Welches Paket zu Ihrer Situation passt, klären wir im <a href="{pre}contact/">kostenlosen Erstgespräch</a> — Übersicht nach Zielgruppe: <a href="{pre}services/">Angebote für Startups, KMU &amp; Solo</a>.</p>
+      </div>
+    </section>"""
+        + guarantee(pre)
+        + faq_section_html(preise_faq, title="Frequently asked questions zu Preisen", section_id="faq", alt=True)
+        + cta_band(pre, "Unsicher, welches Paket passt?", "Im kostenlosen Erstgespräch klären wir Umfang, Förderung und den besten Einstieg für Ihre Situation.")
+    )
+    preise_title = "Preise – Risikomanagement-Beratung | Beraterium"
+    preise_desc = "Preise transparent: Risiko-Analyse 360° 3.475 € (Festpreis), Workshops ab 57 €/Person, Schulungen ab 3.475 €. Marktvergleich: unter Konzernberatern, mit doppelter Garantie."
+    write("pricing/index.html", shell(depth=1, title=preise_title, description=preise_desc,
+          canonical="/pricing/", active_nav="pricing", main=main,
+          json_ld=page_schema(
+              offer_catalog_schema(
+                  name="Preise & Leistungen — Risikomanagement-Beratung",
+                  description=preise_desc,
+                  url="/pricing/",
+                  categories=PRICE_CATEGORIES,
+              ),
+              faq_page_schema(preise_faq),
+              speakable_webpage_schema(
+                  "/pricing/",
+                  selectors=[".brt-highlight-box", ".brt-faq__answer", "#preisvergleich .brt-body"],
+              ),
+              json.dumps(
+                  {
+                      "@context": "https://schema.org",
+                      "@type": "BreadcrumbList",
+                      "itemListElement": [
+                          {"@type": "ListItem", "position": 1, "name": "Start", "item": f"{EN_SITE_URL}/"},
+                          {"@type": "ListItem", "position": 2, "name": "Preise & Leistungen", "item": f"{EN_SITE_URL}/pricing/"},
+                      ],
+                  },
+                  ensure_ascii=False,
+                  indent=2,
+              ),
+          )))
+
+_SCH_PRICING: dict[str, dict] = {
+    o["nr"]: o
+    for cat in PRICE_CATEGORIES
+    for o in cat["offers"]
+    if o["nr"].startswith("SCH-")
+}
+
+
+def schulung_price_section(offer: dict, *, pre: str) -> str:
+    """Preisblock einer Schulung: Basis + Aufpreis + gedeckelte Team-Pauschale."""
+    team_max = offer.get("team_max")
+    if team_max:
+        intro = (
+            f"Buchbar f\u00fcr einzelne Mitarbeitende oder Kleingruppen "
+            f"\u2014 pauschal bis max. {team_max} Teilnehmer."
+        )
+        team_card = (
+            f"<strong>{format_eur(offer['price_team'])} pauschal</strong><br>"
+            f"Max. {team_max} Teilnehmer."
+        )
+    else:
+        intro = (
+            f"Buchbar f\u00fcr einzelne Mitarbeitende, Kleingruppen oder das ganze Team "
+            f"\u2014 ab {offer['team_from']} Personen greift die gedeckelte Team-Pauschale."
+        )
+        team_card = (
+            f"<strong>{format_eur(offer['price_team'])} pauschal</strong> ab {offer['team_from']} Personen<br>"
+            f"Gedeckelt \u2014 mehr Teilnehmer kosten nicht mehr."
+        )
+    return f"""
+    <section class="brt-section brt-section--alt" id="preis" aria-labelledby="preis-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">PREIS (NETTO ZZGL. UST.)</p>
+          <h2 id="preis-title" class="brt-h2">Was kostet die Schulung?</h2>
+          <p class="brt-body">{intro}</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Einzeln</h3><p class="brt-body"><strong>{format_eur(offer["price_base"])}</strong><br>Basispreis f\u00fcr die erste Person.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Kleingruppe</h3><p class="brt-body"><strong>+{format_eur(offer["price_add"])}</strong> je weiterem Teilnehmer<br>Sie zahlen nur, wer wirklich teilnimmt.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Ganzes Team</h3><p class="brt-body">{team_card}</p></li>
+        </ul>
+        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Alle Preise und Angebote im \u00dcberblick: <a href="{pre}pricing/">Preise &amp; Leistungen</a>.</p>
+      </div>
+    </section>"""
+
+def gen_schulung(cfg: dict) -> None:
+    """Datengetriebene Schulungs-Unterseite /training/<slug>/.
+
+    Inhalt aus _schulungen.py (SCHULUNG_CONFIGS), Preis-Staffel aus
+    _pricing.py (Join ueber "nr"). Struktur: Hero -> Fuer-wen-Checkliste ->
+    Ablauf/Sessions -> Ergebnis -> Preisblock -> FAQ -> CTA.
+    """
+    slug = cfg["slug"]
+    pre = "../../"
+    canonical = f"/training/{slug}/"
+    offer = _SCH_PRICING[cfg["nr"]]
+
+    fuer_wen_items = "".join(f"<li>{item}</li>" for item in cfg["fuer_wen"])
+    session_cards = "".join(
+        f'<li class="brt-card brt-hover-lift"><h3 class="brt-h3">{title}</h3>'
+        '<ul class="brt-list-check">'
+        + "".join(f"<li>{b}</li>" for b in bullets)
+        + "</ul></li>"
+        for title, bullets in cfg["sessions"]
+    )
+    ergebnis_items = "".join(f"<li>{item}</li>" for item in cfg["ergebnis"])
+
+    if len(cfg["sessions"]) > 3:
+        # Slider: zeigt 3 Karten, Pfeile blaettern (initCardsSlider in brt-site.js)
+        sessions_block = (
+            '<div class="brt-cards-slider brt-fade-up" data-cards-slider>'
+            '<div class="brt-cards-slider__viewport" tabindex="0" role="group" aria-label="Sessions der Schulung">'
+            f'<ul class="brt-cards-slider__track">{session_cards}</ul>'
+            "</div>"
+            '<div class="brt-cards-slider__nav">'
+            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--prev" aria-label="Vorherige Session">'
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
+            "</button>"
+            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--next" aria-label="N\u00e4chste Session">'
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'
+            "</button></div></div>"
+        )
+    else:
+        sessions_block = f'<ul class="brt-cards-3col brt-stagger">{session_cards}</ul>'
+
+    main = (
+        hero(
+            pre, cfg["tag"], cfg["h1"], cfg["lead"],
+            actions=(
+                f'<a class="brt-btn" href="{pre}contact/">Kostenloses Erstgespr\u00e4ch buchen</a>'
+                f'<a class="brt-btn brt-btn--outline" href="#preis">Zum Preis \u2192</a>'
+            ),
+        )
+        + f"""
+    <section class="brt-section" id="fuer-wen" aria-labelledby="fuer-wen-title">
+      <div class="brt-container brt-highlight-box brt-fade-up">
+        <p class="brt-tag">F\u00dcR WEN?</p>
+        <h2 id="fuer-wen-title" class="brt-h2">F\u00fcr wen ist diese Schulung gedacht?</h2>
+        <p class="brt-body">{cfg["fuer_wen_intro"]}</p>
+        <ul class="brt-list-check">{fuer_wen_items}</ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" id="ablauf" aria-labelledby="ablauf-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">INHALTE &amp; ABLAUF</p>
+          <h2 id="ablauf-title" class="brt-h2">Wie l\u00e4uft die Schulung ab?</h2>
+          <p class="brt-body">Dauer: {offer["duration"]} \u2014 inhouse bei Ihnen vor Ort oder online. Zielgruppe: {cfg["audience"]}.</p>
+        </header>
+        {sessions_block}
+      </div>
+    </section>
+    <section class="brt-section" id="ergebnis" aria-labelledby="ergebnis-title">
+      <div class="brt-container brt-highlight-box brt-fade-up">
+        <p class="brt-tag">ERGEBNIS</p>
+        <h2 id="ergebnis-title" class="brt-h2">Was nehmen Sie mit?</h2>
+        <ul class="brt-list-check">{ergebnis_items}</ul>
+      </div>
+    </section>"""
+        + schulung_price_section(offer, pre=pre)
+        + schulung_geo_note(cfg["nr"], pre=pre)
+        + faq_section(cfg["faq"])
+        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], "Kostenloses Erstgespr\u00e4ch buchen")
+    )
+
+    breadcrumb_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": "Schulungen", "item": f"{EN_SITE_URL}/training/"},
+                {"@type": "ListItem", "position": 3, "name": cfg["h1"], "item": f"{EN_SITE_URL}{canonical}"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    ld = page_schema(
+        course_schema(
+            name=cfg["h1"],
+            description=cfg["description"],
+            url=canonical,
+            price=offer["price_base"],
+            price_detail=offer["price_detail"],
+            workload_iso=cfg["workload_iso"],
+        ),
+        faq_page_schema(cfg["faq"]),
+        speakable_webpage_schema(canonical),
+        breadcrumb_ld,
+    )
+    write(
+        f"training/{slug}/index.html",
+        shell(
+            depth=2,
+            title=cfg["title"],
+            description=cfg["description"],
+            canonical=canonical,
+            active_nav="training",
+            main=main,
+            json_ld=ld,
+        ),
+    )
+
+
+def gen_schulungen_index() -> None:
+    """Index-Seite /training/ mit Karten zu allen Schulungen."""
+    pre = "../"
+    cards = "".join(
+        f'<li class="brt-card brt-card--catalog brt-hover-lift"><a class="brt-card__link" href="{cfg["slug"]}/">'
+        f'<h3 class="brt-h3">{cfg["h1"]}</h3>'
+        f'<p class="brt-body">{_SCH_PRICING[cfg["nr"]]["desc"]}</p>'
+        f'<p class="brt-meta">{_SCH_PRICING[cfg["nr"]]["duration"]} \u00b7 {offer_price_text(_SCH_PRICING[cfg["nr"]])}</p>'
+        f'<span class="brt-meta" aria-hidden="true">Zur Schulung \u2192</span></a></li>'
+        for cfg in SCHULUNG_CONFIGS
+    )
+    schulungen_faq = [
+        ("Wie funktioniert das Preismodell der Schulungen?", "Jede Schulung hat einen Basispreis f\u00fcr die erste Person und einen festen Aufpreis je weiterem Teilnehmer. Ab einer definierten Gruppengr\u00f6\u00dfe greift eine gedeckelte Team-Pauschale \u2014 mehr Teilnehmer kosten dann nicht mehr. Alle Preise netto zzgl. USt."),
+        ("Kann ich eine Schulung f\u00fcr einen einzelnen Mitarbeiter buchen?", "Ja. Jede Schulung ist sowohl f\u00fcr einzelne Mitarbeitende (Basispreis) als auch f\u00fcr Kleingruppen oder das ganze Team buchbar \u2014 die Inhalte werden auf die Gruppengr\u00f6\u00dfe zugeschnitten."),
+        ("Finden die Schulungen bei uns im Haus statt?", "Ja, wahlweise inhouse bei Ihnen vor Ort oder online. Bei Team-Buchungen empfehlen wir inhouse \u2014 die Praxisteile arbeiten direkt an Ihren realen Prozessen und F\u00e4llen."),
+        ("Wie liegen die Preise im Marktvergleich?", "Team-Schulungen (SCH-04–06): ab 2.875 €, Team-Pauschalen 9.395–9.875 € — unter üblichen Inhouse-Preisen (2.500–4.000 €). Intensivformat (SCH-01–03): 3.475–4.975 € für 1:1/Kleinstgruppe — mehr als offene Seminare (250–500 €/Tag), weil Coaching-Tiefe und Transfer inklusive sind. Risikoexperte (SCH-07): 9.875 € (1 Pers.) statt 12.425 € als Einzelbuchungen."),
+    ] + list(SCHULUNGEN_GEO_FAQ)
+    main = (
+        hero(pre, "SCHULUNGEN", "Schulungen f\u00fcr Risikokultur, Innovation &amp; F\u00fchrung",
+             "Sieben vertiefende Schulungen \u2014 von der kompletten Ausbildung zum Risikoexperten \u00fcber die Risk-Awareness-Kultur nach Luftfahrt-Vorbild \u00fcber praktisches Risikomanagement bis zu Innovations-, Feedback- und interkulturellem Management. Buchbar f\u00fcr einzelne Mitarbeitende oder das ganze Team, inhouse oder online. Ausbildung zum Risikoexperten ab 9.875 \u20ac (2 Personen 14.315 \u20ac); Einzelschulungen Intensivformat ab 3.475 \u20ac (netto zzgl. USt.).",
+             compact=True,
+             actions=f'<a class="brt-btn" href="{pre}contact/">Kostenloses Erstgespr\u00e4ch buchen</a>')
+        + f"""
+    <section class="brt-section" id="katalog" aria-labelledby="katalog-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">SECHS SCHULUNGEN</p>
+          <h2 id="katalog-title" class="brt-h2">Welche Schulungen bietet Beraterium an?</h2>
+          <p class="brt-body">Alle Schulungen kommen aus der Praxis unserer Risikoanalysen \u2014 und geben Ihrem Team Methoden an die Hand, die es danach selbst anwenden kann.</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">{cards}</ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" id="preismodell" aria-labelledby="preismodell-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">DAS PREISMODELL</p>
+          <h2 id="preismodell-title" class="brt-h2">Ein Preismodell, drei Stufen</h2>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Einzeln</h3><p class="brt-body">Intensivformat ab 3.475 \u20ac oder Kombi-Ausbildung Risikoexperte ab 9.875 \u20ac \u2014 ideal, um eine Schulung erst einmal zu testen.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Kleingruppe</h3><p class="brt-body">Fester Aufpreis je weiterem Teilnehmer (725\u2013995 \u20ac je nach Schulung) \u2014 transparent und planbar, Sie zahlen nur, wer teilnimmt.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Ganzes Team</h3><p class="brt-body">Gedeckelte Team-Pauschale ab Gruppengr\u00f6\u00dfe (9.395\u20139.875 \u20ac) \u2014 mehr Teilnehmer kosten nicht mehr. Bewusst unter den \u00fcblichen Inhouse-Seminarpreisen (2.500\u20134.000 \u20ac).</p></li>
+        </ul>
+        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Alle Staffeln im Detail: <a href="{pre}pricing/#schulungen">Preise &amp; Leistungen</a>.</p>
+      </div>
+    </section>"""
+        + schulungen_value_section(pre=pre)
+        + faq_section_html(schulungen_faq, title="H\u00e4ufige Fragen zu den Schulungen")
+        + cta_band(pre, "Welche Schulung passt zu Ihrem Team?", "Im kostenlosen Erstgespr\u00e4ch kl\u00e4ren wir Ziel, Teamgr\u00f6\u00dfe und den besten Einstieg \u2014 unverbindlich, in 30 Minuten.")
+    )
+    breadcrumb_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": "Schulungen", "item": f"{EN_SITE_URL}/training/"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    schulungen_title = "Schulungen Risikomanagement & F\u00fchrung | Beraterium"
+    schulungen_desc = "Sieben Inhouse-Schulungen: Ausbildung zum Risikoexperten ab 9.875 \u20ac, Einzelschulungen Intensivformat ab 3.475 \u20ac, Innovation, Feedback, interkulturelles Management."
+    write("training/index.html", shell(depth=1, title=schulungen_title, description=schulungen_desc,
+          canonical="/training/", active_nav="training", main=main,
+          json_ld=page_schema(faq_page_schema(schulungen_faq), speakable_webpage_schema("/training/", selectors=[".brt-highlight-box", ".brt-faq__answer", "#schulungen-vergleich .brt-body"]), breadcrumb_ld)))
+
+def lp_deep_sections_html(sections: list[dict], start: int = 0, end: int | None = None) -> str:
+    """Vertiefungs-Bloecke einer Landingpage (Prosa + optionale Checkliste)."""
+    out = []
+    for i, sec in enumerate(sections[start:end], start=start + 1):
+        paragraphs = "".join(f'<p class="brt-body">{p}</p>' for p in sec.get("paragraphs", []))
+        items = ""
+        if sec.get("items"):
+            items = '<ul class="brt-list-check">' + "".join(f"<li>{it}</li>" for it in sec["items"]) + "</ul>"
+        out.append(f"""
+    <section class="brt-section" id="vertiefung-{i}" aria-labelledby="vertiefung-{i}-title">
+      <div class="brt-container brt-highlight-box brt-fade-up">
+        <p class="brt-tag">{sec["tag"]}</p>
+        <h2 id="vertiefung-{i}-title" class="brt-h2">{sec["h2"]}</h2>
+        <p class="brt-body">{sec["intro"]}</p>
+        {paragraphs}
+        {items}
+      </div>
+    </section>""")
+    return "".join(out)
+
+
+def lp_steps_section_html(cfg: dict) -> str:
+    """Nummerierte Schritt-Karten (z. B. Sofortmassnahmen, Uebergabe-Checkliste)."""
+    sec = cfg.get("steps_section")
+    if not sec:
+        return ""
+    step_cards = "".join(
+        f'<li class="brt-card brt-hover-lift">'
+        f'<span class="brt-method-step__num" aria-hidden="true">{i:02d}</span>'
+        f'<h3 class="brt-h3">{title}</h3><p class="brt-body">{body}</p></li>'
+        for i, (title, body) in enumerate(sec["steps"], start=1)
+    )
+    return f"""
+    <section class="brt-section" id="schritte" aria-labelledby="schritte-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">{sec["tag"]}</p>
+          <h2 id="schritte-title" class="brt-h2">{sec["h2"]}</h2>
+          <p class="brt-body">{sec["intro"]}</p>
+        </header>
+        <ol class="brt-cards-3col brt-stagger">{step_cards}</ol>
+      </div>
+    </section>"""
+
+
+def lp_facts_table_html(table: dict | None) -> str:
+    """Zitierbare Fakten-Tabelle (GEO-Block, z. B. Meldefristen oder Personas)."""
+    if not table:
+        return ""
+    head = "".join(f'<th scope="col">{h}</th>' for h in table["headers"])
+    rows = "".join(
+        "<tr>" + "".join(f"<td>{c}</td>" for c in row) + "</tr>"
+        for row in table["rows"]
+    )
+    return f"""
+    <section class="brt-section brt-section--alt" id="fakten" aria-labelledby="fakten-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">{table["tag"]}</p>
+          <h2 id="fakten-title" class="brt-h2">{table["h2"]}</h2>
+          <p class="brt-body">{table["intro"]}</p>
+        </header>
+        <div class="brt-table-wrap brt-fade-up">
+          <table class="brt-table">
+            <caption class="brt-sr-only">{table["caption"]}</caption>
+            <thead><tr>{head}</tr></thead>
+            <tbody>{rows}</tbody>
+          </table>
+        </div>
+      </div>
+    </section>"""
+
+
+def lp_related_blog_section(slugs: list[str]) -> str:
+    """Kuratierte Blog-Karten am Ende einer Landingpage (Crosslinking LP -> Blog)."""
+    if not slugs:
+        return ""
+    by_slug = {p.slug: p for p in load_blog_posts()}
+    cards = []
+    for s in slugs:
+        post = by_slug.get(s)
+        if post:
+            cards.append(blog_card_html(post, 2))
+        else:
+            print(f"  warn: lp blog_slug nicht gefunden: {s}")
+    if not cards:
+        return ""
+    return f"""
+    <section class="brt-section" aria-labelledby="lp-related-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">WEITERFÜHRENDE ARTIKEL</p>
+          <h2 id="lp-related-title" class="brt-h2">Vertiefung im Beraterium-Blog</h2>
+        </header>
+        <ul class="brt-blog-grid brt-stagger">
+{chr(10).join(cards)}
+        </ul>
+      </div>
+    </section>"""
+
+def gen_landingpage(cfg: dict) -> None:
+    """Datengetriebenes SEO+GEO-One-Pager-Template unter /solutions/<slug>/.
+
+    Eine neue Landingpage = ein neuer Eintrag in LP_CONFIGS (siehe NIS2 als
+    Referenz). Struktur: Hero (answer-first) -> Kriterien-Checkliste (GEO-
+    Zitat-Block) -> Stats -> Schmerz-Karten -> Beraterium-Ueberblick mit Links
+    zur Hauptseite -> FAQ (sichtbar + Schema aus derselben Quelle) -> CTA.
+    """
+    slug = cfg["slug"]
+    pre = "../../"
+    canonical = f"/solutions/{slug}/"
+
+    criteria_items = "".join(f"<li>{item}</li>" for item in cfg["criteria"])
+    pain_cards = "".join(
+        f'<li class="brt-card brt-hover-lift"><h3 class="brt-h3">{title}</h3>'
+        f'<p class="brt-body">{body}</p></li>'
+        for title, body in cfg["pain_cards"]
+    )
+    overview_cards = "".join(
+        f'<li class="brt-card brt-hover-lift"><a class="brt-card__link" href="{pre}{href}">'
+        f'<h3 class="brt-h3">{title}</h3><p class="brt-body">{body}</p>'
+        f'<span class="brt-meta" aria-hidden="true">{link_label} \u2192</span></a></li>'
+        for title, body, href, link_label in cfg["overview_cards"]
+    )
+
+    main = (
+        hero(
+            pre, cfg["tag"], cfg["h1"], cfg["lead"],
+            actions=(
+                f'<a class="brt-btn" href="{pre}contact/">{cfg["hero_cta"]}</a>'
+                f'<a class="brt-btn brt-btn--outline" href="#faq">Frequently asked questions \u2192</a>'
+            ),
+        )
+        + f"""
+    <section class="brt-section" id="kriterien" aria-labelledby="kriterien-title">
+      <div class="brt-container brt-highlight-box brt-fade-up">
+        <p class="brt-tag">{cfg["criteria_tag"]}</p>
+        <h2 id="kriterien-title" class="brt-h2">{cfg["criteria_h2"]}</h2>
+        <p class="brt-body">{cfg["criteria_intro"]}</p>
+        <ul class="brt-list-check">{criteria_items}</ul>
+      </div>
+    </section>"""
+        + guarantee_stat_row(cfg["stats"], aria=cfg["stats_aria"])
+        + lp_deep_sections_html(cfg.get("deep_sections", []), end=1)
+        + f"""
+    <section class="brt-section brt-section--alt" aria-labelledby="pain-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">{cfg["pain_tag"]}</p>
+          <h2 id="pain-title" class="brt-h2">{cfg["pain_h2"]}</h2>
+          <p class="brt-body">{cfg["pain_intro"]}</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">{pain_cards}</ul>
+      </div>
+    </section>"""
+        + lp_steps_section_html(cfg)
+        + lp_facts_table_html(cfg.get("facts_table"))
+        + lp_deep_sections_html(cfg.get("deep_sections", []), start=1)
+        + f"""
+    <section class="brt-section" aria-labelledby="overview-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">{cfg["overview_tag"]}</p>
+          <h2 id="overview-title" class="brt-h2">{cfg["overview_h2"]}</h2>
+          <p class="brt-body">{cfg["overview_intro"]}</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">{overview_cards}</ul>
+      </div>
+    </section>"""
+        + lp_related_blog_section(cfg.get("blog_slugs", []))
+        + faq_section(cfg["faq"], alt=True)
+        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], cfg["hero_cta"])
+    )
+
+    breadcrumb_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": cfg["breadcrumb_name"], "item": f"{EN_SITE_URL}{canonical}"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    ld = page_schema(
+        service_schema(
+            name=cfg["service_name"],
+            description=cfg["description"],
+            url=canonical,
+            audience=cfg["audience"],
+        ),
+        faq_page_schema(cfg["faq"]),
+        speakable_webpage_schema(canonical),
+        breadcrumb_ld,
+    )
+    write(
+        f"solutions/{slug}/index.html",
+        shell(
+            depth=2,
+            title=cfg["title"],
+            description=cfg["description"],
+            canonical=canonical,
+            active_nav=None,
+            main=main,
+            json_ld=ld,
+        ),
+    )
+
+LP_CONFIGS: list[dict] = [
+    {
+        # Keyword (Webseite/Keywords/keyword-liste-master.csv): "nis2 betroffen prüfen" / "nis2 wer ist betroffen" (P1, hoch)
+        "slug": "nis2",
+        "du": False,
+        "audience": "KMU und Mittelstand",
+        "tag": "NIS2",
+        "h1": "NIS2: Ist Ihr Unternehmen betroffen?",
+        "lead": (
+            "NIS2 verpflichtet deutlich mehr Unternehmen als bisher zur IT-Sicherheit – vor allem "
+            "mittelständische Betriebe aus Sektoren wie Energie, Gesundheit, Transport, digitale "
+            "Infrastruktur oder verarbeitendes Gewerbe ab bestimmten Mitarbeiter- und Umsatzgrößen. "
+            "Wer betroffen ist, muss Risikomanagement-Maßnahmen nachweisen – die Geschäftsführung "
+            "haftet dabei persönlich. Beraterium hilft Ihnen, Ihre Betroffenheit zu prüfen und die "
+            "wichtigsten Risiken mit dem 3-Ebenen-Gefahrenkatalog in Euro bewertet sichtbar zu machen."
+        ),
+        "hero_cta": "Book a free intro call",
+        "criteria_tag": "DIREKT-CHECK",
+        "criteria_h2": "Welche Unternehmen müssen NIS2 umsetzen?",
+        "criteria_intro": "Sie sind wahrscheinlich betroffen, wenn Ihr Unternehmen mindestens eines der folgenden Kriterien erfüllt:",
+        "criteria": [
+            "Mindestens 50 Mitarbeitende oder mehr als 10 Mio. € Jahresumsatz",
+            "Tätigkeit in einem NIS2-Sektor (z. B. Energie, Gesundheit, Transport, digitale Infrastruktur, verarbeitendes Gewerbe, Abfallwirtschaft)",
+            "Wichtiger Zulieferer eines bereits NIS2-pflichtigen Unternehmens",
+            "Verarbeitung kritischer Daten oder Betrieb kritischer IT-Systeme",
+        ],
+        "stats_aria": "NIS2 in Zahlen",
+        "stats": [
+            ("Seit 12/2025", "ist NIS2 in Deutschland Pflicht"),
+            ("Bis 10 Mio. €", "mögliches Bußgeld bei Verstößen"),
+            ("Persönlich", "haftet die Geschäftsführung bei Pflichtverletzung"),
+            ("Unter 2 %", "der KMU sind optimal gegen Cyberrisiken geschützt"),
+        ],
+        "pain_tag": "DIE FOLGEN VON NIS2",
+        "pain_h2": "Was passiert, wenn Sie NIS2 ignorieren?",
+        "pain_intro": "NIS2 ist kein Papiertiger. Wer die Anforderungen nicht erfüllt, riskiert mehr als ein Bußgeld.",
+        "pain_cards": [
+            ("Unklare Betroffenheit", "Ohne Prüfung wissen Sie nicht, ob Sie zur Sektorenliste gehören oder die Schwellenwerte erreichen – und verpassen Fristen unbemerkt."),
+            ("Persönliche Haftung", "Bei Pflichtverletzung haftet nicht nur das Unternehmen, sondern die Geschäftsführung persönlich – zivil- und teils strafrechtlich."),
+            ("Aktionismus statt Plan", "Ohne Priorisierung wird NIS2 zum teuren Compliance-Blindflug statt zu echtem Schutz vor den Risiken, die wirklich zählen."),
+        ],
+        "overview_tag": "SO HILFT BERATERIUM",
+        "overview_h2": "Wie führt Beraterium Sie von der NIS2-Pflicht zur echten Sicherheit?",
+        "overview_intro": (
+            "NIS2-Konformität beginnt mit einem klaren Risikobild. Der 3-Ebenen-Gefahrenkatalog von "
+            "Beraterium macht sichtbar, wo Ihr Unternehmen wirklich verwundbar ist – in Euro bewertet, "
+            "nicht mit Ampelfarben."
+        ),
+        "overview_cards": [
+            ("Die Methode", "Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.", "method/", "Zur Methode"),
+            ("Risikoanalyse für KMU", "In rund 6 Wochen zu einem vollständigen, bankfähigen Risiko-Lagebild – inklusive NIS2-relevanter Cyberrisiken.", "services/smb/", "Zum Angebot für KMU"),
+            ("Doppelte Garantie", "Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.", "benefit-guarantee/", "Zur Garantie"),
+        ],
+        "faq": [
+            ("Welche Unternehmen müssen NIS2 umsetzen?", "Betroffen sind vor allem mittelständische und größere Unternehmen aus definierten Sektoren wie Energie, Gesundheit, Transport, digitaler Infrastruktur oder verarbeitendem Gewerbe – meist ab 50 Mitarbeitenden oder 10 Mio. € Jahresumsatz. Auch wichtige Zulieferer betroffener Unternehmen können erfasst sein."),
+            ("Was passiert, wenn ein Unternehmen NIS2 ignoriert?", "Es drohen Bußgelder von bis zu 10 Mio. € oder einem Prozentsatz des Jahresumsatzes, je nach Einrichtungskategorie. Zusätzlich haftet die Geschäftsführung bei nachgewiesenen Pflichtverletzungen persönlich."),
+            ("Was sind die Geschäftsführer-Pflichten nach NIS2?", "NIS2 macht Geschäftsführer persönlich haftbar für die Implementierung von Cybersicherheitsmaßnahmen. Zu den Pflichten gehören: technische und organisatorische Schutzmaßnahmen, BSI-Registrierung, Meldepflichten bei Vorfällen (24 Stunden Erstmeldung, 72 Stunden vollständige Meldung) und Schulung der Mitarbeitenden. Bei Verstößen drohen Bußgelder von bis zu 10 Mio. € oder 2 % des weltweiten Jahresumsatzes."),
+            ("Was kostet die NIS2-Umsetzung ungefähr?", "Die Kosten hängen stark von der IT-Ausgangslage und der Unternehmensgröße ab. Der günstigste erste Schritt ist eine strukturierte Risikoanalyse, die zeigt, welche Maßnahmen wirklich notwendig sind – statt pauschal in alles zu investieren."),
+            ("Wie prüfe ich, ob mein Unternehmen betroffen ist?", "Prüfen Sie Branche, Mitarbeiterzahl und Jahresumsatz gegen die NIS2-Sektorenliste und die Schwellenwerte. Im kostenlosen Erstgespräch bei Beraterium klären wir Ihre konkrete Betroffenheit in rund 30 Minuten."),
+            ("Wer hilft KMU bei der NIS2-Betroffenheitsprüfung?", "Beraterium unterstützt mittelständische Unternehmen dabei, ihre NIS2-Betroffenheit zu klären und die zugrunde liegenden Cyberrisiken mit dem 3-Ebenen-Gefahrenkatalog in Euro zu bewerten – praxisnah statt bürokratisch."),
+            ("Was ist der Unterschied zwischen NIS2-Compliance und klassischem Risikomanagement?", "NIS2 fordert konkrete Cybersicherheits- und Meldemaßnahmen, ersetzt aber kein umfassendes Risikomanagement. Beraterium ordnet NIS2-Anforderungen in ein vollständiges, priorisiertes Risikobild ein, statt sie isoliert abzuarbeiten."),
+        ],
+        "deep_sections": [
+            {
+                "tag": "PFLICHTEN IM ÜBERBLICK",
+                "h2": "Was verlangt NIS2 konkret von betroffenen Unternehmen?",
+                "intro": (
+                    "NIS2 ist seit Dezember 2025 in Deutschland verbindlich und schreibt betroffenen Unternehmen einen "
+                    "Katalog an Cybersicherheits-Pflichten vor. Im Kern geht es nicht um ein Zertifikat, sondern um "
+                    "nachweisbares Risikomanagement: Sie müssen zeigen, dass Sie Ihre IT-Risiken kennen, bewerten und "
+                    "mit angemessenen Maßnahmen behandeln."
+                ),
+                "paragraphs": [
+                    "Die Geschäftsführung trägt dabei die persönliche Verantwortung – sie muss die Maßnahmen freigeben, ihre Umsetzung überwachen und sich selbst schulen lassen. Diese Pflicht lässt sich nicht vollständig an die IT-Abteilung oder externe Dienstleister delegieren.",
+                ],
+                "items": [
+                    "Technische und organisatorische Schutzmaßnahmen: Risikoanalyse, Zugriffskontrollen, Verschlüsselung, Backup-Konzepte und Notfallpläne",
+                    "Registrierung beim Bundesamt für Sicherheit in der Informationstechnik (BSI)",
+                    "Meldepflichten bei erheblichen Sicherheitsvorfällen – mit festen Fristen ab 24 Stunden",
+                    "Schulung von Geschäftsführung und Mitarbeitenden zu Cyberrisiken",
+                    "Absicherung der Lieferkette: Sicherheitsanforderungen auch an kritische Zulieferer und Dienstleister",
+                ],
+            },
+        ],
+        "steps_section": {
+            "tag": "IN 5 SCHRITTEN",
+            "h2": "Wie prüfen Sie Ihre NIS2-Betroffenheit?",
+            "intro": "Die Betroffenheitsprüfung folgt einer klaren Logik – Sektor, Größe, Lieferkette. In den meisten Fällen lässt sie sich in wenigen Tagen abschließen.",
+            "steps": [
+                ("Sektor prüfen", "Gleichen Sie Ihre Tätigkeit mit den NIS2-Sektorenlisten ab: Energie, Transport, Gesundheit, Wasser, digitale Infrastruktur, verarbeitendes Gewerbe, Abfallwirtschaft, Chemie, Ernährung und weitere."),
+                ("Schwellenwerte prüfen", "Ab 50 Mitarbeitenden oder mehr als 10 Mio. € Jahresumsatz bzw. Bilanzsumme fallen Unternehmen aus den gelisteten Sektoren in der Regel unter NIS2."),
+                ("Lieferkette prüfen", "Auch unterhalb der Schwellen können Sie betroffen sein – wenn Sie kritischer Zulieferer oder Dienstleister eines NIS2-pflichtigen Unternehmens sind, verlangt dieses Sicherheitsnachweise von Ihnen."),
+                ("Einstufung klären", "NIS2 unterscheidet wesentliche und wichtige Einrichtungen – mit unterschiedlich strenger Aufsicht und Bußgeldrahmen (bis 10 Mio. € bzw. bis 7 Mio. €)."),
+                ("Risikoanalyse starten", "Leiten Sie Maßnahmen aus Ihrem tatsächlichen Risikobild ab, statt Checklisten abzuarbeiten – so erfüllen Sie die Pflicht und gewinnen echte Sicherheit."),
+            ],
+        },
+        "facts_table": {
+            "tag": "MELDEFRISTEN",
+            "h2": "Welche Meldefristen gelten bei Sicherheitsvorfällen?",
+            "intro": "Bei einem erheblichen Sicherheitsvorfall läuft für NIS2-regulierte Unternehmen eine dreistufige Meldekette an das BSI. Parallel kann bei Verlust personenbezogener Daten die DSGVO-Meldung an die Datenschutzaufsicht (72 Stunden) fällig werden.",
+            "caption": "NIS2-Meldefristen bei erheblichen Sicherheitsvorfällen",
+            "headers": ["Frist", "Meldung", "Inhalt"],
+            "rows": [
+                ("<strong>24 Stunden</strong>", "Erstmeldung ans BSI", "Frühwarnung: Verdacht auf erheblichen Sicherheitsvorfall, erste Einschätzung ob Angriff oder Störung"),
+                ("<strong>72 Stunden</strong>", "Bewertungsmeldung", "Erste Bewertung von Schweregrad und Auswirkungen, Indikatoren der Kompromittierung"),
+                ("<strong>1 Monat</strong>", "Abschlussbericht", "Detaillierte Beschreibung des Vorfalls, Ursachen, ergriffene und laufende Gegenmaßnahmen"),
+            ],
+        },
+        "blog_slugs": [
+            "cyber-attack-what-to-do-smb",
+            "business-security-risk-management-smb",
+            "risk-management-consulting-smb-providers",
+        ],
+        "cta_h2": "Klären Sie Ihre NIS2-Betroffenheit – kostenlos und unverbindlich",
+        "cta_body": "Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Sie erhalten unsere Methode erklärt und wissen danach, wo Sie stehen.",
+        "title": "NIS2-Betroffenheit prüfen für KMU | Beraterium",
+        "description": "Prüfen Sie, ob Ihr Unternehmen von der NIS2-Richtlinie betroffen ist – inklusive Pflichten, Fristen und Bußgeldern. Book a free intro call.",
+        "service_name": "NIS2-Risikocheck für KMU",
+        "breadcrumb_name": "NIS2-Betroffenheit",
+    },
+    {
+        # Keyword (Webseite/Keywords/keyword-liste-master.csv): unternehmensnachfolge planen / nachfolge mittelstand risiken
+        "slug": "succession",
+        "du": False,
+        "audience": 'KMU und Mittelstand',
+        "tag": 'NACHFOLGE',
+        "h1": 'Welche Risiken entstehen bei der Unternehmensnachfolge?',
+        "lead": (
+            'Bis 2030 stehen in Deutschland rund 186.000 Unternehmensübergaben an – viele davon im '
+            'Familienunternehmen des Mittelstands. Neben Steuer und Vertrag entscheidet ein drittes '
+            'Risikofeld über Erfolg oder Scheitern: Wissenstransfer, Führungsakzeptanz und '
+            'Finanzierungsstruktur. Beraterium hilft Ihnen, diese Risiken vor der Übergabe mit dem '
+            '3-Ebenen-Gefahrenkatalog in Euro bewertet sichtbar zu machen.'
+        ),
+        "hero_cta": 'Book a free intro call',
+        "criteria_tag": 'DIREKT-CHECK',
+        "criteria_h2": 'Wann sollten Sie mit der Nachfolge-Risikoanalyse beginnen?',
+        "criteria_intro": 'Sie sollten Ihre Nachfolge-Risiken jetzt strukturiert prüfen, wenn mindestens eines dieser Kriterien zutrifft:',
+        "criteria": [
+            'Übergabe ist in den nächsten 1–5 Jahren geplant oder bereits in Vorbereitung',
+            'Operatives Wissen liegt bei einer Person – meist dem aktuellen Inhaber',
+            'Kundenbeziehungen hängen stark am persönlichen Kontakt des Seniors',
+            'Finanzierung, Haftung oder stille Reserven sind noch nicht transparent geklärt',
+        ],
+        "stats_aria": 'Unternehmensnachfolge in Zahlen',
+        "stats": [
+            ('186.000', 'anstehende Übergaben bis 2030 in Deutschland'),
+            ('3 Felder', 'Wissen, Führung und Finanzierung gleichzeitig'),
+            ('Jahre', 'können Nachfolge-Risiken unbemerkt schwelen'),
+            ('Vor der Übergabe', 'ist der günstigste Zeitpunkt für einen Risiko-Check'),
+        ],
+        "pain_tag": 'DIE ÜBERSEHENEN RISIKEN',
+        "pain_h2": 'Was passiert, wenn Sie nur Steuer und Vertrag planen?',
+        "pain_intro": 'Die meisten Nachfolgeprojekte scheitern nicht am Kaufvertrag, sondern an Risiken, die erst nach der Übergabe sichtbar werden.',
+        "pain_cards": [
+            ('Wissen geht verloren', 'Implizites Führungswissen, Lieferantenbeziehungen und Entscheidungslogik sind selten dokumentiert – und verschwinden mit dem Senior.'),
+            ('Vertrauen bricht ein', 'Mitarbeitende und Kunden müssen der neuen Führung vertrauen. Ohne aktive Übergabe wirkt der Wechsel wie ein Kontaktwechsel, nicht wie Kontinuität.'),
+            ('Haftung überrascht', 'Ungeklärte Altlasten, stille Reserven oder Finanzierungslücken werden oft erst sichtbar, wenn Bank, Beirat oder Nachfolger nachfragen.'),
+        ],
+        "overview_tag": 'SO HILFT BERATERIUM',
+        "overview_h2": 'Wie bereitet Beraterium Ihre Nachfolge bank- und beiratsfähig vor?',
+        "overview_intro": (
+            'Eine erfolgreiche Übergabe braucht ein klares Risikobild – nicht nur einen Vertrag. Der '
+            '3-Ebenen-Gefahrenkatalog von Beraterium macht sichtbar, welche Risiken Ihre Nachfolge '
+            'wirklich gefährden, in Euro bewertet und priorisiert.'
+        ),
+        "overview_cards": [
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
+            ('Risikoanalyse für KMU', 'In rund 6 Wochen zu einem vollständigen, bankfähigen Risiko-Lagebild – inklusive Nachfolge-Risiken.', 'services/smb/', 'Zum Angebot für KMU'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+        ],
+        "faq": [
+            ('Welche Risiken entstehen bei der Unternehmensnachfolge im Mittelstand?', 'Bei der Unternehmensnachfolge treten drei Risikofelder gleichzeitig auf: Wissenstransfer (implizites Führungswissen des Seniors geht verloren), Führungsakzeptanz (Mitarbeitende und Kunden müssen Vertrauen zur Nachfolge aufbauen) und Finanzierungsstruktur (oft ungeklärte Haftungsfragen oder stille Reserven). Eine strukturierte Risikoanalyse vor der Übergabe identifiziert diese Felder und priorisiert Maßnahmen.'),
+            ('Welche Risiken hat ein KMU bei der Unternehmensnachfolge?', 'Bei der Unternehmensnachfolge entstehen drei Risikofelder gleichzeitig: Wissenstransfer (was geht mit dem Senior?), Führungskultur (wer hat wirklich die Autorität?) und Kundenbeziehungen (halten diese den Inhaberwechsel?). Ohne eine strukturierte Risikoanalyse vor der Übergabe werden diese Risiken oft erst sichtbar, wenn sie bereits wirtschaftlichen Schaden angerichtet haben.'),
+            ('Was muss ich bei einer Betriebsübergabe beachten, um Risiken zu minimieren?', 'Eine Betriebsübergabe gelingt dann, wenn drei Bedingungen erfüllt sind: (1) Das operative Wissen des Übergebers ist dokumentiert und übertragbar. (2) Die Kundenbeziehungen werden aktiv übergeben — nicht einfach der Ansprechpartner getauscht. (3) Die Haftungsrisiken aus der Vergangenheit sind transparent gemacht. Beraterium erstellt einen strukturierten Übergabe-Risiko-Check.'),
+            ('Was ist ein Generationenwechsel im Unternehmen und welche Risiken bringt er?', 'Ein Generationenwechsel im Unternehmen beschreibt den Übergang der Führung von einer Generation zur nächsten — oft innerhalb der Familie. Die größten Risiken sind nicht finanzieller Natur, sondern kultureller: Wenn Senior und Junior unterschiedliche Vorstellungen von Autorität, Tempo und Richtung haben, entstehen Lähmungseffekte, die Mitarbeitende und Kunden verunsichern. Beraterium analysiert diese Dynamiken als Teil des Nachfolge-Risiko-Checks.'),
+            ('Wann sollte ich mit der Nachfolgeplanung aus Risikosicht beginnen?', 'Idealerweise 3–5 Jahre vor der geplanten Übergabe – spätestens aber, sobald ein Nachfolger feststeht oder die Übergabe konkret wird. Je früher Wissenslücken, Kundenabhängigkeiten und Finanzierungsfragen sichtbar werden, desto günstiger sind die Gegenmaßnahmen.'),
+            ('Wer begleitet Unternehmensnachfolge aus Risiko-Sicht?', 'Beraterium unterstützt mittelständische Unternehmen dabei, Nachfolge-Risiken vor der Übergabe strukturiert zu erfassen und mit dem 3-Ebenen-Gefahrenkatalog in Euro zu bewerten – praxisnah statt nur steuerlich oder rechtlich.'),
+            ('Was ist ein Generationenwechsel im Unternehmen und welche Risiken bringt er?', 'Ein Generationenwechsel beschreibt den Übergang der Führung von einer Generation zur nächsten – oft innerhalb der Familie. Die größten Risiken sind dabei nicht finanzieller, sondern kultureller Natur: Wenn Senior und Junior unterschiedliche Vorstellungen von Autorität, Tempo und Richtung haben, entstehen Lähmungseffekte, die Mitarbeitende und Kunden verunsichern. Beraterium analysiert diese Dynamiken als Teil des Nachfolge-Risiko-Checks.'),
+        ],
+        "deep_sections": [
+            {
+                "tag": "DIE DREI RISIKOFELDER",
+                "h2": "Welche drei Risikofelder entstehen bei jeder Nachfolge?",
+                "intro": (
+                    "Jede Nachfolge – ob an ein Familienmitglied, das Management oder einen externen Käufer – trifft "
+                    "dieselben drei Felder gleichzeitig. Steuer und Vertrag regeln keines davon."
+                ),
+                "items": [
+                    "<strong>Wissenstransfer:</strong> Implizites Führungswissen, Lieferantenbeziehungen und Entscheidungslogik des Seniors sind selten dokumentiert – und verschwinden mit ihm, wenn sie nicht aktiv übertragen werden",
+                    "<strong>Führungsakzeptanz:</strong> Mitarbeitende und Schlüsselkunden entscheiden selbst, ob sie dem Nachfolger folgen – ein Wechsel der Visitenkarte reicht nicht, Vertrauen muss aktiv übergeben werden",
+                    "<strong>Finanzierungsstruktur:</strong> Stille Reserven, Altlasten und Haftungsfragen werden oft erst sichtbar, wenn Bank, Beirat oder Nachfolger nachfragen – dann unter Zeitdruck",
+                ],
+                "paragraphs": [
+                    "Diese Felder betreffen die Phase vor und während der Übergabe. Was nach der formalen Übergabe schiefgehen kann – Rollenkonflikte, Generationsdynamik, gefühlte gegen formale Macht – ist ein eigenes Risikofeld, das im Beraterium-Blog vertieft wird.",
+                ],
+            },
+            {
+                "tag": "BANK & BEIRAT",
+                "h2": "Wie wird Ihre Nachfolge bank- und beiratsfähig?",
+                "intro": (
+                    "Banken und Beiräte wollen vor einer Nachfolgefinanzierung drei Dinge wissen: Was kann schiefgehen, "
+                    "was kostet es, und was wird dagegen getan? Ein Risiko-Portfolio-Report aus der Beraterium-Methode "
+                    "liefert genau das – priorisierte Risiken in Euro, mit Maßnahmen und Verantwortlichkeiten."
+                ),
+                "items": [
+                    "Ausfall des Übergebers während der Übergangsphase – bewertet als Schlüsselpersonrisiko in Euro",
+                    "Abwanderung von Schlüsselkunden oder Leistungsträgern beim Führungswechsel",
+                    "Ungeklärte Gewährleistungen, laufende Verfahren und steuerliche Altlasten",
+                    "Finanzierungslücken durch stille Reserven oder zu optimistische Kaufpreisannahmen",
+                ],
+                "paragraphs": [
+                    "Das Ergebnis ist kein Gutachten für die Schublade, sondern ein Arbeitsdokument für die 12–18 Monate vor der Übergabe – vorzeigbar gegenüber Bank, Beirat und Nachfolger.",
+                ],
+            },
+        ],
+        "steps_section": {
+            "tag": "ÜBERGABE-CHECKLISTE",
+            "h2": "Wie bereiten Sie die Übergabe strukturiert vor?",
+            "intro": "Diese sechs Schritte decken die häufigsten Nachfolge-Risiken ab – idealerweise beginnen Sie 3–5 Jahre vor der geplanten Übergabe.",
+            "steps": [
+                ("Wissen dokumentieren", "Erfassen Sie das operative Wissen des Übergebers systematisch: Entscheidungslogik, Lieferantenkonditionen, Preisfindung, ungeschriebene Regeln. Was nur im Kopf existiert, geht verloren."),
+                ("Kundenbeziehungen übergeben", "Führen Sie den Nachfolger persönlich bei den wichtigsten Kunden ein – gemeinsame Termine statt einer E-Mail. Kunden folgen Menschen, nicht Firmennamen."),
+                ("Haftung transparent machen", "Klären Sie vor dem Vertragsabschluss, was aus der Vergangenheit den Nachfolger treffen kann: Gewährleistungen, laufende Verfahren, steuerliche Altlasten."),
+                ("Finanzierung realistisch planen", "Lassen Sie stille Reserven und Kaufpreis von unabhängiger Seite prüfen – zu optimistische Annahmen sind eine der häufigsten Ursachen für spätere Finanzierungslücken."),
+                ("Führung schrittweise abgeben", "Definieren Sie, welche Entscheidungen ab wann beim Nachfolger liegen – und halten Sie sich daran. Parallele Machtstrukturen lähmen Mitarbeitende und verunsichern Kunden."),
+                ("Risikobild erstellen", "Erfassen Sie alle Nachfolge-Risiken in einem priorisierten Portfolio in Euro – als Arbeitsgrundlage für die Übergabe und als Nachweis für Bank und Beirat."),
+            ],
+        },
+        "blog_slugs": [
+            "business-succession-overlooked-risks",
+            "family-succession-generational-conflict-risk",
+            "key-person-risk-identify-mitigate",
+        ],
+        "cta_h2": 'Klären Sie Ihre Nachfolge-Risiken – kostenlos und unverbindlich',
+        "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Sie erhalten unsere Methode erklärt und wissen danach, wo Sie stehen.',
+        "title": 'Nachfolge-Risiken im Mittelstand | Beraterium',
+        "description": 'Unternehmensnachfolge: übersehene Risiken erkennen und in Euro bewerten. 186.000 Übergaben bis 2030. Kostenloses Erstgespräch bei Beraterium buchen.',
+        "service_name": 'Nachfolge-Risikoanalyse für KMU',
+        "breadcrumb_name": 'Unternehmensnachfolge',
+    },
+    {
+        # Keyword (Webseite/Keywords/keyword-liste-master.csv): cyberangriff unternehmen was tun / cyberangriff mittelstand schutz
+        "slug": "cyber-attack",
+        "du": False,
+        "audience": 'KMU und Mittelstand',
+        "tag": 'CYBERANGRIFF',
+        "h1": 'Was tun nach einem Cyberangriff auf Ihr Unternehmen?',
+        "lead": (
+            'Cyberangriffe sind das häufigste existenzielle Risiko für mittelständische Unternehmen – '
+            'und weniger als 2 % der KMU sind optimal geschützt. Im Ernstfall zählen die ersten zwei '
+            'Stunden: isolieren, nicht selbst löschen, Experten hinzuziehen, melden. Beraterium hilft '
+            'Ihnen, Cyberrisiken vorab zu bewerten und eine Reaktionskette zu planen – in Euro '
+            'bewertet, nicht mit Ampelfarben.'
+        ),
+        "hero_cta": 'Book a free intro call',
+        "criteria_tag": 'DIREKT-CHECK',
+        "criteria_h2": 'Wann ist Ihr Unternehmen besonders angreifbar?',
+        "criteria_intro": 'Ihr Cyberrisiko ist besonders hoch, wenn mindestens eines dieser Kriterien zutrifft:',
+        "criteria": [
+            'Keine eigene IT-Abteilung oder kein dedizierter IT-Sicherheitsverantwortlicher',
+            'Kritische Daten, Kundeninformationen oder Produktionssysteme sind digital vernetzt',
+            'Mitarbeitende arbeiten remote oder nutzen private Geräte für Firmendaten',
+            'Es gibt keinen getesteten Notfallplan für IT-Sicherheitsvorfälle',
+        ],
+        "stats_aria": 'Cyberrisiko im Mittelstand',
+        "stats": [
+            ('#1 Risiko', 'Cyberangriffe sind das häufigste existenzielle KMU-Risiko'),
+            ('Unter 2 %', 'der KMU sind optimal gegen Cyberrisiken geschützt'),
+            ('2 Stunden', 'entscheiden im Ernstfall über Schadensumfang'),
+            ('24/72 h', 'Meldefristen bei NIS2-pflichtigen Unternehmen'),
+        ],
+        "pain_tag": 'DIE FOLGEN EINES ANGRIFFS',
+        "pain_h2": 'Was passiert, wenn Sie unvorbereitet sind?',
+        "pain_intro": 'Ohne Vorbereitung verlieren Unternehmen im Ernstfall wertvolle Zeit – und oft mehr Geld als der Angriff selbst kostet.',
+        "pain_cards": [
+            ('Panik statt Plan', 'Ohne vorbereitete Reaktionskette wird im Ernstfall improvisiert – Systeme werden falsch heruntergefahren oder Beweise vernichtet.'),
+            ('Stillstand kostet', 'Produktionsausfall, gesperrte Systeme und Datenverlust treffen KMU härter als Konzerne – jeder Ausfalltag kostet direkt Umsatz.'),
+            ('Meldepflicht überrascht', 'NIS2-pflichtige Unternehmen müssen Vorfälle innerhalb von 24 Stunden melden. Ohne Vorbereitung verpassen Sie Fristen und riskieren Bußgelder.'),
+        ],
+        "overview_tag": 'SO HILFT BERATERIUM',
+        "overview_h2": 'Wie macht Beraterium Cyberrisiken handlungsfähig?',
+        "overview_intro": (
+            'Cybersicherheit beginnt mit einem klaren Risikobild. Der 3-Ebenen-Gefahrenkatalog von '
+            'Beraterium bewertet Ihre Cyberrisiken in Euro – und priorisiert Maßnahmen, die wirklich '
+            'Schaden verhindern, statt Compliance-Blindflug.'
+        ),
+        "overview_cards": [
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
+            ('Risikoanalyse für KMU', 'In rund 6 Wochen zu einem vollständigen, bankfähigen Risiko-Lagebild – inklusive Cyber- und NIS2-Risiken.', 'services/smb/', 'Zum Angebot für KMU'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+        ],
+        "faq": [
+            ('Was tun, wenn mein Unternehmen von einem Cyberangriff betroffen ist?', 'Im Ernstfall zählen die ersten 2 Stunden: betroffene Systeme isolieren (Netzwerk trennen), nicht selbst versuchen zu löschen oder zu entschlüsseln, IT-Sicherheitsexperten hinzuziehen und bei schweren Angriffen das BSI sowie die Polizei informieren. Danach folgt die Schadenserfassung. Beraterium unterstützt KMU dabei, diese Reaktionskette vorab zu planen — damit im Ernstfall niemand raten muss.'),
+            ('Was sind die ersten Sofortmaßnahmen bei einem Cyberangriff?', 'Isolieren Sie betroffene Systeme vom Netzwerk, dokumentieren Sie den Zeitpunkt und Umfang, ziehen Sie IT-Sicherheitsexperten hinzu und informieren Sie bei schweren Vorfällen BSI und Polizei. Löschen oder entschlüsseln Sie nichts selbst – das kann Beweise vernichten.'),
+            ('Wie schütze ich mein KMU präventiv ohne eigene IT-Abteilung?', 'Beginnen Sie mit einer strukturierten Risikoanalyse: Welche Systeme sind kritisch, welcher Schaden entsteht bei Ausfall, welche Maßnahmen bringen den größten Nutzen? Beraterium priorisiert diese Schritte in Euro bewertet – statt pauschal in teure Tools zu investieren.'),
+            ('Wie hängen Cyberangriffe und NIS2 zusammen?', 'NIS2 verpflichtet betroffene Unternehmen zu Cybersicherheitsmaßnahmen und Meldepflichten bei Vorfällen. Ein Cyberangriff kann gleichzeitig NIS2-Meldepflichten auslösen. Beraterium ordnet Cyberrisiken in ein vollständiges Risikobild ein – inklusive NIS2-Anforderungen.'),
+            ('Was kostet ein Cyberangriff für ein mittelständisches Unternehmen?', 'Die Kosten variieren stark – von einigen tausend Euro bei kleineren Vorfällen bis zu existenzbedrohenden Beträgen bei Ransomware mit Produktionsausfall. Eine Euro-Bewertung vorab zeigt, welche Szenarien für Ihr Unternehmen wirklich kritisch sind.'),
+            ('Wer hilft KMU bei der Cyberrisiko-Bewertung?', 'Beraterium unterstützt mittelständische Unternehmen dabei, Cyberrisiken mit dem 3-Ebenen-Gefahrenkatalog in Euro zu bewerten und eine handlungsfähige Reaktionskette zu planen – praxisnah statt bürokratisch.'),
+        ],
+        "deep_sections": [
+            {
+                "tag": "WARUM DER MITTELSTAND?",
+                "h2": "Warum trifft es besonders kleine und mittlere Unternehmen?",
+                "intro": (
+                    "Rund 82 % aller Ransomware-Angriffe treffen kleine Unternehmen – nicht, weil sie lukrativer wären, "
+                    "sondern weil sie schlechter geschützt sind. Angreifer automatisieren ihre Attacken und nehmen den "
+                    "Weg des geringsten Widerstands: Betriebe ohne IT-Abteilung, ohne getestete Backups und ohne "
+                    "sensibilisierte Mitarbeitende."
+                ),
+                "paragraphs": [
+                    "Dazu kommt der Faktor Mensch: 40–50 % aller erfolgreichen Cyberangriffe beginnen mit menschlichem Fehlverhalten – ein geöffneter Anhang, ein gescannter QR-Code (Quishing), ein zu einfaches Passwort. Neue Angriffsformen wie QR-Code-Phishing umgehen dabei klassische Sicherheitsfilter komplett, weil Virenscanner den Code nur als Bild sehen.",
+                    "Für KMU ist der Schaden dabei überproportional: Während Konzerne einen mehrtägigen Ausfall abfedern, kostet jeder Stillstandstag ein mittelständisches Unternehmen direkt Umsatz – und die Wiederherstellung ist oft teurer als der eigentliche Angriff.",
+                ],
+            },
+            {
+                "tag": "PRÄVENTION",
+                "h2": "Wie schützen Sie sich präventiv – ohne eigene IT-Abteilung?",
+                "intro": (
+                    "Wirksame Prävention beginnt nicht mit teuren Tools, sondern mit einem klaren Risikobild: Welche "
+                    "Systeme sind kritisch, welcher Schaden entsteht bei Ausfall, welche Maßnahme senkt das Risiko am "
+                    "stärksten? Vier Grundmaßnahmen decken die häufigsten Angriffswege ab:"
+                ),
+                "items": [
+                    "3-2-1-Backup-Regel: drei Kopien Ihrer Daten, auf zwei verschiedenen Medien, eine davon offline – für Ransomware unerreichbar",
+                    "Mitarbeitersensibilisierung: Phishing, Quishing und Passwortsicherheit regelmäßig schulen – erklären statt kontrollieren schafft Akzeptanz",
+                    "Zugriffe limitieren: jede Person erhält nur die Rechte, die sie wirklich braucht – das begrenzt den Schaden kompromittierter Konten",
+                    "Getesteter Notfallplan: wer im Ernstfall was tut, muss vorher feststehen – inklusive Erreichbarkeiten, Dienstleistern und Meldewegen",
+                ],
+            },
+        ],
+        "steps_section": {
+            "tag": "DIE ERSTEN 2 STUNDEN",
+            "h2": "Was tun Sie unmittelbar nach einem Cyberangriff?",
+            "intro": "Im Ernstfall entscheiden die ersten zwei Stunden über den Schadensumfang. Diese Reaktionskette sollte jede Führungskraft kennen – bevor sie gebraucht wird.",
+            "steps": [
+                ("Systeme isolieren", "Trennen Sie betroffene Rechner und Server sofort vom Netzwerk – Kabel ziehen, WLAN deaktivieren. So stoppen Sie die Ausbreitung, ohne Beweise zu vernichten."),
+                ("Zeitpunkt dokumentieren", "Halten Sie fest, wann was aufgefallen ist, welche Systeme betroffen sind und welche Meldungen auf den Bildschirmen stehen – Fotos genügen."),
+                ("Nichts selbst löschen", "Versuchen Sie nicht, Schadsoftware zu entfernen oder Daten zu entschlüsseln – das vernichtet forensische Beweise und kann den Schaden vergrößern."),
+                ("Experten hinzuziehen", "Kontaktieren Sie IT-Sicherheitsexperten – über Ihre Cyber-Versicherung, Ihren IT-Dienstleister oder die Zentrale Ansprechstelle Cybercrime (ZAC) der Landespolizei."),
+                ("Meldungen absetzen", "Prüfen Sie die Meldepflichten: Datenschutzaufsicht bei Personendaten, BSI bei NIS2-Pflicht, Cyber-Versicherung immer sofort – sonst riskieren Sie den Versicherungsschutz."),
+            ],
+        },
+        "facts_table": {
+            "tag": "MELDEPFLICHTEN",
+            "h2": "Wen müssen Sie informieren – und bis wann?",
+            "intro": "Nach einem Angriff laufen mehrere Meldefristen parallel. Diese Übersicht zeigt, welche Stelle wann informiert werden muss.",
+            "caption": "Meldepflichten nach einem Cyberangriff",
+            "headers": ["Stelle", "Frist", "Wann relevant"],
+            "rows": [
+                ("Datenschutzaufsicht (DSGVO Art. 33)", "<strong>72 Stunden</strong>", "Bei Verlust oder Kompromittierung personenbezogener Daten"),
+                ("BSI (NIS2)", "<strong>24 h</strong> Erstmeldung, <strong>72 h</strong> Bewertung, <strong>1 Monat</strong> Abschlussbericht", "Nur für NIS2-regulierte Unternehmen bei erheblichen Vorfällen"),
+                ("Polizei / ZAC", "Keine Frist – sofort empfohlen", "Bei jedem Angriff mit Schaden; die ZAC arbeitet diskret und auf Unternehmen spezialisiert"),
+                ("Cyber-Versicherung", "<strong>Sofort</strong>", "Immer – verspätete Meldung gefährdet den Versicherungsschutz; viele Policen stellen eigene Incident-Response-Teams"),
+            ],
+        },
+        "blog_slugs": [
+            "cyber-attack-what-to-do-smb",
+            "business-security-risk-management-smb",
+            "key-person-risk-identify-mitigate",
+        ],
+        "cta_h2": 'Bewerten Sie Ihr Cyberrisiko – kostenlos und unverbindlich',
+        "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Sie erhalten unsere Methode erklärt und wissen danach, wo Sie stehen.',
+        "title": 'Cyberangriff Mittelstand: Was tun? | Beraterium',
+        "description": 'Cyberangriff im Mittelstand: Was droht und was Sie tun können? Risiken in Euro bewertet. Jetzt kostenloses Erstgespräch bei Beraterium buchen.',
+        "service_name": 'Cyberrisiko-Analyse für KMU',
+        "breadcrumb_name": 'Cyberangriff',
+    },
+    {
+        # Keyword (Webseite/Keywords/keyword-liste-master.csv): selbstständig absichern / risiken selbstständigkeit
+        "slug": "self-employed-protection",
+        "du": True,
+        "audience": 'Solo-Selbstständige und Freelancer',
+        "tag": 'SELBSTSTÄNDIGKEIT',
+        "h1": 'Wie sicherst du dich als Selbstständiger ab?',
+        "lead": (
+            'Als Selbstständiger bist du dein Unternehmen – fällst du aus, fällt der Umsatz aus. Die '
+            'drei größten Risiken: eigene Arbeitskraft (Krankheit, Burnout, Unfall), '
+            'Kundenkonzentration und Scheinselbstständigkeit. Beraterium hilft dir, diese Risiken mit '
+            'dem 2-Wochen-Risiko-Kompass in Euro bewertet sichtbar zu machen – bevor der Ernstfall '
+            'eintritt.'
+        ),
+        "hero_cta": 'Book a free intro call',
+        "criteria_tag": 'DIREKT-CHECK',
+        "criteria_h2": 'Wann solltest du deine Absicherung prüfen?',
+        "criteria_intro": 'Du solltest deine Risiken jetzt strukturiert prüfen, wenn mindestens eines dieser Kriterien zutrifft:',
+        "criteria": [
+            'Ein Hauptkunde macht mehr als 40 % deines Umsatzes aus',
+            'Du hast keine Vertretung für Krankheit oder Urlaub',
+            'Du arbeitest überwiegend für einen Auftraggeber',
+            'Deine Rücklagen reichen nicht für 3–6 Monate Ausfall',
+        ],
+        "stats_aria": 'Selbstständigkeit in Zahlen',
+        "stats": [
+            ('0 Tage', 'Lohnfortzahlung – Ausfall = Einkommensausfall'),
+            ('83 %', 'Umsatz von einem Kunden = Scheinselbstständigkeits-Risiko'),
+            ('4–6 Wochen', 'Krankheit können existenzbedrohend werden'),
+            ('2 Wochen', 'Risiko-Kompass von Beraterium für Solo'),
+        ],
+        "pain_tag": 'DIE DREI HAUPTRISIKEN',
+        "pain_h2": 'Was passiert, wenn du nichts vorbereitest?',
+        "pain_intro": 'Als Solo-Selbstständiger trägst du jedes Risiko allein – ohne Betriebsrat, ohne IT-Abteilung, ohne Vertretung.',
+        "pain_cards": [
+            ('Du fällst aus', 'Krankheit, Burnout oder Unfall stoppen sofort dein Einkommen – während Miete, Versicherungen und Software weiterlaufen.'),
+            ('Ein Kunde fällt weg', 'Wenn ein Hauptkunde kündigt, bricht der Umsatz ein. Ohne Diversifikation reicht ein Vertrag, um deine Existenz zu gefährden.'),
+            ('Scheinselbstständigkeit droht', 'Die Deutsche Rentenversicherung kann rückwirkend Sozialversicherungsbeiträge über Jahre nachfordern – oft erst Jahre später.'),
+        ],
+        "overview_tag": 'SO HILFT BERATERIUM',
+        "overview_h2": 'Wie hilft dir Beraterium, handlungsfähig abgesichert zu sein?',
+        "overview_intro": (
+            'Absicherung beginnt mit einem klaren Bild deiner Risiken. Der 2-Wochen-Risiko-Kompass '
+            'von Beraterium deckt Ausfall, Kundenkonzentration und Scheinselbstständigkeit auf – in '
+            'Euro bewertet, mit konkreten nächsten Schritten. Du willst erst einmal selbst testen, '
+            'wo du stehst? Der kostenlose <a href="../../tools/blindspot-check/">Blindspot Check</a> '
+            'zeigt dir in 10 Minuten deine größten blinden Flecken.'
+        ),
+        "overview_cards": [
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
+            ('2-Wochen-Risiko-Kompass', 'In zwei Wochen zu einem vollständigen Risiko-Lagebild – speziell für Solo-Selbstständige und Freelancer.', 'services/solo/', 'Zum Solo-Angebot'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Du erhältst den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+        ],
+        "faq": [
+            ('Was sind die größten Risiken für Selbstständige und Freelancer?', 'Die drei größten Risiken für Solo-Selbstständige sind: (1) Ausfall der eigenen Arbeitskraft — durch Krankheit, Burnout oder Unfall — ohne Vertretung und ohne Gehaltsfortzahlung; (2) Kundenkonzentration — wenn ein Hauptkunde wegbricht, bricht der Umsatz weg; (3) Scheinselbstständigkeit — eine rückwirkende Feststellung kostet Sozialversicherungsbeiträge über mehrere Jahre. Der 2-Wochen-Risiko-Kompass von Beraterium deckt alle drei auf.'),
+            ('Was passiert, wenn ich als Selbstständiger krank werde?', 'Als Selbstständiger gibt es keine Lohnfortzahlung — fällt die Arbeit aus, fällt auch das Einkommen aus. Gleichzeitig laufen fixe Kosten (Miete, Versicherungen, Software) weiter. Ohne Notfallplan und ausreichende Rücklagen kann schon ein 4–6-wöchiger Ausfall existenzbedrohend werden. Beraterium hilft, dieses Szenario konkret zu bewerten und einen Notfallplan zu entwickeln — bevor der Ernstfall eintritt.'),
+            ('Was ist Scheinselbstständigkeit und wie prüfe ich, ob ich betroffen bin?', 'Scheinselbstständigkeit liegt vor, wenn jemand formal als Freelancer arbeitet, aber tatsächlich wie ein Angestellter in ein Unternehmen eingebunden ist — erkennbar an Kriterien wie ausschließlich einem Auftraggeber, festen Arbeitszeiten und weisungsgebundener Arbeit. Die Deutsche Rentenversicherung kann rückwirkend Sozialversicherungsbeiträge über Jahre nachfordern. Beraterium bewertet das Scheinselbstständigkeitsrisiko als Teil des Solo-Risiko-Kompasses.'),
+            ('Wie viele Auftraggeber brauche ich, um Scheinselbstständigkeit zu vermeiden?', 'Es gibt keine gesetzliche Mindestanzahl, aber die Praxis der Deutschen Rentenversicherung zeigt: Wer mehr als 83 % seines Umsatzes von einem Auftraggeber erzielt, gerät schnell unter Verdacht. Wichtiger als die reine Zahl ist die Art der Zusammenarbeit — Weisungsbindung, feste Arbeitszeiten und fehlende unternehmerische Eigenständigkeit sind stärkere Indizien als die Auftraggeberanzahl allein.'),
+            ('Wie viele Rücklagen sollte ich als Selbstständiger aufbauen?', 'Als Faustregel: mindestens 3–6 Monatsausgaben als Notreserve. Die genaue Höhe hängt von deinen Fixkosten, Krankenversicherung und Kundenkonzentration ab. Beraterium bewertet dein persönliches Ausfallszenario in Euro – statt mit pauschalen Prozentregeln.'),
+            ('Wer hilft Selbstständigen bei der Risiko-Absicherung?', 'Beraterium unterstützt Solo-Selbstständige und Freelancer mit dem 2-Wochen-Risiko-Kompass – Ausfall, Kundenkonzentration und Scheinselbstständigkeit in Euro bewertet, mit konkreten nächsten Schritten.'),
+        ],
+        "deep_sections": [
+            {
+                "tag": "DIE DREI KERNRISIKEN",
+                "h2": "Warum sind genau diese drei Risiken existenziell?",
+                "intro": (
+                    "Als Solo-Selbstständiger bist du dein Unternehmen – Person und Betrieb sind identisch. Deshalb "
+                    "wirken drei Risiken bei dir anders als in jedem anderen Unternehmen: Sie treffen nicht eine "
+                    "Abteilung, sondern sofort dein gesamtes Einkommen."
+                ),
+                "items": [
+                    "<strong>Ausfall der Arbeitskraft:</strong> Es gibt keine Lohnfortzahlung und keine Vertretung – schon 4–6 Wochen Krankheit oder Burnout können existenzbedrohend werden, während Miete, Versicherungen und Software weiterlaufen",
+                    "<strong>Kundenkonzentration:</strong> Macht ein Hauptkunde mehr als 40 % deines Umsatzes aus, entscheidet dessen Budgetplanung über deine Existenz – ein einziger gekündigter Vertrag reicht",
+                    "<strong>Scheinselbstständigkeit:</strong> Die Deutsche Rentenversicherung kann rückwirkend Sozialversicherungsbeiträge über Jahre nachfordern – oft fünfstellige Beträge, die ohne Rücklagen nicht zu stemmen sind",
+                ],
+            },
+            {
+                "tag": "SCHEINSELBSTSTÄNDIGKEIT",
+                "h2": "Woran erkennst du ein Scheinselbstständigkeits-Risiko?",
+                "intro": (
+                    "Scheinselbstständigkeit liegt vor, wenn du formal als Freelancer arbeitest, aber tatsächlich wie "
+                    "ein Angestellter in ein Unternehmen eingebunden bist. Die Praxis der Deutschen Rentenversicherung "
+                    "zeigt: Wer mehr als 83 % seines Umsatzes von einem Auftraggeber erzielt, gerät schnell unter "
+                    "Verdacht. Diese Kriterien sind die stärksten Indizien:"
+                ),
+                "items": [
+                    "Du arbeitest überwiegend oder ausschließlich für einen Auftraggeber",
+                    "Du bist an feste Arbeitszeiten oder Anwesenheitspflichten gebunden",
+                    "Du arbeitest weisungsgebunden – der Auftraggeber bestimmt, wie du arbeitest, nicht nur was",
+                    "Du bist in Teams, Tools und Prozesse des Auftraggebers eingebunden wie Festangestellte",
+                    "Du trägst kein unternehmerisches Risiko und trittst nicht am Markt auf (keine eigene Website, keine weiteren Kunden-Akquise)",
+                ],
+                "paragraphs": [
+                    "Wichtiger als die reine Auftraggeberzahl ist die Art der Zusammenarbeit. Bei Unsicherheit schafft eine Statusfeststellung bei der Deutschen Rentenversicherung Klarheit – besser proaktiv als in einer Betriebsprüfung.",
+                ],
+            },
+        ],
+        "steps_section": {
+            "tag": "DIESE WOCHE MACHBAR",
+            "h2": "Was kannst du sofort für deine Absicherung tun?",
+            "intro": "Absicherung muss nicht mit einem großen Projekt beginnen. Diese fünf Schritte kannst du diese Woche anstoßen – jeder einzelne senkt dein Risiko messbar.",
+            "steps": [
+                ("Kundenanteile ausrechnen", "Rechne aus, wie viel Prozent deines Umsatzes jeder Kunde ausmacht. Liegt einer über 40 %, ist Diversifikation deine wichtigste Baustelle – plane aktiv Akquise-Zeit ein."),
+                ("Rücklagen-Reichweite prüfen", "Teile deine Rücklagen durch deine monatlichen Fixkosten. Weniger als 3 Monate Reichweite heißt: Sparrate erhöhen, bevor du in andere Absicherung investierst."),
+                ("Verträge prüfen", "Prüfe deine Rahmenverträge auf Scheinselbstständigkeits-Indizien: Weisungsbindung, feste Zeiten, Exklusivität. Formulierungen lassen sich oft nachverhandeln."),
+                ("Notfallkontakte klären", "Wer informiert deine Kunden, wenn du morgen ausfällst? Ein Kollege, Partner oder Netzwerk-Kontakt mit Zugriff auf eine simple Notfall-Liste genügt für den Anfang."),
+                ("Risikobild erstellen", "Bewerte deine drei Kernrisiken in Euro – selbst mit dem kostenlosen Blindspot Check oder strukturiert mit dem 2-Wochen-Risiko-Kompass von Beraterium."),
+            ],
+        },
+        "blog_slugs": [
+            "risks-self-employed-freelancers",
+            "false-self-employment-check",
+            "key-person-risk-identify-mitigate",
+        ],
+        "cta_h2": 'Prüfe deine Absicherung – kostenlos und unverbindlich',
+        "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Du erhältst unsere Methode erklärt und weißt danach, wo du stehst.',
+        "title": 'Selbstständig absichern: Ausfallrisiko | Beraterium',
+        "description": 'Selbstständig absichern: Ausfallrisiko und Kundenkonzentration in Euro bewertet. Der 2-Wochen-Risiko-Kompass. Book a free intro call.',
+        "service_name": '2-Wochen-Risiko-Kompass für Solo',
+        "breadcrumb_name": 'Selbstständig absichern',
+    },
+    {
+        # Keyword (Webseite/Keywords/keyword-liste-master.csv): schlüsselperson absichern unternehmen / key person risiko
+        "slug": "key-person-risk",
+        "du": False,
+        "audience": 'KMU, Startups und Solo-Selbstständige',
+        "tag": 'SCHLÜSSELPERSON',
+        "h1": 'Was passiert, wenn eine Schlüsselperson ausfällt?',
+        "lead": (
+            'Das Schlüsselpersonrisiko beschreibt den wirtschaftlichen Schaden, der entsteht, wenn '
+            'eine für das Unternehmen unverzichtbare Person langfristig ausfällt – durch Krankheit, '
+            'Kündigung oder Tod. In KMU ist das oft die Geschäftsführung, in Startups der Gründer, '
+            'bei Solo-Selbstständigen sind Sie die Schlüsselperson selbst. Beraterium erfasst diese '
+            'Abhängigkeiten mit dem 3-Ebenen-Gefahrenkatalog in Euro.'
+        ),
+        "hero_cta": 'Book a free intro call',
+        "criteria_tag": 'DIREKT-CHECK',
+        "criteria_h2": 'Wann ist Ihr Unternehmen von Schlüsselpersonen abhängig?',
+        "criteria_intro": 'Sie haben ein relevantes Schlüsselpersonrisiko, wenn mindestens eines dieser Kriterien zutrifft:',
+        "criteria": [
+            'Eine Person trägt Wissen, das nirgends dokumentiert ist',
+            'Kundenbeziehungen hängen an einer einzelnen Ansprechperson',
+            'Entscheidungen stocken, wenn eine bestimmte Person fehlt',
+            'Es gibt keine dokumentierte Vertretungsregelung',
+        ],
+        "stats_aria": 'Schlüsselpersonrisiko in Zahlen',
+        "stats": [
+            ('1 Person', 'kann in KMU das gesamte Unternehmen lahmlegen'),
+            ('40–50 %', 'der Startup-Teams erleben Co-Founder-Trennung'),
+            ('Solo', 'bist du selbst die Schlüsselperson'),
+            ('Euro', 'bewertet Beraterium den Schaden – nicht mit Ampeln'),
+        ],
+        "pain_tag": 'DIE FOLGEN DES AUSFALLS',
+        "pain_h2": 'Was passiert, wenn die Schlüsselperson wegbricht?',
+        "pain_intro": 'Der Ausfall einer Schlüsselperson trifft Unternehmen härter als viele andere Risiken – weil Wissen, Beziehungen und Entscheidungsfähigkeit gleichzeitig wegfallen.',
+        "pain_cards": [
+            ('Wissen verschwindet', 'Implizites Know-how, Lieferantenbeziehungen und Entscheidungslogik sind selten dokumentiert – und gehen mit der Person verloren.'),
+            ('Kunden verunsichern', 'Wenn die persönliche Ansprechperson fehlt, verlieren Kunden Vertrauen – besonders in KMU und bei Startups mit wenigen Großkunden.'),
+            ('Entscheidungen stocken', 'Ohne Vertretungsregelung warten Projekte, Lieferungen und strategische Entscheidungen – jeder Tag kostet Umsatz.'),
+        ],
+        "overview_tag": 'SO HILFT BERATERIUM',
+        "overview_h2": 'Wie macht Beraterium Schlüsselpersonrisiken sichtbar?',
+        "overview_intro": (
+            'Schlüsselpersonrisiken lassen sich systematisch erfassen. Der 3-Ebenen-Gefahrenkatalog '
+            'von Beraterium identifiziert, welche Personen welche einzigartigen Funktionen tragen – '
+            'in Euro bewertet, mit Maßnahmen zur Wissensverteilung und Vertretung.'
+        ),
+        "overview_cards": [
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
+            ('Angebote für jede Zielgruppe', 'Ob KMU, Startup oder Solo – Beraterium hat ein passendes Risiko-Angebot für Ihre Situation.', 'services/', 'Zu den Angeboten'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+        ],
+        "faq": [
+            ('Was ist das Schlüsselpersonrisiko und wie schützt mein KMU sich dagegen?', 'Das Schlüsselpersonrisiko beschreibt den wirtschaftlichen Schaden, der entsteht, wenn eine für das Unternehmen unverzichtbare Person langfristig ausfällt — durch Krankheit, Kündigung oder Tod. In vielen KMU ist das die Geschäftsführung selbst. Beraterium erfasst im 3-Ebenen-Gefahrenkatalog systematisch, welche Personen welche einzigartigen Funktionen tragen, und entwickelt Maßnahmen zur Wissensverteilung oder -dokumentation.'),
+            ('Wie zeigt sich Schlüsselpersonrisiko bei Startups?', 'Bei Startups konzentriert sich das Risiko oft auf Gründer und Co-Founder: Technisches Know-how, Kundenbeziehungen und strategische Entscheidungen hängen an wenigen Personen. Co-Founder-Konflikte treffen 40–50 % aller Teams. Beraterium erfasst Team-Risiken als eigene Kategorie im Gefahrenkatalog.'),
+            ('Wie zeigt sich Schlüsselpersonrisiko bei Solo-Selbstständigen?', 'Bei Solo-Selbstständigen sind Sie selbst die Schlüsselperson – jeder Ausfall durch Krankheit, Burnout oder Unfall stoppt sofort Umsatz und Einkommen. Es gibt keine Vertretung und keine Lohnfortzahlung. Der 2-Wochen-Risiko-Kompass von Beraterium bewertet dieses Szenario konkret in Euro.'),
+            ('Welche Sofortmaßnahmen reduzieren Schlüsselpersonrisiken?', 'Dokumentieren Sie kritisches Wissen, benennen Sie Vertretungen für jeden Kernprozess und verteilen Sie Kundenbeziehungen auf mindestens zwei Ansprechpersonen. Beraterium priorisiert diese Maßnahmen nach Euro-Schaden – nicht nach Bauchgefühl.'),
+            ('Was kostet der Ausfall einer Schlüsselperson?', 'Der Schaden hängt von Branche, Unternehmensgröße und der Rolle der Person ab – von einigen tausend Euro bei kurzem Ausfall bis zu existenzbedrohenden Beträgen bei langfristigem Wegfall der Geschäftsführung. Eine Euro-Bewertung vorab macht das Szenario greifbar.'),
+            ('Wer hilft bei der Schlüsselperson-Absicherung?', 'Beraterium unterstützt KMU, Startups und Solo-Selbstständige dabei, Schlüsselpersonrisiken mit dem 3-Ebenen-Gefahrenkatalog systematisch zu erfassen und in Euro zu bewerten – für jede Zielgruppe mit dem passenden Angebot.'),
+        ],
+        "deep_sections": [
+            {
+                "tag": "DEFINITION",
+                "h2": "Was genau ist ein Schlüsselpersonrisiko?",
+                "intro": (
+                    "Das Schlüsselpersonrisiko beschreibt den wirtschaftlichen Schaden, der entsteht, wenn eine für das "
+                    "Unternehmen unverzichtbare Person langfristig ausfällt – durch Krankheit, Kündigung, Unfall oder Tod. "
+                    "Entscheidend ist nicht die Position auf dem Organigramm, sondern die Frage: Welche Funktion kann "
+                    "niemand anderes kurzfristig übernehmen?"
+                ),
+                "paragraphs": [
+                    "Typische Schlüsselpersonen sind die Geschäftsführung mit exklusiven Kundenbeziehungen, der Meister mit undokumentiertem Produktionswissen, die eine Person, die das ERP-System versteht – oder der Gründer, auf den Produktvision und Investorenvertrauen zugeschnitten sind.",
+                    "Das Risiko bleibt oft jahrelang unsichtbar, weil im Alltag alles funktioniert. Sichtbar wird es erst im Ausfall – dann aber mit voller Wucht: Wissen, Beziehungen und Entscheidungsfähigkeit brechen gleichzeitig weg.",
+                ],
+            },
+        ],
+        "steps_section": {
+            "tag": "IN 3 SCHRITTEN",
+            "h2": "Wie erfasst der 3-Ebenen-Gefahrenkatalog Schlüsselpersonen?",
+            "intro": "Im 3-Ebenen-Gefahrenkatalog von Beraterium ist der Ausfall von Schlüsselpersonen eine eigene Gefahrenklasse – neben externen Gefahren und internen Prozessrisiken. Die Analyse läuft in drei Schritten:",
+            "steps": [
+                ("Sammeln", "Welche Personen tragen welche einzigartigen Funktionen? Erfasst werden Wissen, Kundenbeziehungen, Entscheidungsbefugnisse und technische Abhängigkeiten – neutral, ohne vorschnelle Bewertung."),
+                ("Bewerten", "„Stell dir vor, die Person fällt morgen aus“ – der mögliche Schaden wird in Euro geschätzt: Umsatzausfall, Wiederbeschaffungskosten, Vertrauensverlust bei Kunden, Projektverzögerungen."),
+                ("Priorisieren", "Das Ergebnis fließt in die Risikomatrix ein und wird gegen alle anderen Risiken gestellt – etwa einen Cyberangriff oder Liquiditätsengpass. So landet das Budget bei dem Risiko, das wirklich am meisten kostet."),
+            ],
+        },
+        "facts_table": {
+            "tag": "DREI ZIELGRUPPEN",
+            "h2": "Wie zeigt sich das Risiko bei KMU, Startup und Solo?",
+            "intro": "Das Schlüsselpersonrisiko trifft jede Unternehmensform – aber in unterschiedlicher Ausprägung und mit unterschiedlichen Gegenmaßnahmen.",
+            "caption": "Schlüsselpersonrisiko im Vergleich: KMU, Startup, Solo-Selbstständige",
+            "headers": ["Zielgruppe", "Typische Ausprägung", "Wirksamste Maßnahme"],
+            "rows": [
+                ("<strong>KMU</strong>", "Geschäftsführung oder Meister mit exklusivem Wissen und persönlichen Kundenbeziehungen – ein Single Point of Failure im Tagesgeschäft", "Wissen dokumentieren, Vertretungsregelungen definieren, Kundenbeziehungen auf zwei Ansprechpersonen verteilen"),
+                ("<strong>Startup</strong>", "Produktwissen und Investorenvertrauen konzentrieren sich auf die Gründer – verschärft durch Burnout-Risiko und Co-Founder-Konflikte (40–50 % der Teams)", "Rollen und Entscheidungsregeln schriftlich klären, technisches Wissen im Team verteilen, Key-Person-Frage vor der Due Diligence beantworten"),
+                ("<strong>Solo</strong>", "Du bist selbst die Schlüsselperson – jeder Ausfalltag kostet direkt Umsatz, ohne Vertretung und ohne Lohnfortzahlung", "Rücklagen für 3–6 Monate, Notfallplan mit Vertretungsnetzwerk, Absicherung der Arbeitskraft prüfen"),
+            ],
+        },
+        "blog_slugs": [
+            "key-person-risk-identify-mitigate",
+            "business-succession-overlooked-risks",
+            "risks-self-employed-freelancers",
+        ],
+        "cta_h2": 'Bewerten Sie Ihr Schlüsselpersonrisiko – kostenlos und unverbindlich',
+        "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Sie erhalten unsere Methode erklärt und wissen danach, wo Sie stehen.',
+        "title": 'Schlüsselperson-Risiko erkennen | Beraterium',
+        "description": 'Schlüsselperson-Risiko: Was passiert, wenn eine Person ausfällt? Schaden in Euro bewertet. Jetzt kostenloses Erstgespräch bei Beraterium buchen.',
+        "service_name": 'Schlüsselperson-Risikoanalyse',
+        "breadcrumb_name": 'Schlüsselperson-Risiko',
+    },
+    {
+        # Keyword (Webseite/Keywords/keyword-liste-master.csv): due diligence vorbereiten startup / startup due diligence checklist
+        "slug": 'investor-due-diligence',
+        "du": True,
+        "audience": 'Startups und Gründer',
+        "tag": 'DUE DILIGENCE',
+        "h1": 'Wie bereitest du dein Startup auf Due Diligence vor?',
+        "lead": (
+            'Wenn ein Investor nach deinem Risk Assessment fragt, will er wissen: Kennst du deine '
+            'eigenen Risiken – und kannst du sie managen? Due Diligence prüft nicht nur Zahlen, '
+            'sondern auch Key-Person-, Cash-, Legal- und Tech-Risiken. Beraterium erstellt in 4 '
+            'Wochen ein strukturiertes Risiko-Portfolio in Euro bewertet – investor-ready statt '
+            'improvisiert.'
+        ),
+        "hero_cta": 'Book a free intro call',
+        "criteria_tag": 'DIREKT-CHECK',
+        "criteria_h2": 'Wann solltest du dein Startup investor-ready machen?',
+        "criteria_intro": 'Du solltest deine Due-Diligence-Vorbereitung starten, wenn mindestens eines dieser Kriterien zutrifft:',
+        "criteria": [
+            'Ein Investor oder Business Angel hat Interesse signalisiert',
+            'Du wirst nach Risk Assessment oder Risiko-Portfolio gefragt',
+            'Co-Founder-Rollen oder Entscheidungsregeln sind ungeklärt',
+            'Ein Großkunde macht mehr als 40 % deines Umsatzes aus',
+        ],
+        "stats_aria": 'Due Diligence in Zahlen',
+        "stats": [
+            ('4 Wochen', 'Risiko-Check von Beraterium für Startups'),
+            ('40–50 %', 'der Founding-Teams erleben Co-Founder-Trennung'),
+            ('~32 %', 'der scheiternden Startups scheitern wegen Cash'),
+            ('Investor-ready', 'mit strukturiertem Risiko-Portfolio'),
+        ],
+        "pain_tag": 'DIE INVESTOR-FRAGEN',
+        "pain_h2": 'Was passiert, wenn du unvorbereitet bist?',
+        "pain_intro": 'Investoren erwarten kein perfektes Unternehmen – aber sie erwarten, dass du deine Risiken kennst und einen Plan hast.',
+        "pain_cards": [
+            ('Vertrauen sinkt', 'Wenn du bei der Risk-Assessment-Frage zögerst oder Risiken herunterspielst, verlierst du Glaubwürdigkeit – oft schneller als durch schlechte Zahlen.'),
+            ('Deal verzögert sich', 'Fehlende Dokumentation zu Team, IP, Legal oder Cash-Runway verlängert Due Diligence um Wochen – und manchmal bricht der Deal ab.'),
+            ('Bewertung sinkt', 'Unerkannte Risiken tauchen in der Due Diligence auf und drücken die Bewertung – oder führen zu härteren Investorenbedingungen.'),
+        ],
+        "overview_tag": 'SO HILFT BERATERIUM',
+        "overview_h2": 'Wie macht Beraterium dein Startup investor-ready?',
+        "overview_intro": (
+            'Investor-Readiness beginnt mit einem ehrlichen Risikobild. Der 4-Wochen-Risiko-Check von '
+            'Beraterium deckt Key-Person-, Cash-, Legal- und Tech-Risiken auf – in Euro bewertet, '
+            'priorisiert und als Portfolio dokumentiert.'
+        ),
+        "overview_cards": [
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
+            ('4-Wochen-Risiko-Check', 'In vier Wochen zu einem investor-ready Risiko-Portfolio – Key-Person, Cash, Legal und Tech.', 'services/startups/', 'Zum Startup-Angebot'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Du erhältst den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+        ],
+        "faq": [
+            ('Wie bereite ich mein Startup auf Due Diligence vor?', 'Due Diligence durch Investoren prüft nicht nur die Zahlen — sie prüft auch, ob Gründer ihre eigenen Risiken kennen und managen. Ein strukturiertes Risiko-Portfolio, in dem Key-Person-, Cash-, Legal- und Tech-Risiken bewertet und priorisiert sind, ist ein starkes Signal für Investor-Readiness. Beraterium erstellt dieses Portfolio in 4 Wochen.'),
+            ('Was fragt ein Investor bei Due Diligence über Risiken?', 'Investoren prüfen typischerweise: Team-Risiken (Co-Founder, Key-Person-Abhängigkeit), Cash-Runway und Burn-Rate, Kundenkonzentration, IP- und Legal-Risiken sowie technische Abhängigkeiten. Ein strukturiertes Risk Assessment zeigt, dass du diese Felder kennst und priorisiert hast.'),
+            ('Welche Risiken haben Startups, die oft übersehen werden?', 'Die häufig übersehenen Startup-Risiken liegen nicht im Produkt, sondern in den Strukturen: Co-Founder-Konflikte (in 40–50 % aller Founding-Teams kommt es zur Trennung), Klumpenrisiko bei Kunden (ein Großkunde = 60 % Umsatz), Key-Person-Abhängigkeit und Cash-Runway-Unterschätzung. Beraterium deckt diese Risiken im 4-Wochen-Risiko-Check systematisch auf.'),
+            ('Was ist ein Co-Founder-Konflikt und wie manage ich das Risiko?', 'Ein Co-Founder-Konflikt entsteht häufig nicht durch schlechte Persönlichkeiten, sondern durch ungeklärte Rollenverteilung und fehlende Entscheidungsregeln für Krisen. Beraterium erfasst Team-Risiken als eigene Kategorie im Gefahrenkatalog: Wer hat welche Funktion, was passiert bei Ausfall, und welche Vereinbarungen fehlen? Das Ergebnis ist eine konkrete To-do-Liste.'),
+            ('Wie lange dauert die Due-Diligence-Vorbereitung?', 'Der 4-Wochen-Risiko-Check von Beraterium liefert ein vollständiges, investor-ready Risiko-Portfolio – inklusive Key-Person-, Cash-, Legal- und Tech-Risiken in Euro bewertet. Für dringende Investor-Gespräche kann ein fokussiertes Erstgespräch die größten Lücken in 30 Minuten identifizieren.'),
+            ('Wer hilft Startups bei der Due-Diligence-Vorbereitung?', 'Beraterium unterstützt Startups und Gründer mit dem 4-Wochen-Risiko-Check – ein strukturiertes Risiko-Portfolio in Euro bewertet, das Investoren zeigt, dass du deine Risiken kennst und managst.'),
+        ],
+        "deep_sections": [
+            {
+                "tag": "WAS INVESTOREN PRÜFEN",
+                "h2": "Was prüft ein Investor beim Risk Assessment wirklich?",
+                "intro": (
+                    "Due Diligence prüft nicht nur, ob deine Zahlen stimmen – sie prüft, ob du dein eigenes Unternehmen "
+                    "verstehst. Ein Investor will sehen, dass du deine Risiken kennst, ehrlich benennst und einen Plan "
+                    "dafür hast. Vier Risikofelder stehen dabei fast immer im Fokus:"
+                ),
+                "items": [
+                    "<strong>Key-Person-Risiken:</strong> Hängt das Produkt an einer Person? Was passiert bei Co-Founder-Trennung – in 40–50 % aller Founding-Teams kommt es dazu",
+                    "<strong>Cash-Risiken:</strong> Runway, Burn-Rate und Kundenkonzentration – rund 32 % der scheiternden Startups scheitern an Cash, nicht am Produkt",
+                    "<strong>Legal- und IP-Risiken:</strong> Gehört dem Startup wirklich der Code? Sind Verträge, Marken und Datenschutz sauber dokumentiert?",
+                    "<strong>Tech-Risiken:</strong> Abhängigkeiten von einzelnen Plattformen, Dienstleistern oder Legacy-Entscheidungen, die eine Skalierung bremsen",
+                ],
+                "paragraphs": [
+                    "Ein Startup, das diese Felder in einem strukturierten Risiko-Portfolio beantwortet – bewertet in Euro, mit Maßnahmen und Prioritäten – signalisiert Reife. Das alte Notion-Dokument mit einer Brainstorming-Liste tut das Gegenteil.",
+                ],
+            },
+            {
+                "tag": "TYPISCHE FEHLER",
+                "h2": "Welche Fehler kosten Startups die Investor-Glaubwürdigkeit?",
+                "intro": (
+                    "Die meisten Startups scheitern in der Due Diligence nicht an ihren Risiken – sondern daran, wie sie "
+                    "damit umgehen. Drei Muster tauchen immer wieder auf:"
+                ),
+                "items": [
+                    "<strong>Risiken herunterspielen:</strong> „Das ist bei uns kein Thema“ wirkt auf erfahrene Investoren wie ein Warnsignal – sie kennen die Basisraten für Co-Founder-Konflikte und Cash-Probleme",
+                    "<strong>Struktur improvisieren:</strong> Unklare Rollen, fehlende Entscheidungsregeln und Mikromanagement des Gründers zeigen sich in der Due Diligence als Organisations-Risiko – lange bevor sie im Alltag eskalieren",
+                    "<strong>Dokumentation aufschieben:</strong> Wer IP-Zuordnung, Verträge und Runway-Berechnung erst zusammensucht, wenn der Investor fragt, verlängert die Due Diligence um Wochen – und manchmal stirbt der Deal an der Verzögerung",
+                ],
+            },
+        ],
+        "steps_section": {
+            "tag": "DD-CHECKLISTE",
+            "h2": "Wie machst du dein Startup in 6 Schritten investor-ready?",
+            "intro": "Diese Checkliste deckt die Risiko-Seite der Due-Diligence-Vorbereitung ab – das, wonach Investoren beim Stichwort Risk Assessment wirklich fragen.",
+            "steps": [
+                ("Risiko-Portfolio aufbauen", "Erfasse alle Risiken strukturiert nach Kategorien: Team, Cash, Kunden, Legal/IP, Tech. Ein priorisiertes Portfolio in Euro schlägt jede unsortierte Liste."),
+                ("Runway ehrlich berechnen", "Verfügbares Kapital geteilt durch monatlichen Netto-Cash-Burn – mit realistischen Annahmen. Investoren rechnen nach."),
+                ("Key-Person-Frage beantworten", "Dokumentiere, welches Wissen an welchen Köpfen hängt und was bei Ausfall passiert. Co-Founder-Rollen und Entscheidungsregeln gehören schriftlich fixiert."),
+                ("Kundenkonzentration ausweisen", "Zeige den Umsatzanteil deiner Top-Kunden offen. Ein Klumpenrisiko, das du selbst benennst und managst, ist glaubwürdiger als eines, das der Investor findet."),
+                ("Legal & IP dokumentieren", "IP-Übertragungen, Arbeitsverträge, Datenschutz und Markenrechte sauber ablegen – die häufigsten Verzögerer in der Due Diligence."),
+                ("Maßnahmen priorisieren", "Zu jedem Top-Risiko eine konkrete Maßnahme mit Verantwortlichem und Zeitrahmen – das unterscheidet ein Risk Assessment von einer Risiko-Liste."),
+            ],
+        },
+        "blog_slugs": [
+            "startup-mistakes-avoid-risk-management",
+            "key-person-risk-identify-mitigate",
+            "what-is-risk-management",
+        ],
+        "cta_h2": 'Mach dein Startup investor-ready – kostenlos und unverbindlich',
+        "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Du erhältst unsere Methode erklärt und weißt danach, wo du stehst.',
+        "title": 'Startup Due Diligence vorbereiten | Beraterium',
+        "description": 'Due Diligence für Startups: Risiken erkennen, in Euro bewerten und investor-ready werden. Der 4-Wochen-Check. Book a free intro call.',
+        "service_name": '4-Wochen-Risiko-Check für Startups',
+        "breadcrumb_name": 'Investor Due Diligence',
+    },
+]
+
+
+
+
+def standort_cities_section(cfg: dict) -> str:
+    """Sichtbare Städte-Abdeckung für Local SEO/GEO (optional pro STANDORT_CONFIG)."""
+    cities = cfg.get("city_coverage", [])
+    if not cities:
+        return ""
+    cards = "".join(
+        f'<li class="brt-card brt-hover-lift"><h3 class="brt-h3">Risikomanagement {c["name"]}</h3>'
+        f'<p class="brt-body">{c["text"]}</p></li>'
+        for c in cities
+    )
+    region = cfg.get("region", cfg["city"])
+    h2 = cfg.get("cities_h2", f"Beraterium als lokaler Partner in {region}")
+    intro = cfg.get(
+        "cities_intro",
+        f"Beraterium ist mit fester Lokalvertretung in {region} für KMU, Startups und Solo-Selbstständige vor Ort erreichbar.",
+    )
+    return f"""
+    <section class="brt-section brt-section--alt" id="staedte" aria-labelledby="staedte-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">REGIONALE PRÄSENZ</p>
+          <h2 id="staedte-title" class="brt-h2">{h2}</h2>
+          <p class="brt-body">{intro}</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">{cards}</ul>
+      </div>
+    </section>"""
+
+def gen_standort(cfg: dict) -> None:
+    """Lokale Vertretungs-One-Pager unter /locations/<slug>/ (Local SEO + GEO).
+
+    Neue Stadt = neuer Eintrag in STANDORT_CONFIGS (Muenchen als Referenz).
+    Struktur: Hero (answer-first) -> Lokalvertretung (Person + Region) ->
+    Methode kompakt (GEO-Zitat-Block) -> Angebote-Ueberblick -> Doppelte
+    Garantie -> Google Maps (Klick-to-load, DSGVO) -> Blog-Teaser ->
+    Termin buchen (Calendly) -> FAQ (sichtbar + Schema) -> CTA.
+    """
+    slug = cfg["slug"]
+    city = cfg["city"]
+    pre = "../../"
+    canonical = f"/locations/{slug}/"
+
+    member = team_by_slug(load_team_members()).get(cfg["member_slug"])
+    rep_bio = (
+        team_profile_bio_html(member, team_section_id(member.slug))
+        if member
+        else ""
+    )
+    rep_media = (
+        img_html(member.image, member.image_alt, 2, css_class="brt-team-portrait", aspect="4/5")
+        if member
+        else ""
+    )
+    rep_contacts = team_contact_icons(member) if member else ""
+    geo_facts = "".join(f"<li>{item}</li>" for item in cfg.get("geo_facts", []))
+    geo_section = ""
+    if cfg.get("geo_h2"):
+        geo_section = f"""
+    <section class="brt-section" id="geo-local" aria-labelledby="geo-local-title">
+      <div class="brt-container brt-highlight-box brt-fade-up">
+        <p class="brt-tag">{cfg.get('geo_tag', 'KURZ & KLAR')}</p>
+        <h2 id="geo-local-title" class="brt-h2">{cfg['geo_h2']}</h2>
+        <p class="brt-body">{cfg.get('geo_intro', '')}</p>
+        <ul class="brt-list-check">{geo_facts}</ul>
+      </div>
+    </section>"""
+
+    offer_cards = "".join(
+        f'<li class="brt-card brt-hover-lift"><a class="brt-card__link" href="{pre}{href}">'
+        f'<h3 class="brt-h3">{title}</h3><p class="brt-body">{body}</p>'
+        f'<span class="brt-meta" aria-hidden="true">{label} \u2192</span></a></li>'
+        for title, body, href, label in [
+            (
+                "Risikoanalyse für KMU",
+                f"In rund 6 Wochen zum vollständigen, in Euro bewerteten Risiko-Lagebild – moderiert vor Ort in {city} oder remote.",
+                "services/smb/",
+                "Zum Angebot für KMU",
+            ),
+            (
+                "Risiko-Check für Startups",
+                "In 4 Wochen wissen Gründerteams, welche Risiken ihr Wachstum bremsen – investor-ready aufbereitet.",
+                "services/startups/",
+                "Zum Angebot für Startups",
+            ),
+            (
+                "Risiko-Kompass für Solo-Selbstständige",
+                "In 2 Wochen weißt du, wo du verletzlich bist – Ausfall, Kundenabhängigkeit, Rücklagen.",
+                "services/solo/",
+                "Zum Angebot für Solo-Selbstständige",
+            ),
+        ]
+    )
+    blog_cards = "\n".join(blog_card_html(p, 2) for p in load_blog_posts()[:3])
+
+    main = (
+        hero(
+            pre,
+            cfg["tag"],
+            cfg["h1"],
+            cfg["lead"],
+            actions=(
+                f'<a class="brt-btn" href="#termin">{cfg["hero_cta"]}</a>'
+                f'<a class="brt-btn brt-btn--outline" href="#faq">Frequently asked questions \u2192</a>'
+            ),
+        )
+        + geo_section
+        + standort_cities_section(cfg)
+        + f"""
+    <section class="brt-section brt-standort-rep" id="{cfg.get('member_slug', 'lokalvertretung')}" aria-labelledby="vertretung-title">
+      <div class="brt-container brt-split">
+        <div class="brt-split__media brt-fade-up" style="--fade-delay: 120ms">
+          {rep_media}
+        </div>
+        <div class="brt-split__text brt-fade-up">
+          <p class="brt-tag">IHRE LOKALVERTRETUNG</p>
+          <h2 id="vertretung-title" class="brt-h2">{cfg["rep_h2"]}</h2>
+          {rep_contacts}
+          {rep_bio}
+          <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}team/">Mehr über das Team \u2192</a></p>
+        </div>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" id="methode" aria-labelledby="methode-title">
+      <div class="brt-container brt-highlight-box brt-fade-up">
+        <p class="brt-tag">DIE METHODE</p>
+        <h2 id="methode-title" class="brt-h2">Was macht Beraterium?</h2>
+        <p class="brt-body">Beraterium ist eine Risikomanagement-Beratung für KMU, Startups und Solo-Selbstständige. Der 3-Ebenen-Gefahrenkatalog macht sichtbar, wo Ihr Unternehmen wirklich verwundbar ist – praxisnah statt bürokratisch:</p>
+        <ul class="brt-list-check">
+          <li>Gefahren strukturiert sammeln – mit dem 3-Ebenen-Gefahrenkatalog, branchenangepasst</li>
+          <li>Risiken in Euro bewerten – Schadenshöhe und Eintrittswahrscheinlichkeit statt Ampelfarben</li>
+          <li>Die wenigen wirksamsten Maßnahmen priorisieren – mit Fahrplan und Verantwortlichkeiten</li>
+          <li>Doppelte Garantie: Relevanz und Nutzen – sonst erstatten wir den vollen Betrag</li>
+        </ul>
+        <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}method/">Zur Methode \u2192</a> <a class="brt-btn brt-btn--outline" href="{pre}pricing/">Preise &amp; Leistungen \u2192</a></p>
+      </div>
+    </section>
+    <section class="brt-section" aria-labelledby="angebote-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">UNSERE ANGEBOTE</p>
+          <h2 id="angebote-title" class="brt-h2">Risikoanalyse in {city} – für jede Unternehmensgröße</h2>
+          <p class="brt-body">Dieselbe Methode, angepasst auf Ihre Größe und Branche – vor Ort in {city} und Umgebung oder remote.</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">{offer_cards}</ul>
+      </div>
+    </section>"""
+        + guarantee(pre)
+        + f"""
+    <section class="brt-section brt-section--alt" id="karte" aria-labelledby="karte-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">VOR ORT IN {city.upper()}</p>
+          <h2 id="karte-title" class="brt-h2">{cfg["map_h2"]}</h2>
+          <p class="brt-body">{cfg["map_body"]}</p>
+        </header>
+        <div class="brt-map-embed brt-fade-up" data-map-embed data-map-query="{cfg["map_query"]}" data-map-title="Karte: Beraterium vor Ort in {city}">
+          <button type="button" class="brt-map-embed__poster">
+            <span class="brt-map-embed__label">Karte anzeigen</span>
+            <span class="brt-map-embed__hint">Beim Klick wird eine Google-Maps-Karte geladen; dabei werden Daten an Google übertragen.</span>
+          </button>
+        </div>
+        <p class="brt-meta brt-fade-up">Details zur Datenverarbeitung durch Google finden Sie in unserer <a href="{pre}privacy/">Datenschutzerklärung</a>.</p>
+      </div>
+    </section>
+    <section class="brt-section" aria-labelledby="blog-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-section__header--row brt-fade-up">
+          <div>
+            <p class="brt-tag">EINBLICKE</p>
+            <h2 id="blog-title" class="brt-h2">Experten-Einblicke von Beraterium</h2>
+            <p class="brt-body">Kurze, praxisnahe Artikel zu Risiko, Führung und Entscheidungen – geschrieben vom Beraterium-Team.</p>
+          </div>
+          <a class="brt-btn brt-btn--outline" href="{pre}blog/">Alle Artikel \u2192</a>
+        </header>
+        <ul class="brt-blog-grid brt-stagger">
+{blog_cards}
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--booking" id="termin" aria-labelledby="termin-title">
+      <div class="brt-container brt-fade-up">
+        <header class="brt-section__header">
+          <p class="brt-tag">30 Minuten · kostenlos · unverbindlich</p>
+          <h2 id="termin-title" class="brt-h2">Ihr kostenloses Erstgespräch – vor Ort in {city} oder online</h2>
+          <p class="brt-body">Wählen Sie direkt einen Termin – wir nehmen uns Zeit für Ihre Situation, nicht für Verkaufsargumente.</p>
+        </header>
+        <div class="brt-calendly" data-calendly-embed>
+          <div id="beraterium-calendly" class="calendly-inline-widget" data-url="https://calendly.com/beraterium/30min"></div>
+        </div>
+      </div>
+    </section>"""
+        + faq_section(cfg["faq"], alt=True)
+        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], "Book a free intro call")
+    )
+
+    breadcrumb_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": f"Beraterium vor Ort {city}", "item": f"{EN_SITE_URL}{canonical}"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    person_ld = ""
+    member_section_id = team_section_id(member.slug) if member else ""
+    if member:
+        person_data = person_schema(member)
+        person_data["@id"] = f"{EN_SITE_URL}/team/#{member_section_id}"
+        person_ld = json.dumps(
+            {"@context": "https://schema.org", **person_data},
+            ensure_ascii=False,
+            indent=2,
+        )
+    ld = page_schema(
+        local_business_schema(
+            name=f"Beraterium vor Ort {city}",
+            description=cfg["description"],
+            url=canonical,
+            locality=city,
+            region=cfg["region"],
+            latitude=cfg["lat"],
+            longitude=cfg["lng"],
+            email=member.email if member else "",
+            telephone=member.phone if member else "",
+            employee_name=member.name if member else "",
+            employee_id=f"{EN_SITE_URL}/team/#{member_section_id}" if member else "",
+            schema_locality=cfg.get("schema_locality", ""),
+            street_address=cfg.get("street_address", ""),
+            postal_code=cfg.get("postal_code", ""),
+            cities_served=cfg.get("cities_served"),
+        ),
+        service_schema(
+            name=f"Risikomanagement-Beratung {city}",
+            description=cfg["description"],
+            url=canonical,
+            audience=cfg.get("service_audience", f"KMU, Startups und Solo-Selbstständige in {city} und {cfg['region']}"),
+            service_type="Risikomanagement-Beratung",
+            area_served=cfg["region"],
+            cities_served=cfg.get("cities_served"),
+        ),
+        person_ld,
+        faq_page_schema(cfg["faq"]),
+        speakable_webpage_schema(
+            canonical,
+            selectors=[
+                ".brt-page-hero__text .brt-lead",
+                "#geo-local .brt-highlight-box",
+                "#staedte .brt-card",
+                ".brt-faq__answer",
+            ],
+        ),
+        breadcrumb_ld,
+    )
+    write(
+        f"locations/{slug}/index.html",
+        shell(
+            depth=2,
+            title=cfg["title"],
+            description=cfg["description"],
+            canonical=canonical,
+            active_nav=None,
+            main=main,
+            json_ld=ld,
+            og_image=(f"https://www.beraterium.com/{member.image}" if member and member.image else ""),
+        ).replace(
+            f'<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
+            f'<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>\n<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
+        ),
+    )
+
+STANDORT_CONFIGS: list[dict] = [
+    {
+        # Keyword (lokal, Muster wie "risikomanagement bautzen" in Webseite/Keywords/keyword-liste-master.csv):
+        # "risikomanagement münchen" / "risikoberatung münchen" — anbieter-suchend, Local SEO/GEO.
+        # Adresse bewusst nur Region-Level (Umzug steht an); exakte Anschrift + Map-Pin nachrüsten, sobald final.
+        "slug": "munich",
+        "city": "München",
+        "region": "Bayern",
+        "lat": 48.1372,
+        "lng": 11.5756,
+        "map_query": "München, Deutschland",
+        "member_slug": "peter-muenstermann",
+        "tag": "BERATERIUM VOR ORT · MÜNCHEN",
+        "h1": "Risikomanagement in München: Beraterium vor Ort",
+        "lead": (
+            "Beraterium ist mit einer eigenen Lokalvertretung im Großraum München für Sie da: "
+            "Peter Münstermann, Mitgründer und Entwickler des Beraterium-Risikomanagement-Ansatzes, "
+            "betreut Unternehmen in München und Bayern persönlich. Ob KMU, Startup oder "
+            "Solo-Selbstständige – wir machen Ihre größten Risiken sichtbar, bewerten sie in Euro "
+            "und priorisieren die Maßnahmen, die wirklich zählen. Vor Ort bei Ihnen oder remote."
+        ),
+        "hero_cta": "Book a free intro call",
+        "rep_h2": "Peter Münstermann – Ihre Beraterium-Lokalvertretung in München",
+        "rep_paragraphs": [
+            "Peter Münstermann bringt über 20 Jahre Erfahrung als Risikomanager in großen Unternehmen mit – und übersetzt Konzern-Risikomanagement in eine Form, die für Mittelstand, Familienunternehmen und Startups im Raum München praktisch funktioniert.",
+            "Er bringt Führungskräfte und Mitarbeitende an einen Tisch und moderiert offene Diskussionen über Risiken, Chancen und Lösungen – strukturiert, aber menschlich. Das Ergebnis: Klarheit, Prioritäten und Maßnahmen, die im Alltag funktionieren.",
+            "Als Lokalvertretung im Großraum München ist er für Kick-offs, Analyse-Sessions und Workshops direkt bei Ihnen im Unternehmen – von der Münchner Innenstadt über das Umland bis nach ganz Bayern.",
+        ],
+        "map_h2": "So erreichen Sie uns in München",
+        "map_body": "Unsere Lokalvertretung ist im Großraum München ansässig und für Termine in der ganzen Region unterwegs – von München-Stadt über das Umland bis nach ganz Bayern. Die genaue Anschrift erhalten Sie mit Ihrer Terminbestätigung.",
+        "faq": [
+            ("Bietet Beraterium Risikomanagement-Beratung in München an?", "Ja. Beraterium ist mit Peter Münstermann als Lokalvertretung im Großraum München vertreten. Analyse-Sessions und Workshops finden direkt bei Ihnen im Unternehmen in München und Bayern statt – oder remote, wenn Sie das bevorzugen."),
+            ("Wer ist die Beraterium-Lokalvertretung in München?", "Peter Münstermann, Mitgründer von Beraterium und Entwickler des Risikomanagement-Ansatzes. Er bringt über 20 Jahre Erfahrung als Risikomanager in großen Unternehmen mit und macht Risikomanagement für KMU, Familienunternehmen und Startups greifbar und praktisch umsetzbar."),
+            ("Finden die Risikoanalyse-Sessions vor Ort in München statt?", "Ja. Im Großraum München kommen wir für Kick-off, Analyse-Sessions und Workshops direkt zu Ihnen ins Unternehmen. Alle Formate funktionieren genauso remote – viele Kunden kombinieren beides."),
+            ("Für welche Unternehmen in München eignet sich die Risikoanalyse?", "Für KMU und Familienunternehmen, für Startups und Gründerteams sowie für Solo-Selbstständige. Die Methode ist dieselbe – der 3-Ebenen-Gefahrenkatalog wird auf Größe und Branche angepasst."),
+            ("Was kostet eine Risikoanalyse in München?", "Kompakte Checks starten ab 47 €, vollständige Analysepakete ab 3.475 € Festpreis. Alle Preise stehen transparent auf der Preisseite; der Standort ändert nichts am Preis."),
+            ("Arbeitet Beraterium nur in München?", "Nein. Beraterium arbeitet deutschlandweit und im DACH-Raum. München ist einer unserer Standorte – neben Sachsen und NRW. Die Lokalvertretung sorgt dafür, dass Unternehmen in München und Bayern einen persönlichen Ansprechpartner vor Ort haben."),
+            ("Gibt es Risikomanagement-Berater in München?", "Ja. Beraterium ist mit Peter Münstermann als Lokalvertretung im Großraum München vertreten. Er moderiert Risikoanalysen für KMU, Startups und Solo-Selbstständige – vor Ort in München und Bayern oder remote."),
+            ("Wie finde ich eine Risikoberatung für mein KMU in München?", "Achten Sie auf eine strukturierte Methode (nicht nur Checklisten), Euro-Bewertung statt Ampeln und einen festen Ansprechpartner. Beraterium kombiniert Konzern-Erfahrung mit Mittelstands-Praxis – transparente Festpreise auf der Preisseite, abgesichert durch die doppelte Garantie."),
+        ],
+        "geo_tag": "RISIKOMANAGEMENT IN MÜNCHEN",
+        "geo_h2": "Risikomanagement in München – kurz erklärt",
+        "geo_intro": (
+            "Beraterium ist eine unabhängige Risikomanagement-Beratung für KMU, Startups und Solo-Selbstständige – "
+            "mit fester Lokalvertretung in München. Wir bewerten Risiken in Euro, priorisieren die wirksamsten Maßnahmen "
+            "und liefern ein umsetzbares Lagebild statt theoretischer Checklisten."
+        ),
+        "geo_facts": [
+            "Ansprechpartner vor Ort: Peter Münstermann im Großraum München – von der Innenstadt über das Umland bis ganz Bayern.",
+            "Formate: Kick-off, Analyse-Sessions und Workshops bei Ihnen im Unternehmen oder remote – je nachdem, was schneller Klarheit schafft.",
+            "Zielgruppen: KMU und Familienunternehmen, Startups und Gründerteams, Solo-Selbstständige und Freelancer.",
+            "Ergebnis: vollständiges Risiko-Lagebild in Euro plus Fahrplan mit Verantwortlichkeiten – abgesichert durch die doppelte Garantie.",
+            "Preise: transparent auf der Preisseite; München ist kein Aufschlag, sondern persönlicher Ansprechpartner vor Ort.",
+        ],
+        "service_audience": "KMU, Startups und Solo-Selbstständige in München und Bayern",
+        "cta_h2": "Bereit für Klarheit über Ihre Risiken – vor Ort in München?",
+        "cta_body": "Buchen Sie Ihr kostenloses Erstgespräch mit Peter Münstermann – 30 Minuten, kein Sales-Pitch. Sie gehen mit einer DIY-Anleitung raus, egal wie Sie sich entscheiden.",
+        "title": "Risikomanagement München – vor Ort | Beraterium",
+        "description": "Risikomanagement & Risikoberatung in München und Bayern: Peter Münstermann als Lokalvertretung vor Ort. Risiken in Euro bewertet, doppelte Garantie. Erstgespräch kostenlos.",
+        "breadcrumb_name": "München",
+    },
+    {
+        # Keywords (lokal): risikomanagement bautzen/dresden/leipzig/chemnitz/goerlitz, risikoberatung sachsen
+        # GEO: Städte-Abdeckung + FAQ je Kernstadt; Schema areaServed + Firmensitz Bautzen (NAP).
+        "slug": "saxony",
+        "city": "Sachsen",
+        "region": "Sachsen",
+        "lat": 51.1814,
+        "lng": 14.4279,
+        "map_query": "Bautzen, Sachsen, Deutschland",
+        "schema_locality": "Bautzen",
+        "street_address": "Dr.-Maria-Grollmuß-Str. 14",
+        "postal_code": "02625",
+        "member_slug": "till-blania",
+        "cities_served": [
+            "Bautzen", "Dresden", "Görlitz", "Leipzig", "Chemnitz", "Zwickau", "Plauen",
+            "Freiberg", "Meißen", "Pirna", "Riesa", "Hoyerswerda", "Bischofswerda", "Döbeln", "Delitzsch", "Torgau", "Annaberg-Buchholz",
+        ],
+        "tag": "BERATERIUM VOR ORT · SACHSEN",
+        "h1": "Risikomanagement in Sachsen: Beraterium – Ihr lokaler Partner vor Ort",
+        "lead": (
+            "Beraterium hat seinen Firmensitz in Bautzen und betreut Unternehmen im gesamten Freistaat Sachsen "
+            "als lokaler Partner für Risikomanagement: Till Manfred Blania, Geschäftsführer und Mitgründer, "
+            "ist persönlich in Bautzen, Dresden, Görlitz, Leipzig, Chemnitz und der gesamten Region für Sie da. "
+            "Risiken werden in Euro bewertet, Maßnahmen priorisiert – vor Ort bei Ihnen oder remote."
+        ),
+        "hero_cta": "Book a free intro call",
+        "rep_h2": "Till Manfred Blania – Ihre Beraterium-Lokalvertretung in Sachsen",
+        "map_h2": "So erreichen Sie uns in Sachsen",
+        "map_body": (
+            "Unser Firmensitz liegt in Bautzen (Dr.-Maria-Grollmuß-Str. 14) – Till Blania ist für Termine "
+            "im gesamten Freistaat unterwegs: Oberlausitz, Dresden, Leipzig, Chemnitz, Vogtland, Erzgebirge "
+            "und sächsische Schweiz."
+        ),
+        "cities_h2": "Beraterium als lokaler Risikomanagement-Partner in Sachsen",
+        "cities_intro": (
+            "Beraterium ist in den wichtigsten Wirtschaftsregionen Sachsens als fester Ansprechpartner vor Ort "
+            "präsent – mit derselben Methode, transparenten Festpreisen und doppelter Garantie in jeder Stadt."
+        ),
+        "city_coverage": [
+            {
+                "name": "Bautzen",
+                "text": "Firmensitz der Beraterium GbR: Till Blania ist hier ansässig und betreut KMU, Familienunternehmen und Startups in der Oberlausitz persönlich – Kick-offs und Workshops direkt bei Ihnen.",
+            },
+            {
+                "name": "Dresden",
+                "text": "Als lokaler Partner in der Landeshauptstadt moderiert Beraterium Risikoanalysen für Unternehmen in Dresden und dem Umland – von Tech- und Kultur-Startups bis zu etablierten Dienstleistern und Industrie.",
+            },
+            {
+                "name": "Görlitz",
+                "text": "Beraterium ist Ihr Ansprechpartner für Risikomanagement in Görlitz und der Lausitz: strukturierte Analyse-Sessions bei Ihnen im Unternehmen, Risiken in Euro bewertet, mit Umsetzungsfahrplan.",
+            },
+            {
+                "name": "Leipzig",
+                "text": "In Leipzigs dynamischem Gründer- und Mittelstandsumfeld begleitet Beraterium Teams von der ersten Risikoanalyse bis zum investor-ready Lagebild – vor Ort oder remote.",
+            },
+            {
+                "name": "Chemnitz",
+                "text": "KMU und Industrieunternehmen in Chemnitz und Westsachsen erhalten mit Beraterium einen festen Lokalpartner: Konzern-Methodik, Mittelstands-Praxis, persönliche Moderation durch Till Blania.",
+            },
+            {
+                "name": "Zwickau",
+                "text": "Beraterium betreut Unternehmen in Zwickau und Südwestsachsen – vom Familienbetrieb bis zum wachsenden Mittelständler. Sessions vor Ort im Unternehmen.",
+            },
+            {
+                "name": "Plauen",
+                "text": "Im Vogtland und rund um Plauen bringt Beraterium strukturiertes Risikomanagement für KMU und Solo-Selbstständige – ohne bürokratische Checklisten, mit Euro-Bewertung.",
+            },
+            {
+                "name": "Freiberg",
+                "text": "Beraterium ist lokaler Risikomanagement-Partner für Unternehmen in Freiberg und Mittelsachsen – Analyse, Priorisierung und Maßnahmenplan mit festem Ansprechpartner.",
+            },
+            {
+                "name": "Meißen",
+                "text": "Unternehmen im Elbtal und rund um Meißen werden von Beraterium persönlich betreut: Risiko-Lagebild in Euro, Team-Einbindung, doppelte Garantie.",
+            },
+            {
+                "name": "Pirna",
+                "text": "In der Sächsischen Schweiz und Pirna begleitet Beraterium Firmen bei der strukturierten Risikoanalyse – vor Ort bei Ihnen oder online.",
+            },
+            {
+                "name": "Riesa",
+                "text": "KMU in Riesa und Nordwestsachsen erhalten mit Beraterium einen regionalen Partner für Risikoberatung – praxisnah und in Festpreisen kalkuliert.",
+            },
+            {
+                "name": "Hoyerswerda",
+                "text": "Beraterium unterstützt Unternehmen in Hoyerswerda und der Lausitz bei der systematischen Risikoanalyse – mit Till Blania als Lokalvertretung.",
+            },
+        ],
+        "faq": [
+            (
+                "Wer ist der lokale Risikomanagement-Partner von Beraterium in Sachsen?",
+                "Beraterium mit Firmensitz in Bautzen und Till Manfred Blania als Lokalvertretung. Er betreut KMU, Startups und Solo-Selbstständige in ganz Sachsen persönlich – Risiken in Euro bewertet, mit doppelter Garantie und transparenten Festpreisen.",
+            ),
+            (
+                "Bietet Beraterium Risikomanagement in Bautzen an?",
+                "Ja. Bautzen ist der Firmensitz der Beraterium GbR (Dr.-Maria-Grollmuß-Str. 14). Till Blania betreut Unternehmen in Bautzen und der Oberlausitz vor Ort – Kick-offs, Analyse-Sessions und Workshops direkt bei Ihnen im Unternehmen.",
+            ),
+            (
+                "Gibt es Risikomanagement-Beratung in Dresden?",
+                "Ja. Beraterium ist als lokaler Partner in Dresden und dem Dresdner Umland vertreten. Till Blania moderiert Risikoanalysen für KMU, Startups und Solo-Selbstständige – vor Ort in Dresden oder remote.",
+            ),
+            (
+                "Wer hilft bei Risikomanagement in Görlitz und der Lausitz?",
+                "Beraterium mit Lokalvertretung Till Blania. Analyse-Sessions finden in Görlitz, Bautzen, Hoyerswerda und der gesamten Lausitz bei Ihnen im Unternehmen statt – strukturiert mit dem 3-Ebenen-Gefahrenkatalog.",
+            ),
+            (
+                "Bietet Beraterium Risikoberatung in Leipzig an?",
+                "Ja. Für Leipzigs Gründer- und Mittelstandsszene bietet Beraterium vollständige Risikoanalysen ab 3.475 € Festpreis – investor-ready aufbereitet, mit persönlichem Ansprechpartner vor Ort.",
+            ),
+            (
+                "Gibt es einen Risikomanagement-Berater in Chemnitz?",
+                "Ja. Beraterium betreut Unternehmen in Chemnitz und Westsachsen als lokaler Partner – Industrie, Dienstleister und Gründerteams. Termine vor Ort oder online.",
+            ),
+            (
+                "Deckt Beraterium auch Zwickau, Plauen und Freiberg ab?",
+                "Ja. Beraterium ist im gesamten Freistaat Sachsen unterwegs – u. a. Zwickau, Plauen, Freiberg, Meißen, Pirna und Riesa. Der Standort ändert nichts am Preis; Sachsen bedeutet persönlichen Ansprechpartner vor Ort.",
+            ),
+            (
+                "Was kostet eine Risikoanalyse in Sachsen?",
+                "Kompakte Checks ab 47 €, vollständige Analysepakete ab 3.475 € Festpreis. Alle Preise stehen transparent auf beraterium.de/pricing/ – unabhängig davon, ob Sie in Dresden, Leipzig oder Bautzen sitzen.",
+            ),
+            (
+                "Finden Risikoanalyse-Sessions vor Ort in Sachsen statt?",
+                "Ja. Im Raum Bautzen, Dresden, Görlitz, Leipzig, Chemnitz und der gesamten Region kommen wir für Kick-off, Analyse-Sessions und Workshops zu Ihnen. Remote ist ebenfalls möglich – viele Kunden kombinieren beides.",
+            ),
+            (
+                "Arbeitet Beraterium nur in Sachsen?",
+                "Nein. Beraterium arbeitet deutschlandweit und im DACH-Raum – mit weiteren Lokalvertretungen in München und NRW. Sachsen ist der Heimatstandort mit Firmensitz in Bautzen.",
+            ),
+        ],
+        "geo_tag": "RISIKOMANAGEMENT IN SACHSEN",
+        "geo_h2": "Was ist Risikomanagement in Sachsen mit Beraterium?",
+        "geo_intro": (
+            "Beraterium ist eine unabhängige Risikomanagement-Beratung mit Firmensitz in Bautzen und fester "
+            "Lokalvertretung im Freistaat Sachsen. Als lokaler Partner bewerten wir Risiken in Euro, priorisieren "
+            "die wirksamsten Maßnahmen und liefern ein umsetzbares Lagebild – in Dresden, Leipzig, Görlitz, "
+            "Chemnitz und der gesamten Region."
+        ),
+        "geo_facts": [
+            "Lokaler Partner: Till Blania – persönlich in Bautzen, Dresden, Görlitz, Leipzig, Chemnitz, Zwickau, Plauen und ganz Sachsen.",
+            "Firmensitz: Beraterium GbR, Dr.-Maria-Grollmuß-Str. 14, 02625 Bautzen – Termine im gesamten Freistaat.",
+            "Formate: Kick-off, Analyse-Sessions und Workshops bei Ihnen im Unternehmen oder remote.",
+            "Zielgruppen: KMU, Familienunternehmen, Startups, Gründerteams, Solo-Selbstständige und Freelancer.",
+            "Ergebnis: Risiko-Lagebild in Euro plus Fahrplan – abgesichert durch die doppelte Garantie (Relevanz + Nutzen).",
+            "Preise: transparent auf beraterium.de/pricing/; kein Aufschlag für Sachsen.",
+        ],
+        "service_audience": "KMU, Startups und Solo-Selbstständige in Sachsen",
+        "cta_h2": "Bereit für Klarheit über Ihre Risiken – vor Ort in Sachsen?",
+        "cta_body": (
+            "Buchen Sie Ihr kostenloses Erstgespräch mit Till Blania – 30 Minuten, kein Sales-Pitch. "
+            "Sie gehen mit einer DIY-Anleitung raus, egal wie Sie sich entscheiden."
+        ),
+        "title": "Risikomanagement Sachsen: Bautzen–Dresden | Beraterium",
+        "description": (
+            "Lokaler Partner Sachsen: Beraterium Bautzen, Till Blania – Dresden, Leipzig, Görlitz, Chemnitz. "
+            "Risiken in Euro. Erstgespräch kostenlos."
+        ),
+        "breadcrumb_name": "Sachsen",
+    },
+    {
+        # Keywords (lokal): risikomanagement köln/düsseldorf/dortmund/essen, risikoberatung nrw
+        # GEO: Städte-Abdeckung + FAQ je Kernstadt; Schema areaServed + Hub Düsseldorf (Region-Level).
+        "slug": "nrw",
+        "city": "NRW",
+        "region": "Nordrhein-Westfalen",
+        "lat": 51.2277,
+        "lng": 6.7735,
+        "map_query": "Düsseldorf, Nordrhein-Westfalen, Deutschland",
+        "schema_locality": "Düsseldorf",
+        "member_slug": "joachim-lau",
+        "cities_served": [
+            "Köln", "Düsseldorf", "Dortmund", "Essen", "Duisburg", "Bochum", "Wuppertal",
+            "Bielefeld", "Bonn", "Münster", "Aachen", "Gelsenkirchen", "Mönchengladbach",
+            "Krefeld", "Oberhausen", "Hagen", "Hamm", "Herne", "Solingen", "Leverkusen",
+            "Neuss", "Paderborn", "Recklinghausen", "Bottrop", "Remscheid", "Siegen",
+        ],
+        "tag": "BERATERIUM VOR ORT · NRW",
+        "h1": "Risikomanagement in NRW: Beraterium – Ihr lokaler Partner vor Ort",
+        "lead": (
+            "Beraterium betreut Unternehmen in Nordrhein-Westfalen als lokaler Partner für "
+            "Risikomanagement und Risikoberatung: Joachim Lau, Experte für Textil- und "
+            "produzierende Betriebe, ist persönlich in Köln, Düsseldorf, Dortmund, Essen und "
+            "dem gesamten Ruhrgebiet für Sie da. Risiken werden in Euro bewertet, Maßnahmen "
+            "priorisiert – vor Ort bei Ihnen oder remote."
+        ),
+        "hero_cta": "Book a free intro call",
+        "rep_h2": "Joachim Lau – Ihre Beraterium-Lokalvertretung in NRW",
+        "map_h2": "So erreichen Sie uns in NRW",
+        "map_body": (
+            "Joachim Lau ist im gesamten Nordrhein-Westfalen unterwegs – von Köln und Düsseldorf "
+            "über das Ruhrgebiet (Dortmund, Essen, Duisburg) bis nach Bonn, Münster, Aachen und "
+            "Ostwestfalen. Die genaue Anschrift erhalten Sie mit Ihrer Terminbestätigung."
+        ),
+        "cities_h2": "Beraterium als lokaler Risikomanagement-Partner in NRW",
+        "cities_intro": (
+            "Beraterium ist in den wichtigsten Wirtschaftsregionen Nordrhein-Westfalens als fester "
+            "Ansprechpartner vor Ort präsent – mit derselben Methode, transparenten Festpreisen "
+            "und doppelter Garantie in jeder Stadt."
+        ),
+        "city_coverage": [
+            {
+                "name": "Köln",
+                "text": "Als lokaler Partner am Rhein moderiert Beraterium Risikoanalysen für KMU, Startups und produzierende Betriebe in Köln und dem Umland – strukturiert mit dem 3-Ebenen-Gefahrenkatalog, in Euro bewertet.",
+            },
+            {
+                "name": "Düsseldorf",
+                "text": "Beraterium betreut Unternehmen in Düsseldorf und der Landeshauptstadt-Region persönlich – von Dienstleistern und Mittelständlern bis zu wachsenden Gründerteams. Sessions vor Ort oder remote.",
+            },
+            {
+                "name": "Dortmund",
+                "text": "Im Ruhrgebiet begleitet Joachim Lau Firmen in Dortmund bei der systematischen Risikoanalyse – besonders Textil- und produzierende Betriebe mit über 20 Jahren Branchenerfahrung.",
+            },
+            {
+                "name": "Essen",
+                "text": "KMU und Industrieunternehmen in Essen erhalten mit Beraterium einen festen Lokalpartner: Konzern-Methodik, Mittelstands-Praxis, persönliche Moderation durch Joachim Lau.",
+            },
+            {
+                "name": "Duisburg",
+                "text": "Beraterium ist Ihr Ansprechpartner für Risikomanagement in Duisburg und am unteren Rhein – Kick-offs, Analyse-Sessions und Workshops direkt bei Ihnen im Unternehmen.",
+            },
+            {
+                "name": "Bochum",
+                "text": "Beraterium begleitet Unternehmen in Bochum und dem mittleren Ruhrgebiet – vom Familienbetrieb bis zum wachsenden Mittelständler, mit Umsetzungsfahrplan statt Checklisten.",
+            },
+            {
+                "name": "Gelsenkirchen",
+                "text": "KMU in Gelsenkirchen und dem nördlichen Ruhrgebiet erhalten mit Beraterium einen regionalen Partner für Risikoberatung – praxisnah und in Festpreisen kalkuliert.",
+            },
+            {
+                "name": "Bonn",
+                "text": "Unternehmen in Bonn und der Region werden von Beraterium persönlich betreut: Risiko-Lagebild in Euro, Team-Einbindung, doppelte Garantie.",
+            },
+            {
+                "name": "Münster",
+                "text": "In Münster und Westfalen begleitet Beraterium Teams von der ersten Risikoanalyse bis zum priorisierten Maßnahmenplan – vor Ort oder remote.",
+            },
+            {
+                "name": "Aachen",
+                "text": "Beraterium unterstützt Unternehmen in Aachen und der Städteregion bei strukturiertem Risikomanagement – mit Joachim Lau als Lokalvertretung.",
+            },
+            {
+                "name": "Wuppertal",
+                "text": "KMU in Wuppertal und Bergischem Land erhalten mit Beraterium einen regionalen Partner für Risikoberatung – Risiken in Euro bewertet, nicht mit Ampelfarben.",
+            },
+            {
+                "name": "Bielefeld",
+                "text": "Beraterium betreut Unternehmen in Bielefeld und Ostwestfalen – vom Familienbetrieb bis zum wachsenden Mittelständler, Sessions vor Ort im Unternehmen.",
+            },
+            {
+                "name": "Mönchengladbach",
+                "text": "Im Textil- und Produktionsumfeld von Mönchengladbach bringt Joachim Lau Branchen-Know-how und strukturiertes Risikomanagement zusammen – ohne bürokratische Checklisten.",
+            },
+            {
+                "name": "Leverkusen",
+                "text": "Unternehmen in Leverkusen und der Region Rheinland profitieren von Berateriums lokaler Präsenz – Analyse, Priorisierung und Maßnahmenplan mit festem Ansprechpartner.",
+            },
+            {
+                "name": "Krefeld",
+                "text": "Beraterium betreut Textil- und produzierende Betriebe in Krefeld und am Niederrhein – Joachim Lau verbindet über 20 Jahre Branchenpraxis mit der Beraterium-Methode.",
+            },
+            {
+                "name": "Oberhausen",
+                "text": "KMU in Oberhausen und dem westlichen Ruhrgebiet erhalten strukturierte Risikoanalysen ab 3.475 € Festpreis – mit persönlichem Ansprechpartner vor Ort.",
+            },
+        ],
+        "faq": [
+            (
+                "Wer ist der lokale Risikomanagement-Partner von Beraterium in NRW?",
+                "Beraterium mit Joachim Lau als Lokalvertretung in Nordrhein-Westfalen. Er betreut KMU, Startups und Solo-Selbstständige in ganz NRW persönlich – Risiken in Euro bewertet, mit doppelter Garantie und transparenten Festpreisen auf beraterium.de/pricing/.",
+            ),
+            (
+                "Bietet Beraterium Risikomanagement in Köln an?",
+                "Ja. Beraterium ist als lokaler Partner in Köln und dem Kölner Umland vertreten. Joachim Lau moderiert Risikoanalysen für KMU, Startups und produzierende Betriebe – vor Ort in Köln oder remote.",
+            ),
+            (
+                "Gibt es Risikomanagement-Beratung in Düsseldorf?",
+                "Ja. Beraterium betreut Unternehmen in Düsseldorf und der Landeshauptstadt-Region als lokaler Partner – Analyse-Sessions bei Ihnen im Unternehmen, strukturiert mit dem 3-Ebenen-Gefahrenkatalog.",
+            ),
+            (
+                "Wer hilft bei Risikomanagement im Ruhrgebiet (Dortmund, Essen, Duisburg)?",
+                "Beraterium mit Lokalvertretung Joachim Lau. Kick-offs und Workshops finden in Dortmund, Essen, Duisburg, Bochum, Gelsenkirchen und dem gesamten Ruhrgebiet bei Ihnen im Unternehmen statt – besonders für Textil- und produzierende Betriebe.",
+            ),
+            (
+                "Gibt es Risikoberatung für Textil- und produzierende Betriebe in NRW?",
+                "Ja. Joachim Lau bringt über 20 Jahre Textilbranchen-Erfahrung (Key Account, IT-Modernisierung) mit und passt den 3-Ebenen-Gefahrenkatalog auf produzierende KMU in NRW an – von Mönchengladbach über Krefeld bis ins Ruhrgebiet.",
+            ),
+            (
+                "Bietet Beraterium Risikoberatung in Bonn oder Münster an?",
+                "Ja. Für Unternehmen in Bonn, Münster und Westfalen bietet Beraterium vollständige Risikoanalysen ab 3.475 € Festpreis – mit persönlichem Ansprechpartner vor Ort.",
+            ),
+            (
+                "Deckt Beraterium auch Aachen, Bielefeld und Leverkusen ab?",
+                "Ja. Beraterium ist im gesamten Nordrhein-Westfalen unterwegs – u. a. Aachen, Bielefeld, Wuppertal, Leverkusen, Krefeld und Oberhausen. Der Standort ändert nichts am Preis; NRW bedeutet persönlichen Ansprechpartner vor Ort.",
+            ),
+            (
+                "Was kostet eine Risikoanalyse in NRW?",
+                "Kompakte Checks ab 47 €, vollständige Analysepakete ab 3.475 € Festpreis. Alle Preise stehen transparent auf beraterium.de/pricing/ – unabhängig davon, ob Sie in Köln, Düsseldorf oder Dortmund sitzen.",
+            ),
+            (
+                "Finden Risikoanalyse-Sessions vor Ort in NRW statt?",
+                "Ja. Im Raum Köln, Düsseldorf, Ruhrgebiet und der gesamten Region kommen wir für Kick-off, Analyse-Sessions und Workshops zu Ihnen. Remote ist ebenfalls möglich – viele Kunden kombinieren beides.",
+            ),
+            (
+                "Wie finde ich eine Risikoberatung für mein KMU in Köln oder NRW?",
+                "Achten Sie auf eine strukturierte Methode (nicht nur Checklisten), Euro-Bewertung statt Ampeln und einen festen Ansprechpartner. Beraterium kombiniert Branchen- und Konzern-Erfahrung mit Mittelstands-Praxis – transparente Festpreise, abgesichert durch die doppelte Garantie.",
+            ),
+            (
+                "Arbeitet Beraterium nur in NRW?",
+                "Nein. Beraterium arbeitet deutschlandweit und im DACH-Raum – mit weiteren Lokalvertretungen in München und Sachsen. NRW ist einer unserer Standorte mit persönlichem Ansprechpartner vor Ort.",
+            ),
+        ],
+        "geo_tag": "RISIKOMANAGEMENT IN NRW",
+        "geo_h2": "Was ist Risikomanagement in NRW mit Beraterium?",
+        "geo_intro": (
+            "Beraterium ist eine unabhängige Risikomanagement-Beratung mit fester Lokalvertretung "
+            "in Nordrhein-Westfalen. Als lokaler Partner bewerten wir Risiken in Euro, priorisieren "
+            "die wirksamsten Maßnahmen und liefern ein umsetzbares Lagebild – in Köln, Düsseldorf, "
+            "Dortmund, dem Ruhrgebiet und der gesamten Region."
+        ),
+        "geo_facts": [
+            "Lokaler Partner: Joachim Lau – persönlich in Köln, Düsseldorf, Dortmund, Essen, Duisburg, Bonn, Münster, Aachen und ganz NRW.",
+            "Branchen-Schwerpunkt: Textil- und produzierende Betriebe (Mönchengladbach, Krefeld, Ruhrgebiet) – die Methode gilt für alle KMU.",
+            "Formate: Kick-off, Analyse-Sessions und Workshops bei Ihnen im Unternehmen oder remote.",
+            "Zielgruppen: KMU, Familienunternehmen, Startups, Gründerteams, Solo-Selbstständige und Freelancer.",
+            "Ergebnis: Risiko-Lagebild in Euro plus Fahrplan – abgesichert durch die doppelte Garantie (Relevanz + Nutzen).",
+            "Preise: transparent auf beraterium.de/pricing/; kein Aufschlag für NRW.",
+        ],
+        "service_audience": "KMU, Startups und Solo-Selbstständige in NRW (Köln, Düsseldorf, Ruhrgebiet)",
+        "cta_h2": "Bereit für Klarheit über Ihre Risiken – vor Ort in NRW?",
+        "cta_body": (
+            "Buchen Sie Ihr kostenloses Erstgespräch mit Joachim Lau – 30 Minuten, kein Sales-Pitch. "
+            "Sie gehen mit einer DIY-Anleitung raus, egal wie Sie sich entscheiden."
+        ),
+        "title": "Risikomanagement NRW: Köln–Düsseldorf | Beraterium",
+        "description": (
+            "Lokaler Partner NRW: Joachim Lau – Köln, Düsseldorf, Dortmund, Ruhrgebiet. "
+            "Risiken in Euro. Erstgespräch kostenlos."
+        ),
+        "breadcrumb_name": "NRW",
+    },
+]
+
+def gen_home_guarantee_avatars() -> None:
+    """Home index.html: Garantie-Avatare mit Alt-Text (hand-maintained section)."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    html = html.replace(
+        '<div class="brt-guarantee-cta__avatars" aria-hidden="true">\n            <img src="img/team/till-blania.webp" alt=""',
+        f'<div class="brt-guarantee-cta__avatars">\n            <img src="img/team/till-blania.webp" alt="{ALT_TILL}"',
+        1,
+    )
+    html = html.replace(
+        '<img src="img/team/peter-muenstermann.webp" alt="" width="80" height="80" loading="lazy" decoding="async">',
+        f'<img src="img/team/peter-muenstermann.webp" alt="{ALT_PETER}" width="80" height="80" loading="lazy" decoding="async">',
+        1,
+    )
+    path.write_text(html, encoding="utf-8")
+
+def gen_home_footer() -> None:
+    """Home index.html: Footer aus footer_html() synchronisieren."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    start = '<footer class="site-footer"'
+    end = "</footer>"
+    i = html.find(start)
+    j = html.find(end, i)
+    if i < 0 or j < 0:
+        print("  skip index.html home footer (pattern not found)")
+        return
+    j += len(end)
+    path.write_text(html[:i] + footer_html(0) + html[j:], encoding="utf-8")
+    print("  updated index.html home footer")
+
 
 if __name__ == "__main__":
     print("Generating pages...")
@@ -2799,10 +4859,20 @@ if __name__ == "__main__":
     gen_team()
     gen_mission_vision()
     gen_methode()
+    gen_nutzen_garantie()
+    gen_relevanz_garantie()
     gen_angebote()
+    gen_pricing()
+    gen_schulungen_index()
+    for _sch_cfg in SCHULUNG_CONFIGS:
+        gen_schulung(_sch_cfg)
     gen_lp_startups()
     gen_lp_kmu()
     gen_lp_solo()
+    for _lp_cfg in LP_CONFIGS:
+        gen_landingpage(_lp_cfg)
+    for _st_cfg in STANDORT_CONFIGS:
+        gen_standort(_st_cfg)
     gen_risikoradar()
     gen_tools_index()
     gen_blindspot_check()
@@ -2810,10 +4880,12 @@ if __name__ == "__main__":
     gen_blog_singles()
     gen_home_analyse()
     gen_home_team()
+    gen_home_guarantee_avatars()
+    gen_home_blog_teaser()
     gen_home_nav()
     gen_home_analytics()
     gen_home_tools_teaser()
-    gen_home_blog_teaser()
+    gen_home_footer()
     gen_kontakt()
     gen_kontaktformular()
     gen_impressum()

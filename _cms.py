@@ -52,7 +52,7 @@ CATEGORY_SLUGS = {
     "Solo": "solo",
 }
 
-SITE_URL = "https://en.beraterium.de"
+SITE_URL = "https://www.beraterium.com"
 
 HOME_TEAM_FEATURED_SLUGS = (
     "till-blania",
@@ -1435,6 +1435,7 @@ def service_schema(
     audience: str | None = None,
     service_type: str = "Risk management consulting",
     area_served: str = "DE",
+    cities_served: list[str] | None = None,
 ) -> str:
     graph: dict[str, Any] = {
         "@context": "https://schema.org",
@@ -1444,7 +1445,12 @@ def service_schema(
         "description": description,
         "url": f"{SITE_URL}{url}",
         "provider": {"@id": f"{SITE_URL}/#organization"},
-        "areaServed": {"@type": "Country", "name": area_served},
+        "areaServed": (
+            [{"@type": "City", "name": c} for c in cities_served]
+            + [{"@type": "AdministrativeArea", "name": area_served}]
+            if cities_served
+            else {"@type": "Country", "name": area_served}
+        ),
     }
     if audience:
         graph["audience"] = {"@type": "Audience", "audienceType": audience}
@@ -1470,6 +1476,244 @@ def speakable_webpage_schema(
     return json.dumps(graph, ensure_ascii=False, indent=2)
 
 
+def _offer_jsonld(offer: dict[str, Any], url: str) -> dict[str, Any]:
+    """Ein Angebot aus _pricing.py als schema.org Offer.
+
+    Festpreis (price) -> PriceSpecification; "ab"-Preis (price_from) ->
+    UnitPriceSpecification mit price = niedrigster Staffelpreis. Die volle
+    Staffel steht als Klartext in der description (LLMs lesen beides).
+    """
+    desc = offer["desc"]
+    if offer.get("duration"):
+        desc = f"{desc} Duration: {offer['duration']}."
+    if offer.get("price_detail"):
+        desc = f"{desc} Price: {offer['price_detail']}."
+    item: dict[str, Any] = {
+        "@type": "Offer",
+        "name": f"{offer['name']} ({offer['nr']})",
+        "description": desc,
+        "url": f"{SITE_URL}{url}#{offer['nr'].lower()}",
+        "priceCurrency": "EUR",
+        "seller": {"@id": f"{SITE_URL}/#organization"},
+        "itemOffered": {
+            "@type": "Service",
+            "name": offer["name"],
+            "description": offer["desc"],
+            "provider": {"@id": f"{SITE_URL}/#organization"},
+        },
+        "availability": "https://schema.org/InStock",
+    }
+    if "price" in offer:
+        item["price"] = str(offer["price"])
+        item["priceSpecification"] = {
+            "@type": "PriceSpecification",
+            "price": str(offer["price"]),
+            "priceCurrency": "EUR",
+        }
+    elif "price_base" in offer:
+        # Schulungen: Basispreis (1 Teilnehmer) als Einstiegspreis; Staffel
+        # (Aufpreis je Teilnehmer, Team-Pauschale) als Klartext in description.
+        item["price"] = str(offer["price_base"])
+        item["priceSpecification"] = {
+            "@type": "PriceSpecification",
+            "price": str(offer["price_base"]),
+            "priceCurrency": "EUR",
+        }
+    else:
+        spec: dict[str, Any] = {
+            "@type": "UnitPriceSpecification",
+            "price": str(offer["price_from"]),
+            "priceCurrency": "EUR",
+        }
+        if offer.get("unit"):
+            spec["unitText"] = offer["unit"]
+        item["price"] = str(offer["price_from"])
+        item["priceSpecification"] = spec
+    return item
+
+
+def offer_catalog_schema(
+    *,
+    name: str,
+    description: str,
+    url: str,
+    categories: list[dict[str, Any]],
+    service_type: str = "Risk management consulting",
+) -> str:
+    """Service + hasOfferCatalog-JSON-LD für die Preisseite (GEO).
+
+    categories = PRICE_CATEGORIES aus _pricing.py; je Kategorie ein
+    verschachtelter OfferCatalog, je Angebot ein Offer mit priceSpecification,
+    damit LLMs und Suchmaschinen Preise maschinell vergleichen können.
+    """
+    catalogs = [
+        {
+            "@type": "OfferCatalog",
+            "name": cat["title"],
+            "itemListElement": [_offer_jsonld(o, url) for o in cat["offers"]],
+        }
+        for cat in categories
+    ]
+    graph: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": service_type,
+        "name": name,
+        "description": description,
+        "url": f"{SITE_URL}{url}",
+        "provider": {"@id": f"{SITE_URL}/#organization"},
+        "areaServed": {"@type": "Country", "name": "DE"},
+        "audience": {"@type": "Audience", "audienceType": "SMEs, startups, solo self-employed"},
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": name,
+            "itemListElement": catalogs,
+        },
+        "termsOfService": f"{SITE_URL}/terms/",
+        "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "EUR",
+            "lowPrice": "0",
+            "highPrice": "9675",
+            "offerCount": sum(len(c["offers"]) for c in categories),
+            "url": f"{SITE_URL}{url}",
+        },
+    }
+    return json.dumps(graph, ensure_ascii=False, indent=2)
+
+
+def course_schema(
+    *,
+    name: str,
+    description: str,
+    url: str,
+    price: int,
+    price_detail: str = "",
+    workload_iso: str = "",
+) -> str:
+    """schema.org Course fuer Schulungs-Unterseiten (/schulungen/<slug>/).
+
+    price = Basispreis (1 Teilnehmer); die volle Staffel (Aufpreis je
+    Teilnehmer, Team-Pauschale) steht als Klartext in der description.
+    workload_iso = ISO-8601-Dauer (z. B. "PT6H") fuer CourseInstance.
+    """
+    desc = f"{description} Price: {price_detail}." if price_detail else description
+    graph: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "Course",
+        "name": name,
+        "description": desc,
+        "url": f"{SITE_URL}{url}",
+        "provider": {"@id": f"{SITE_URL}/#organization"},
+        "inLanguage": "en-GB",
+        "educationalLevel": "Professional",
+        "teaches": "Risikomanagement, Risikokultur, Fuehrung unter Unsicherheit",
+        "offers": {
+            "@type": "Offer",
+            "price": str(price),
+            "priceCurrency": "EUR",
+            "url": f"{SITE_URL}{url}",
+            "category": "Paid",
+            "seller": {"@id": f"{SITE_URL}/#organization"},
+            "availability": "https://schema.org/InStock",
+        },
+    }
+    if workload_iso:
+        graph["hasCourseInstance"] = {
+            "@type": "CourseInstance",
+            "courseMode": ["Onsite", "Online"],
+            "courseWorkload": workload_iso,
+        }
+    return json.dumps(graph, ensure_ascii=False, indent=2)
+
+
+def speakable_webpage_schema(
+    url: str,
+    *,
+    selectors: list[str] | None = None,
+) -> str:
+    """SpeakableSpecification fuer Sprachassistenten (GEO/AEO)."""
+    sels = selectors or [".brt-faq__answer", ".brt-highlight-box", ".brt-body"]
+    graph: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": f"{SITE_URL}{url}#webpage",
+        "url": f"{SITE_URL}{url}",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": sels,
+        },
+    }
+    return json.dumps(graph, ensure_ascii=False, indent=2)
+
+
+def local_business_schema(
+    *,
+    name: str,
+    description: str,
+    url: str,
+    locality: str,
+    region: str,
+    latitude: float,
+    longitude: float,
+    email: str = "",
+    telephone: str = "",
+    employee_name: str = "",
+    employee_id: str = "",
+    schema_locality: str = "",
+    street_address: str = "",
+    postal_code: str = "",
+    cities_served: list[str] | None = None,
+) -> str:
+    """LocalBusiness/ProfessionalService fuer /standort/<slug>/ (Local SEO).
+
+    Bewusst nur Region-Level (keine streetAddress), bis die endgueltige
+    Adresse feststeht -- vermeidet NAP-Inkonsistenzen beim Umzug.
+    """
+    graph: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "name": name,
+        "description": description,
+        "url": f"{SITE_URL}{url}",
+        "parentOrganization": {"@id": f"{SITE_URL}/#organization"},
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": locality,
+            "addressRegion": region,
+            "addressCountry": "DE",
+        },
+        "@id": f"{SITE_URL}{url}#local",
+        "geo": {"@type": "GeoCoordinates", "latitude": latitude, "longitude": longitude},
+        "serviceType": "Risk management consulting",
+        "areaServed": (
+            [{"@type": "City", "name": c} for c in cities_served]
+            + [{"@type": "AdministrativeArea", "name": region}]
+            if cities_served
+            else [
+                {"@type": "City", "name": locality},
+                {"@type": "AdministrativeArea", "name": region},
+            ]
+        ),
+    }
+    addr_locality = schema_locality or locality
+    graph["address"]["addressLocality"] = addr_locality
+    if street_address:
+        graph["address"]["streetAddress"] = street_address
+    if postal_code:
+        graph["address"]["postalCode"] = postal_code
+    if employee_name:
+        emp: dict[str, Any] = {"@type": "Person", "name": employee_name}
+        if employee_id:
+            emp["@id"] = employee_id
+        graph["employee"] = emp
+    if email:
+        graph["email"] = f"mailto:{email}"
+    if telephone:
+        graph["telephone"] = telephone
+    return json.dumps(graph, ensure_ascii=False, indent=2)
+
+
 def combine_jsonld(*blocks: str) -> str:
     parsed = [json.loads(b) for b in blocks if b and b.strip()]
     if not parsed:
@@ -1492,9 +1736,27 @@ def gen_sitemap_urls() -> list[str]:
         "/services/startups/",
         "/services/smb/",
         "/services/solo/",
+        "/pricing/",
+        "/training/",
+        "/training/risk-expert/",
+        "/training/risk-awareness-culture/",
+        "/training/risk-aware-manager/",
+        "/training/practical-risk-management/",
+        "/training/innovation-management/",
+        "/training/feedback-culture/",
+        "/training/cultural-management/",
         "/risk-radar/",
         "/tools/",
         "/tools/blindspot-check/",
+        "/solutions/nis2/",
+        "/solutions/succession/",
+        "/solutions/cyber-attack/",
+        "/solutions/self-employed-protection/",
+        "/solutions/key-person-risk/",
+        "/solutions/investor-due-diligence/",
+        "/locations/munich/",
+        "/locations/saxony/",
+        "/locations/nrw/",
         "/blog/",
         "/contact/",
         "/contact-form/",
@@ -1510,10 +1772,16 @@ def gen_sitemap_urls() -> list[str]:
 
 def write_sitemap() -> None:
     urls = gen_sitemap_urls()
+    blog_lastmod = {
+        f"{SITE_URL}/blog/{post.slug}/": post.date.isoformat()
+        for post in load_blog_posts()
+    }
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for url in urls:
         lines.append("  <url>")
         lines.append(f"    <loc>{url}</loc>")
+        if url in blog_lastmod:
+            lines.append(f"    <lastmod>{blog_lastmod[url]}</lastmod>")
         lines.append("  </url>")
     lines.append("</urlset>")
     (SITE / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")

@@ -44,21 +44,71 @@
   }
 }
 
-/* Team + Standort: Portrait 4/5 fest, nicht an ausklappbare Bio-Spalte strecken */
-.brt-page--inner .brt-section[id] .brt-split:has(.brt-team-portrait) {
-  align-items: flex-start;
+/* Equal-height catalog cards (Schulungen index) and blog cards */
+.brt-card--catalog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.brt-page--inner .brt-section[id] .brt-split__media:has(.brt-team-portrait) {
-  align-self: auto;
-  display: block;
+.brt-card--catalog > .brt-card__link {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100%;
 }
 
-.brt-page--inner .brt-section[id] .brt-split__media .brt-team-portrait {
-  aspect-ratio: 4 / 5;
-  height: auto;
-  object-fit: cover;
-  object-position: center top;
+.brt-card--catalog .brt-h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.2em * 3);
+}
+
+.brt-card--catalog .brt-body {
+  flex: 1;
+  max-width: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.brt-card--catalog > .brt-card__link > .brt-meta:last-child {
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+
+.brt-card--blog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.brt-card--blog > .brt-card__link {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.brt-card--blog .brt-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.brt-card--blog .brt-h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.brt-card--blog .brt-card__body > .brt-btn--ghost {
+  margin-top: auto;
+  padding-top: var(--space-4);
+  align-self: flex-start;
 }
 
 /* Blog card thumbs: fill 16:9 crop (fixes blue gap under hero images in grid) */
@@ -87,3 +137,127 @@
   }
 }
 
+/* Klick-to-load Google Maps (Standort-Seiten) */
+.brt-map-embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.brt-map-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.brt-map-embed__poster {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  height: 100%;
+  padding: var(--space-6);
+  border: 1px dashed rgba(14, 17, 22, 0.25);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(14, 17, 22, 0.06), transparent 55%),
+    radial-gradient(circle at 75% 65%, rgba(14, 17, 22, 0.05), transparent 50%),
+    #f2f4f7;
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s ease;
+}
+
+.brt-map-embed__poster:hover {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(14, 17, 22, 0.09), transparent 55%),
+    radial-gradient(circle at 75% 65%, rgba(14, 17, 22, 0.07), transparent 50%),
+    #eceef2;
+}
+
+.brt-map-embed__poster:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.brt-map-embed__label {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.brt-map-embed__hint {
+  max-width: 42ch;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+/* Team + Standort: Portrait 4/5 fest, nicht an ausklappbare Bio-Spalte strecken */
+.brt-page--inner .brt-section[id] .brt-split:has(.brt-team-portrait) {
+  align-items: flex-start;
+}
+
+.brt-page--inner .brt-section[id] .brt-split__media:has(.brt-team-portrait) {
+  align-self: auto;
+  display: block;
+}
+
+.brt-page--inner .brt-section[id] .brt-split__media .brt-team-portrait {
+  aspect-ratio: 4 / 5;
+  height: auto;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Linked offer/overview cards (Standort, LPs): title + CTA meta blue on hover like blog cards */
+.brt-card.brt-hover-lift:has(> .brt-card__link) {
+  padding: 0;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.brt-card.brt-hover-lift > .brt-card__link {
+  padding: var(--space-8);
+  height: 100%;
+}
+
+.brt-card.brt-hover-lift:has(> .brt-card__link):hover {
+  border-color: rgba(11, 95, 255, 0.25);
+}
+
+.brt-card.brt-hover-lift .brt-card__link .brt-h3,
+.brt-card.brt-hover-lift .brt-card__link .brt-meta {
+  transition: color 200ms ease;
+}
+
+.brt-card.brt-hover-lift:hover .brt-card__link .brt-h3,
+.brt-card.brt-hover-lift:hover .brt-card__link .brt-meta,
+.brt-card.brt-hover-lift > .brt-card__link:hover .brt-h3,
+.brt-card.brt-hover-lift > .brt-card__link:hover .brt-meta {
+  color: var(--color-accent);
+}
+
+.brt-card.brt-hover-lift:hover .brt-card__link .brt-meta,
+.brt-card.brt-hover-lift > .brt-card__link:hover .brt-meta {
+  font-weight: 600;
+}
+
+/* Schulungen-Katalog: Box-Hover → nur CTA; Titel nur bei direktem Hover */
+.brt-card--catalog.brt-hover-lift:hover .brt-card__link .brt-h3 {
+  color: var(--color-ink);
+}
+
+.brt-card--catalog.brt-hover-lift:hover .brt-card__link .brt-meta:not(:last-child) {
+  color: var(--color-muted);
+}
+
+.brt-card--catalog.brt-hover-lift:hover .brt-card__link > .brt-meta:last-child {
+  color: var(--color-accent);
+}
+
+.brt-card--catalog.brt-hover-lift:hover .brt-card__link .brt-h3:hover {
+  color: var(--color-accent);
+}

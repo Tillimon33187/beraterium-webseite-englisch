@@ -1,6 +1,30 @@
 # https://www.robotstxt.org/
 
+# Allow crawling of all content
 User-agent: *
 Disallow:
 
-Sitemap: https://en.beraterium.de/sitemap.xml
+# AI search / LLM crawlers explicitly allowed (GEO/AEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://www.beraterium.com/sitemap.xml
+LLM: https://www.beraterium.com/llms.txt

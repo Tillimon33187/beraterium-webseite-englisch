@@ -41,9 +41,9 @@
     hint.id = "brt-file-protocol-hint";
     hint.setAttribute("role", "status");
     hint.innerHTML =
-      "<strong>Local preview:</strong> This browser blocks CSS and images on <code>file://</code>. " +
-      "Open in <strong>Chrome</strong> or <strong>Safari</strong> (double-click <code>index.html</code> or <code>ÖFFNEN.command</code>). " +
-      "Comet only: <code>python3 Webseite/preview-local.py</code> → http://127.0.0.1:8766/";
+      "<strong>Lokale Vorschau:</strong> In diesem Browser werden CSS und Bilder unter <code>file://</code> blockiert. " +
+      "Seite in <strong>Chrome</strong> oder <strong>Safari</strong> öffnen (Doppelklick auf <code>index.html</code> oder <code>ÖFFNEN.command</code>). " +
+      "Alternativ nur für Comet: <code>python3 Webseite/preview-local.py</code> → http://127.0.0.1:8765/";
     hint.style.cssText =
       "margin:1rem;padding:1rem;background:#fff3cd;color:#0e1116;border:1px solid #856404;" +
       "font:14px/1.5 system-ui,sans-serif;";
