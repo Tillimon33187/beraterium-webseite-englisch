@@ -1,0 +1,76 @@
+{
+  "title": "relevance-guarantee-threshold",
+  "slug": "relevanz-schwelle",
+  "language": "en",
+  "intent": "editorial",
+  "subject": "Consultant and SME owner at a bright workshop table mark a clear damage-threshold line on a simple risk board: smaller risks below the line stay grey, one risk above the line is highlighted in cyan with an abstract euro figure.",
+  "context": "Beraterium Relevanz-Garantie page section “Was relevant bedeutet” (DE) / “What relevant means” (EN). Visualises jointly agreed damage threshold in kick-off — not generic insurance, not alarmist. Professional B2B editorial for static website split column.",
+  "platform_website": {
+    "orientation": "landscape",
+    "primary_export_px": {
+      "width": 1536,
+      "height": 1024
+    },
+    "aspect_ratio": "3:2 (split media beside text on guarantee subpage)",
+    "upload_source_png": "Webseite/site/img/garantie/relevanz-schwelle.png",
+    "optimized_variants_en": "Convert PNG to WebP as img/garantie/relevanz-schwelle.webp for _gen_pages.py IMG_RELEVANZ_SCHWELLE",
+    "best_practice_notes_en": "Single readable focal point; threshold motif obvious at glance; calm office/workshop; works at ~480px column width and ~600px desktop split.",
+    "safe_zone_en": "Keep threshold board and hands in central 85%; avoid critical detail in outer 8% edges (rounded card crop)."
+  },
+  "composition": {
+    "shot_type": "medium-wide",
+    "camera_angle": "slightly elevated eye-level",
+    "depth": "foreground marker pen and corner of threshold chart, midground two people gesturing at board, soft blurred office background",
+    "aspect_ratios": [
+      "3:2",
+      "4:3",
+      "1:1"
+    ]
+  },
+  "lighting": {
+    "style": "soft natural window light with clean corporate falloff",
+    "direction": "from left",
+    "contrast": "medium"
+  },
+  "color_palette": {
+    "primary": "#041E42",
+    "secondary": "#0B5FFF",
+    "accent": "#0D9488",
+    "background": "#F5F7FA"
+  },
+  "style": {
+    "visual_style": "clean editorial realism",
+    "detail_level": "medium-high",
+    "mood": "collaborative, clear, trustworthy — joint decision not sales pressure"
+  },
+  "optional_text_overlay": {
+    "recommended_for_blog_hero": false,
+    "display_language": "de",
+    "line_1_optional": "",
+    "typography_en": "No text on image — H2 and body copy render beside image.",
+    "prompt_instruction_en": "No readable text, numbers or logos on the board; abstract bars/lines only."
+  },
+  "negative_prompt": [
+    "no watermark",
+    "no distorted hands",
+    "no extra fingers",
+    "no readable text or euro amounts on screen",
+    "no third-party logos",
+    "no insurance contract clichés",
+    "no red alarm icons",
+    "no generic stock photo handshake",
+    "no low-resolution artifacts",
+    "no identifiable real persons or celebrities",
+    "no Beraterium logo unless brand-approved",
+    "no cluttered whiteboard"
+  ],
+  "seo": {
+    "target_keyword": "Relevanz-Garantie Schadensschwelle",
+    "alt_text_de": "Berater und Unternehmer legen im Kick-off die Schadensschwelle für relevante Risiken fest",
+    "alt_text_en": "Consultant and business owner agreeing the damage threshold for relevant risks in a kick-off workshop",
+    "caption": "Die Schadensschwelle wird gemeinsam im Kick-off festgelegt — darunter zählt ein Risiko nicht als relevant im Sinne der Garantie.",
+    "filename": "relevanz-schwelle.webp",
+    "image_title": "Relevanz-Garantie — gemeinsam festgelegte Schadensschwelle"
+  },
+  "generation_prompt_single_block_en": "Editorial photograph 1536x1024, 3:2. Modern SME workshop room, navy (#041E42) and cyan (#0B5FFF) accents with subtle teal (#0D9488). Two professionals (consultant + business owner, smart casual, diverse but non-identifiable) at clean table reviewing a simple vertical risk chart on a stand. Clear horizontal threshold line across chart: muted grey bars below, one bar above highlighted in cyan suggesting higher damage potential — abstract only, no readable numbers or text. Foreground: marker pen. Soft window light from left, medium contrast, collaborative calm mood. Clean editorial realism, medium-high detail. No text, watermarks, logos, alarm symbols, handshake clichés, distorted hands. Safe zone: subject central 85% width."
+}

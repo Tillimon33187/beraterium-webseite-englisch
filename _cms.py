@@ -119,6 +119,7 @@ class BlogPost:
     category: str
     author: str
     excerpt: str
+    seo_title: str = ""
     hero_image: str = ""
     hero_alt: str = ""
     draft: bool = True
@@ -773,6 +774,7 @@ def load_blog_posts(*, include_drafts: bool = False) -> list[BlogPost]:
                 category=meta.get("category", "Risk management"),
                 author=meta.get("author", ""),
                 excerpt=excerpt,
+                seo_title=str(meta.get("seo_title", "") or "").strip(),
                 hero_image=meta.get("hero_image", ""),
                 hero_alt=meta.get("hero_alt", meta.get("title", "")),
                 draft=draft,
@@ -1335,6 +1337,41 @@ def person_schema(member: TeamMember) -> dict[str, Any]:
     return data
 
 
+
+BLOG_SHELL_TITLE_SUFFIX = " | Beraterium Blog"
+BLOG_META_DESC_MAX = 155
+
+
+def blog_shell_title(post: BlogPost) -> str:
+    """Page <title> for blog posts: optional seo_title, max ~60 chars total."""
+    base = (post.seo_title or post.title).strip()
+    full = f"{base}{BLOG_SHELL_TITLE_SUFFIX}"
+    if len(full) <= 60:
+        return full
+    max_base = 60 - len(BLOG_SHELL_TITLE_SUFFIX)
+    trimmed = base[:max_base]
+    if " " in trimmed:
+        trimmed = trimmed.rsplit(" ", 1)[0].rstrip("–—-:, ")
+    return f"{trimmed}{BLOG_SHELL_TITLE_SUFFIX}"
+
+
+def blog_meta_description(excerpt: str) -> str:
+    """Meta description capped at 155 chars (word-safe)."""
+    text = (excerpt or "").strip()
+    if len(text) <= BLOG_META_DESC_MAX:
+        return text
+    trimmed = text[: BLOG_META_DESC_MAX - 1].rsplit(" ", 1)[0]
+    return trimmed.rstrip("–—-:, ") + "…"
+
+
+def blog_hero_public_url(hero_image: str, site_url: str = SITE_URL) -> str:
+    """Public hero URL for schema/OG — prefer delivered .webp over frontmatter .png."""
+    path = (hero_image or "").strip().lstrip("/")
+    if path.endswith(".png"):
+        path = path[:-4] + ".webp"
+    return f"{site_url}/{path}"
+
+
 def blog_posting_schema(post: BlogPost, author: TeamMember | None) -> str:
     author_obj: dict[str, Any] = {"@type": "Person", "name": author.name if author else "Beraterium"}
     if author and author.image:
@@ -1352,7 +1389,7 @@ def blog_posting_schema(post: BlogPost, author: TeamMember | None) -> str:
         "inLanguage": "en-GB",
     }
     if post.hero_image:
-        graph["image"] = f"{SITE_URL}/{post.hero_image}"
+        graph["image"] = blog_hero_public_url(post.hero_image)
     return json.dumps(graph, ensure_ascii=False, indent=2)
 
 
@@ -1449,11 +1486,15 @@ def gen_sitemap_urls() -> list[str]:
         "/team/",
         "/mission-vision/",
         "/method/",
+        "/benefit-guarantee/",
+        "/relevance-guarantee/",
         "/services/",
         "/services/startups/",
         "/services/smb/",
         "/services/solo/",
         "/risk-radar/",
+        "/tools/",
+        "/tools/blindspot-check/",
         "/blog/",
         "/contact/",
         "/contact-form/",

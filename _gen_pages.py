@@ -6,9 +6,12 @@ import json
 from html import escape
 from pathlib import Path
 
+from _blindspot import blindspot_config_json
+from _blindspot import selfcheck as blindspot_selfcheck
 from _i18n import hreflang_links, language_switcher_html
 
 from _cms import (
+    SITE_URL,
     BlogPost,
     TeamMember,
     about_founder_section_html,
@@ -40,7 +43,7 @@ from _cms import (
 )
 
 SITE = Path(__file__).parent
-BRT_ASSET_VERSION = "20260626-header-hero"
+BRT_ASSET_VERSION = "20260715-blindspot-v5"
 
 IMG_HOME_ANALYSE = "img/home/analyse-situation.webp"
 IMG_METHODE_GEFAHRENKATALOG = "img/methode/gefahrenkatalog-3-ebenen.webp"
@@ -48,6 +51,8 @@ IMG_UEBER_UNS_RISIKORADAR = "img/ueber-uns/risikoradar.webp"
 IMG_ANGEBOT_STARTUPS_HERO = "img/angebote/startups/hero.webp"
 IMG_ANGEBOT_KMU_HERO = "img/angebote/kmu/hero.webp"
 IMG_ANGEBOT_SOLO_HERO = "img/angebote/solo/hero.webp"
+IMG_RELEVANZ_SCHWELLE = "img/garantie/relevanz-schwelle.webp"
+IMG_NUTZEN_KRITERIEN = "img/garantie/nutzen-kriterien.webp"
 
 
 def _depth_from_pre(pre: str) -> int:
@@ -77,11 +82,23 @@ COOKIEYES_HEAD = """  <!-- Start cookieyes banner -->
   <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/d36bc57a067448f51ec9da2968bc257a/script.js"></script>
   <!-- End cookieyes banner -->"""
 
+GA4_MEASUREMENT_ID = "G-BM435GHE6W"
+
+GA4_ANALYTICS_HEAD = f"""  <!-- Google tag (gtag.js) — loads only after Analytics consent (CookieYes) -->
+  <script type="text/plain" data-cookieyes="analytics" async src="https://www.googletagmanager.com/gtag/js?id={GA4_MEASUREMENT_ID}"></script>
+  <script type="text/plain" data-cookieyes="analytics">
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+    gtag('config', '{GA4_MEASUREMENT_ID}');
+  </script>"""
+
 NAV = [
     ("services", "Services"),
     ("method", "Method"),
     ("about", "About us"),
     ("risk-radar", "Risk Radar"),
+    ("tools", "Tools"),
     ("blog", "Blog"),
 ]
 
@@ -103,6 +120,8 @@ def nav_html(depth: int, active: str | None) -> str:
     services_active = bool(active and active.startswith("services"))
     services_cur = ' aria-current="page"' if active == "services" else ""
     about_active = active in ("about", "team")
+    tools_active = bool(active and active.startswith("tools"))
+    tools_cur = ' aria-current="page"' if active == "tools" else ""
 
     def service_sub_cur(slug: str) -> str:
         return ' aria-current="page"' if active == f"services/{slug}" else ""
@@ -134,6 +153,15 @@ def nav_html(depth: int, active: str | None) -> str:
           </ul>
         </li>""",
         f'        <li><a href="{pre}risk-radar/"{nav_cur("risk-radar")}>Risk Radar</a></li>',
+        f"""        <li class="site-header__item site-header__item--has-menu{" is-active" if tools_active else ""}">
+          <a href="{pre}tools/" class="site-header__parent-link"{tools_cur} aria-expanded="false">
+            Tools
+            {CARET_SVG}
+          </a>
+          <ul class="site-header__submenu" aria-label="Tools">
+            <li><a href="{pre}tools/blindspot-check/"{nav_cur("tools/blindspot-check")}>Blindspot Check</a></li>
+          </ul>
+        </li>""",
         f'        <li><a href="{pre}blog/"{nav_cur("blog")}>Blog</a></li>',
     ]
     return "\n".join(items)
@@ -193,6 +221,8 @@ def shell(
     main: str,
     json_ld: str = "",
     noindex: bool = False,
+    extra_css: str = "",
+    extra_scripts: str = "",
 ) -> str:
     pre = pfx(depth)
     home = pre or "./"
@@ -205,6 +235,7 @@ def shell(
 
 <head>
 {COOKIEYES_HEAD}
+{GA4_ANALYTICS_HEAD}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
@@ -228,7 +259,7 @@ def shell(
 
   <link rel="stylesheet" href="{pre}css/brt.css?v={BRT_ASSET_VERSION}" data-brt-css>
   <link rel="stylesheet" href="{pre}css/brt-fallback.css?v={BRT_ASSET_VERSION}">
-  <link rel="stylesheet" href="{pre}css/brt-layout-fix.css?v={BRT_ASSET_VERSION}">
+  <link rel="stylesheet" href="{pre}css/brt-layout-fix.css?v={BRT_ASSET_VERSION}">{extra_css}
   <script src="{pre}js/brt-init.js"></script>{ld}
 </head>
 
@@ -258,7 +289,7 @@ def shell(
 
 {footer_html(depth)}
 
-<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>
+<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>{extra_scripts}
 
 </body>
 </html>
@@ -321,6 +352,196 @@ def cta_band(pre: str, h2: str, body: str, btn: str = "Book a free intro call") 
         <h2 id="final-cta" class="brt-h2 brt-h2--on-dark">{h2}</h2>
         <p class="brt-body brt-body--on-dark">{body}</p>
         <a class="brt-btn brt-btn--on-dark brt-btn--lg" href="{pre}contact/">{btn}</a>
+      </div>
+    </section>"""
+
+
+
+ICON_GUARANTEE_SHIELD = (
+    '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">'
+    '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>'
+)
+ICON_GUARANTEE_TARGET = (
+    '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">'
+    '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>'
+)
+
+
+def guarantee_stat_row(items: list[tuple[str, str]], *, aria: str) -> str:
+    lis = []
+    for i, (num, label) in enumerate(items):
+        delay = f' style="--fade-delay: {i * 80}ms"' if i else ""
+        lis.append(
+            f'<li class="brt-stat brt-fade-up"{delay}>'
+            f'<span class="brt-stat__number">{num}</span>'
+            f'<span class="brt-stat__label">{label}</span></li>'
+        )
+    return f"""
+    <section class="brt-stat-row brt-section brt-section--compact" aria-label="{aria}">
+      <div class="brt-container">
+        <ul class="brt-stat-row__list">{"".join(lis)}</ul>
+      </div>
+    </section>"""
+
+
+def guarantee_rule_band(quote: str, *, aria: str) -> str:
+    return f"""
+    <section class="brt-quote-band brt-quote-band--accent brt-section--compact" aria-label="{aria}">
+      <div class="brt-container brt-fade-up">
+        <p class="brt-quote-band__text">{quote}</p>
+      </div>
+    </section>"""
+
+
+
+def guarantee_contrast_duo(
+    *,
+    left_tag: str,
+    left_title: str,
+    left_id: str,
+    left_paras: list[str],
+    left_note_label: str,
+    left_note: str,
+    right_tag: str,
+    right_title: str,
+    right_id: str,
+    right_paras: list[str],
+    right_note_label: str,
+    right_note: str,
+    section_id: str,
+) -> str:
+    """Balanced two-card contrast (relevance guarantee: not vs. seek)."""
+
+    def paras_html(items: list[str]) -> str:
+        return "".join(f'<p class="brt-body">{p}</p>' for p in items)
+
+    def card(tag: str, title: str, cid: str, paras: list[str], note_label: str, note: str) -> str:
+        return f"""
+          <li id="{cid}" class="brt-contrast-card brt-fade-up">
+            <p class="brt-tag">{tag}</p>
+            <h2 class="brt-h2">{title}</h2>
+            {paras_html(paras)}
+            <div class="brt-contrast-card__footer">
+              <div class="brt-contrast-card__note">
+                <p class="brt-contrast-card__note-label">{note_label}</p>
+                <p class="brt-body">{note}</p>
+              </div>
+            </div>
+          </li>"""
+
+    return f"""
+    <section id="{section_id}" class="brt-section brt-section--alt brt-section--compact" aria-labelledby="{left_id}-title">
+      <div class="brt-container">
+        <ul class="brt-contrast-duo brt-stagger">
+          {card(left_tag, left_title, left_id, left_paras, left_note_label, left_note)}
+          {card(right_tag, right_title, right_id, right_paras, right_note_label, right_note)}
+        </ul>
+      </div>
+    </section>"""
+
+
+def guarantee_pair_section(pre: str, *, current: str) -> str:
+    """Both guarantees side-by-side (homepage pattern). current: relevanz | nutzen."""
+    cards = {
+        "relevanz": {
+            "slug": "relevance-guarantee",
+            "num": "01",
+            "icon": ICON_GUARANTEE_SHIELD,
+            "title": "Relevance guarantee",
+            "quote": "“We don’t find a relevant risk? Money back.”",
+            "body": "If the analysis doesn’t identify a single risk above the agreed damage threshold, we refund the full amount.",
+            "link": "Learn more →",
+        },
+        "nutzen": {
+            "slug": "benefit-guarantee",
+            "num": "02",
+            "icon": ICON_GUARANTEE_TARGET,
+            "title": "Value guarantee",
+            "quote": "“No measurable value? Money back.”",
+            "body": "If even one of the three agreed criteria isn’t met at the end, we refund 100% of the project price.",
+            "link": "Learn more →",
+        },
+    }
+
+    def card_html(key: str) -> str:
+        c = cards[key]
+        is_current = key == current
+        cls = "brt-card brt-card--guarantee"
+        if is_current:
+            cls += " brt-card--guarantee-current"
+        else:
+            cls += " brt-hover-lift"
+        foot = (
+            f'<div class="brt-guarantee-card__foot"><span class="brt-guarantee-here"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>You are here</span></div>'
+            if is_current
+            else f'<div class="brt-guarantee-card__foot"><a href="{pre}{c["slug"]}/">{c["link"]}</a></div>'
+        )
+        aria = ' aria-current="page"' if is_current else ""
+        return f"""
+          <li class="{cls}"{aria}>
+            <div class="brt-guarantee__visual">
+              <div class="brt-guarantee__icon" aria-hidden="true">{c["icon"]}</div>
+              <span class="brt-guarantee__num" aria-hidden="true">{c["num"]}</span>
+            </div>
+            <h3 class="brt-h3">{c["title"]}</h3>
+            <p class="brt-quote">{c["quote"]}</p>
+            <p class="brt-body">{c["body"]}</p>
+            {foot}
+          </li>"""
+
+    return f"""
+    <section class="brt-section brt-section--alt brt-section--compact" aria-labelledby="guarantee-pair">
+      <div class="brt-container">
+        <header class="brt-section__header brt-section__header--center brt-fade-up">
+          <p class="brt-tag">DOUBLE GUARANTEE</p>
+          <h2 id="guarantee-pair" class="brt-h2">Both pillars of our safety promise</h2>
+          <p class="brt-body brt-section__lede">Two clear promises – if we don’t deliver, we refund the full amount.</p>
+        </header>
+        <ul class="brt-guarantee-duo brt-stagger">
+          {card_html("relevanz")}
+          {card_html("nutzen")}
+        </ul>
+      </div>
+    </section>"""
+
+
+
+
+def guarantee_rich_cta(
+    pre: str,
+    lead: str,
+    sub: str,
+    btn: str,
+    *,
+    contact_slug: str = "contact",
+    team_name: str = "Your Beraterium team",
+    team_note: str = "We’re here for you.",
+    aria: str = "Book intro call",
+) -> str:
+    img = f"{pre}img/team/"
+    return f"""
+    <section class="brt-section brt-section--guarantee brt-section--compact" aria-labelledby="final-cta">
+      <div class="brt-container">
+        <aside class="brt-guarantee-cta brt-fade-up" aria-label="{aria}">
+          <div class="brt-guarantee-cta__icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="brt-guarantee-cta__copy">
+            <p class="brt-guarantee-cta__lead">{lead}</p>
+            <p class="brt-guarantee-cta__sub">{sub}</p>
+          </div>
+          <a class="brt-btn brt-btn--white" href="{pre}{contact_slug}/">{btn}</a>
+          <div class="brt-guarantee-cta__team">
+            <div class="brt-guarantee-cta__avatars">
+              <img src="{img}till-blania.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
+              <img src="{img}peter-muenstermann.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
+            </div>
+            <div>
+              <p class="brt-guarantee-cta__team-name">{team_name}</p>
+              <p class="brt-guarantee-cta__team-note">{team_note}</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>"""
 
@@ -1077,6 +1298,250 @@ def gen_methode() -> None:
     )
 
 
+
+def gen_nutzen_garantie() -> None:
+    pre = "../"
+    faq = [
+        ("Ist das nicht sehr streng für euch?", "Ja, bewusst. Wir tragen das unternehmerische Risiko, nicht Sie. Deshalb gilt die Garantie nur für unsere Kernleistungen (Risikoanalyse-Pakete), nicht automatisch für jede Einzelleistung."),
+        ("Wer legt die drei Kriterien fest?", "Sie und wir gemeinsam, im Kick-off vor Projektstart. Nicht wir allein und nicht Sie allein."),
+        ("Sind weiche Kriterien nicht zu subjektiv?", "Deshalb formulieren wir das weiche Kriterium vorab genauso konkret wie die beiden harten: schriftlich, nachvollziehbar, nicht erst am Ende interpretiert."),
+        ("Was zählt konkret als „erfüllt“?", "Genau das, was im Kick-off schriftlich festgehalten wurde. Keine nachträgliche Auslegung, keine Grauzonen."),
+        ("Gilt die Garantie auch für Workshops oder Einzelberatung?", "Nur, wenn das ausdrücklich vereinbart wurde. Standardmäßig gilt sie für unsere Risikoanalyse-Pakete."),
+        ("Was passiert, wenn ich als Kunde nicht mitwirke?", "Dann kann die Garantie entfallen. Sie setzt voraus, dass Sie Informationen liefern und an vereinbarten Terminen teilnehmen."),
+    ]
+    title = "Value guarantee: no value, no fee | Beraterium"
+    desc = "Unsere Nutzen-Garantie: Drei vorab vereinbarte Kriterien entscheiden. Erfüllen wir auch nur eines nicht, erhalten Sie 100 % zurück."
+    json_ld = page_schema(
+        faq_page_schema(faq),
+        speakable_webpage_schema("/benefit-guarantee/"),
+    )
+    main = (
+        hero(pre, "IHR RISIKO LIEGT BEI UNS", "Kein Nutzen aus unserer Arbeit? Sie zahlen nichts.",
+             "Bevor wir starten, legen wir gemeinsam fest, woran Sie den Erfolg unserer Arbeit erkennen. Erfüllen wir das am Ende nicht, erhalten Sie den vollen Betrag zurück, ohne Diskussion.",
+             compact=True,
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a>')
+        + guarantee_stat_row(
+            [
+                ("3 Kriterien", "Zwei harte, ein weiches – vorab gemeinsam festgelegt"),
+                ("100 %", "Volle Erstattung, wenn auch nur eines fehlt"),
+                ("14 Tage", "Rückerstattung ohne weitere Diskussion"),
+            ],
+            aria="Kernpunkte der Nutzen-Garantie",
+        )
+        + f"""
+    <nav class="brt-anchor-nav" aria-label="Sprungnavigation auf dieser Seite" data-anchor-nav>
+      <div class="brt-container brt-anchor-nav__inner">
+        <p class="brt-anchor-nav__label">Auf dieser Seite</p>
+        <div class="brt-anchor-nav__track">
+          <ul class="brt-anchor-nav__list">
+            <li><a class="brt-anchor-nav__link" href="#bedeutung">Bedeutung</a></li>
+            <li><a class="brt-anchor-nav__link" href="#kriterien">Die 3 Kriterien</a></li>
+            <li><a class="brt-anchor-nav__link" href="#vertrag">Vertraglich fixiert</a></li>
+            <li><a class="brt-anchor-nav__link" href="#ablauf">Ablauf am Ende</a></li>
+            <li><a class="brt-anchor-nav__link" href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <section id="bedeutung" class="brt-section" aria-labelledby="bedeutung-title">
+      <div class="brt-container brt-split">
+        <div class="brt-split__text brt-fade-up">
+          <h2 id="bedeutung-title" class="brt-h2">Was bedeutet die Nutzen-Garantie?</h2>
+          <p class="brt-body">Wenn Sie keinen Nutzen aus unserer Arbeit ziehen, zahlen Sie nichts. Im Vorgespräch legen wir gemeinsam mit Ihnen Zielgrößen fest, an denen wir klar messen können, ob unsere Arbeit etwas gebracht hat oder nicht.</p>
+          <p class="brt-body">Das ist kein pauschales Versprechen, sondern eine Prüfung anhand konkreter, vorher vereinbarter Punkte. Diese Kriterien werden bereits vor Beginn der Arbeit vertraglich festgehalten, damit für beide Seiten transparent ist, welche Ergebnisse erzielt werden sollen.</p>
+        </div>
+        {split_media_html(IMG_NUTZEN_KRITERIEN, "Consultant and business owner agreeing the three success criteria for the value guarantee in a kick-off workshop", 1, contain=True)}
+      </div>
+    </section>"""
+        + guarantee_rule_band(
+            "„Kein messbarer Nutzen? Geld zurück.“",
+            aria="Kernaussage Nutzen-Garantie",
+        )
+        + f"""
+    <section id="kriterien" class="brt-section brt-section--alt" aria-labelledby="kriterien-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">KEIN PAUSCHAL-ERFOLG</p>
+          <h2 id="kriterien-title" class="brt-h2">Drei Kriterien, gemeinsam festgelegt: zwei harte, ein weiches</h2>
+          <p class="brt-body">Damit die Garantie eine echte Balance hat, arbeiten wir bewusst mit einer Mischung: zwei Kriterien, die sich zählen oder belegen lassen, und ein Kriterium, das beschreibt, wie Sie sich nach der Zusammenarbeit fühlen.</p>
+        </header>
+        <ul class="brt-guarantee-duo brt-stagger" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+          <li class="brt-card brt-card--guarantee brt-hover-lift">
+            <div class="brt-guarantee__visual">
+              <div class="brt-guarantee__icon" aria-hidden="true">{ICON_GUARANTEE_TARGET}</div>
+              <span class="brt-guarantee__num" aria-hidden="true">01</span>
+            </div>
+            <p class="brt-tag">Hart</p>
+            <h3 class="brt-h3">Relevante Risiken identifiziert</h3>
+            <p class="brt-body">Mindestens 3 Risiken mit Schadenpotenzial über der vereinbarten Schwelle. Zählbar im Ergebnis-Report.</p>
+          </li>
+          <li class="brt-card brt-card--guarantee brt-hover-lift">
+            <div class="brt-guarantee__visual">
+              <div class="brt-guarantee__icon" aria-hidden="true">{ICON_GUARANTEE_TARGET}</div>
+              <span class="brt-guarantee__num" aria-hidden="true">02</span>
+            </div>
+            <p class="brt-tag">Hart</p>
+            <h3 class="brt-h3">Klare Priorisierung mit nächsten Schritten</h3>
+            <p class="brt-body">Eine dokumentierte Top-Rangliste mit einem konkreten nächsten Schritt pro Risiko. Nachprüfbar im Dokument.</p>
+          </li>
+          <li class="brt-card brt-card--guarantee brt-hover-lift">
+            <div class="brt-guarantee__visual">
+              <div class="brt-guarantee__icon" aria-hidden="true">{ICON_GUARANTEE_SHIELD}</div>
+              <span class="brt-guarantee__num" aria-hidden="true">03</span>
+            </div>
+            <p class="brt-tag">Weich</p>
+            <h3 class="brt-h3">Spürbare Handlungsklarheit</h3>
+            <p class="brt-body">Sie fühlen sich nach der Analyse sicherer und weniger im Blindflug. Vorab konkret formuliert, gemeinsam im Abschlussgespräch geprüft.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section id="vertrag" class="brt-section" aria-labelledby="vertrag-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="vertrag-title" class="brt-h2">Vertraglich transparent, bevor wir beginnen</h2>
+        <p class="brt-body">Alle drei Kriterien stehen schwarz auf weiß im Angebot bzw. Vertrag, bevor das Projekt startet. Es gibt keine nachträgliche Verschiebung der Zielgrößen ohne Ihre Zustimmung, und keine Interpretation im Nachhinein.</p>
+        <div class="brt-highlight-box" style="margin-top: var(--space-8);">
+          <h3 class="brt-h3">Die Regel ist einfach</h3>
+          <p class="brt-body">Sind am Ende alle drei Kriterien erfüllt, war die Zusammenarbeit erfolgreich. Fehlt auch nur eines, erstatten wir 100 % des vereinbarten Projektpreises. Sie tragen kein finanzielles Risiko bei der Beauftragung.</p>
+        </div>
+      </div>
+    </section>
+    <section id="ablauf" class="brt-section brt-section--alt" aria-labelledby="ablauf-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <h2 id="ablauf-title" class="brt-h2">So läuft es am Projektende ab</h2>
+        </header>
+        <ul class="brt-step-cards brt-stagger">
+          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 1</span><h3 class="brt-h3">Gemeinsame Abschluss-Reflexion</h3><p class="brt-body">Zum vereinbarten Endergebnis prüfen wir mit Ihnen alle drei Kriterien anhand der schriftlich festgehaltenen Formulierung.</p></li>
+          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 2</span><h3 class="brt-h3">Klare Bewertung</h3><p class="brt-body">Ist auch nur eines nicht erfüllt, greift die Garantie. Keine Grauzonen, keine nachträgliche Auslegung.</p></li>
+          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 3</span><h3 class="brt-h3">Volle Erstattung</h3><p class="brt-body">Sie erhalten den vollen Betrag innerhalb von 14 Tagen zurück. Die rechtlichen Details stehen in unseren <a href="{pre}agb/">AGB, Abschnitt 7</a>.</p></li>
+        </ul>
+      </div>
+    </section>"""
+        + guarantee_pair_section(pre, current="nutzen")
+        + guarantee_rich_cta(
+            pre,
+            "Let’s define your criteria together",
+            "In the free intro call, we discuss how you’ll recognise whether our collaboration succeeded.",
+            "Book your intro call →",
+        )
+        + faq_section_html(faq, title="Frequently asked questions about the value guarantee", section_id="faq", alt=True)
+    )
+    write(
+        "benefit-guarantee/index.html",
+        shell(depth=1, title=title, description=desc,
+              canonical="/benefit-guarantee/", active_nav=None, main=main, json_ld=json_ld),
+    )
+
+
+
+
+def gen_relevanz_garantie() -> None:
+    pre = "../"
+    faq = [
+        ("Sucht ihr nicht einfach, bis ihr etwas findet?", "Nein. Nur Risiken über der vorher gemeinsam festgelegten Schadensschwelle zählen als relevant im Sinne der Garantie. Alles darunter ändert an der Erstattung nichts."),
+        ("Was, wenn wir unsere Risiken schon alle kennen?", "Dann ist das ein valides Ergebnis. Bestätigen wir nur bereits Bekanntes, ohne eine neue relevante Erkenntnis über der Schwelle, greift die Garantie: Sie zahlen nichts."),
+        ("Wie hoch muss die Schadensschwelle sein?", "Das legen wir individuell im Kick-off fest, passend zu Ihrer Unternehmensgröße. Es gibt keine pauschale Zahl für alle."),
+        ("Was, wenn ihr nur kleine Risiken findet?", "Liegt der Schaden unter der vereinbarten Schwelle, zählt das nicht als relevantes Risiko im Sinne der Garantie."),
+        ("Kostet mich das Erstgespräch etwas?", "Nein. Das Erstgespräch ist immer kostenlos und unverbindlich, unabhängig von dieser Garantie."),
+        ("Wie unterscheidet sich das von der Nutzen-Garantie?", "Die Relevanz-Garantie prüft, ob wir überhaupt ein relevantes Risiko finden. Die Nutzen-Garantie prüft, ob die gesamte Zusammenarbeit den vorab vereinbarten Mehrwert bringt."),
+    ]
+    title = "Relevanz-Garantie: Kein Risiko, kein Geld | Beraterium"
+    desc = "Finden wir kein relevantes Risiko über der vereinbarten Schwelle, zahlen Sie nichts. Transparent vertraglich vereinbart, bevor wir starten."
+    json_ld = page_schema(
+        faq_page_schema(faq),
+        speakable_webpage_schema("/relevanz-garantie/"),
+    )
+    main = (
+        hero(pre, "IHR RISIKO LIEGT BEI UNS", "Kein relevantes Risiko gefunden? Sie zahlen nichts.",
+             "Wir suchen nicht, um etwas abzurechnen. Finden wir kein Risiko über der gemeinsam vereinbarten Schwelle, erstatten wir den vollen Betrag, ohne Wenn und Aber.",
+             compact=True,
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a>')
+        + guarantee_stat_row(
+            [
+                ("Individuell", "Schadensschwelle im Kick-off gemeinsam festgelegt"),
+                ("Risiko bei uns", "Kein relevanter Befund — wir tragen das Kostenrisiko"),
+                ("100 %", "Volle Erstattung, wenn nichts Relevantes gefunden wird"),
+            ],
+            aria="Kernpunkte der Relevanz-Garantie",
+        )
+        + f"""
+    <nav class="brt-anchor-nav" aria-label="Sprungnavigation auf dieser Seite" data-anchor-nav>
+      <div class="brt-container brt-anchor-nav__inner">
+        <p class="brt-anchor-nav__label">Auf dieser Seite</p>
+        <div class="brt-anchor-nav__track">
+          <ul class="brt-anchor-nav__list">
+            <li><a class="brt-anchor-nav__link" href="#bedeutet">Was „relevant“ bedeutet</a></li>
+            <li><a class="brt-anchor-nav__link" href="#suchen">Was wir gezielt suchen</a></li>
+            <li><a class="brt-anchor-nav__link" href="#vertrag">Vertraglich fixiert</a></li>
+            <li><a class="brt-anchor-nav__link" href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <section id="bedeutet" class="brt-section" aria-labelledby="bedeutet-title">
+      <div class="brt-container brt-split">
+        <div class="brt-split__text brt-fade-up">
+          <h2 id="bedeutet-title" class="brt-h2">What &ldquo;relevant&rdquo; means</h2>
+          <p class="brt-body">A risk is relevant if its potential damage reaches or exceeds the threshold we agree on together in the kick-off, for example a damage potential of more than EUR 10,000.</p>
+          <p class="brt-body">We set this threshold individually with you, not as a blanket figure for every company. If the agreed analysis doesn&rsquo;t identify a single risk that meets this threshold, we refund you the full agreed project price.</p>
+        </div>
+        {split_media_html(IMG_RELEVANZ_SCHWELLE, "Consultant and business owner agreeing the damage threshold for relevant risks in a kick-off workshop", 1, contain=True)}
+      </div>
+    </section>"""
+        + guarantee_rule_band(
+            "„Wir finden kein relevantes Risiko? Geld zurück.“",
+            aria="Kernaussage Relevanz-Garantie",
+        )
+        + guarantee_contrast_duo(
+            left_tag="NO SMALL CHANGE",
+            left_title="What we don’t do",
+            left_id="not",
+            left_paras=[
+                "We’re not looking for any random, irrelevant risk just so our work gets paid. Findings below the agreed threshold don’t count as relevant under this guarantee.",
+                "That matters so you lose the fear that we only search in order to bill you.",
+            ],
+            left_note_label="Outcome",
+            left_note="If we find nothing relevant, the entire analysis costs you nothing.",
+            right_tag="BLIND SPOTS",
+            right_title="What we specifically look for",
+            right_id="search",
+            right_paras=[
+                "We focus on risks that weren’t on your radar before, or that were internally dismissed as insignificant but turn out to be highly relevant.",
+            ],
+            right_note_label="Example",
+            right_note="A risk internally treated as “long known and under control” turns out in the assessment to have damage potential well above the agreed threshold.",
+            section_id="not",
+        )
+        + f"""
+    <section id="vertrag" class="brt-section" aria-labelledby="vertrag-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="vertrag-title" class="brt-h2">Vertraglich festgehalten, bevor wir beginnen</h2>
+        <p class="brt-body">Die Schadensschwelle und die Garantie selbst werden im Kick-off vereinbart und im Angebot bzw. Vertrag schriftlich festgehalten. Sie haben damit von Anfang an die Sicherheit, dass Sie nichts zahlen müssen, wenn wir kein relevantes Risiko finden.</p>
+        <div class="brt-highlight-box" style="margin-top: var(--space-8);">
+          <h3 class="brt-h3">Das Risiko liegt bei uns</h3>
+          <p class="brt-body">Wir suchen nicht, um abzurechnen. Finden wir nichts Relevantes, tragen wir das finanzielle Risiko, nicht Sie. Die vollständigen Bedingungen stehen in unseren <a href="{pre}agb/">AGB, Abschnitt 7</a>.</p>
+        </div>
+      </div>
+    </section>"""
+        + guarantee_pair_section(pre, current="relevanz")
+        + guarantee_rich_cta(
+            pre,
+            "Find out which risks you may be overlooking",
+            "In the free intro call, you’ll learn how we set the damage threshold together with you.",
+            "Book your intro call →",
+        )
+        + faq_section_html(faq, title="Frequently asked questions about the relevance guarantee", section_id="faq", alt=True)
+    )
+    write(
+        "relevance-guarantee/index.html",
+        shell(depth=1, title=title, description=desc,
+              canonical="/relevance-guarantee/", active_nav=None, main=main, json_ld=json_ld),
+    )
+
+
+
+
 def gen_angebote() -> None:
     pre = "../"
     services_faq = [
@@ -1453,6 +1918,178 @@ def gen_risikoradar() -> None:
           json_ld=page_schema(faq_page_schema(risk_radar_faq))))
 
 
+BLINDSPOT_FAQ = [
+    ("What is the Blindspot Check?",
+     "The Blindspot Check is a free online self-assessment by Beraterium. In 10 to 15 questions you check where your business is vulnerable — around key people, technology and day-to-day operations. You get your results immediately, no sign-up required."),
+    ("How long does the Blindspot Check take?",
+     "About 10 minutes. Depending on your audience choice you answer 10 to 15 short 'What happens if …' questions and see your results right afterwards."),
+    ("Is the Blindspot Check free?",
+     "Yes, the check is completely free and can be used without registration. Optionally, you can have the results sent to you as a PDF report by email."),
+    ("Does the check replace a full risk analysis?",
+     "No. The Blindspot Check covers a selection from more than 100 hazard areas of our 3-level hazard catalog. A good result does not mean all risks are ruled out — that is what Beraterium's systematic risk analysis is for."),
+    ("Who is the Blindspot Check for?",
+     "For solo self-employed professionals, founders and startups, and small and medium-sized enterprises (SMEs). The questions adapt to your choice: solo self-employed answer 10 questions, founders and SMEs 15 each."),
+    ("What happens to my answers?",
+     "The evaluation runs directly in your browser. You only provide personal data if you request the optional PDF report — in that case our privacy policy applies. We do not store IP addresses."),
+]
+
+
+def gen_tools_index() -> None:
+    pre = "../"
+    main = (
+        hero(
+            pre,
+            "FREE TOOLS",
+            "Tools: check your risks yourself — in minutes, not weeks",
+            "Compact self-assessments drawn from the Beraterium method. No substitute for a full risk analysis, but an honest first look at your blind spots.",
+            compact=True,
+        )
+        + f"""
+    <section class="brt-section" aria-labelledby="tools-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">TEST YOURSELF</p>
+          <h2 id="tools-title" class="brt-h2">Which tools are available?</h2>
+          <p class="brt-body">One tool right now — more are in the works. All tools are based on our 3-level hazard catalog with more than 100 hazard areas.</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-hover-lift">
+            <h3 class="brt-h3">Blindspot Check</h3>
+            <p class="brt-body">The free quick check: 10–15 'What happens if …' questions about key people, technology and day-to-day operations. Immediate results with traffic-light status and concrete first steps.</p>
+            <p class="brt-section__cta"><a class="brt-btn" href="{pre}tools/blindspot-check/">Start the Blindspot Check →</a></p>
+          </li>
+          <li class="brt-card brt-hover-lift">
+            <h3 class="brt-h3">Risk Radar</h3>
+            <p class="brt-body">Not a self-assessment, but the next step: our protected expert network for implementing the measures from your risk analysis.</p>
+            <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}risk-radar/">Discover Risk Radar →</a></p>
+          </li>
+        </ul>
+      </div>
+    </section>"""
+        + cta_band(pre, "Prefer to talk to an expert directly?", "In a free intro call we clarify which risks really matter for your business.")
+    )
+    breadcrumb_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": "Tools", "item": f"{SITE_URL}/tools/"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    write("tools/index.html", shell(
+        depth=1,
+        title="Tools – Free risk checks | Beraterium",
+        description="Free tools by Beraterium: use the Blindspot Check to spot blind spots and business risks in 10 minutes – no sign-up, immediate results.",
+        canonical="/tools/",
+        active_nav="tools",
+        main=main,
+        json_ld=page_schema(breadcrumb_ld),
+    ))
+
+
+def gen_blindspot_check() -> None:
+    pre = "../../"
+    canonical = "/tools/blindspot-check/"
+    config_json = blindspot_config_json(
+        locale="en",
+        submit_url="https://script.google.com/macros/s/AKfycbxOVMHI01byul3j0QqJ-MGgDdnw9l_HMKwgoyZlHteAftWo7rnGN7I-R9r77XJvCqmSDQ/exec",
+        report_url="https://script.google.com/macros/s/AKfycbxOVMHI01byul3j0QqJ-MGgDdnw9l_HMKwgoyZlHteAftWo7rnGN7I-R9r77XJvCqmSDQ/exec",
+        booking_url=f"{pre}contact/",
+        privacy_url=f"{pre}privacy/",
+    )
+    main = (
+        hero(
+            pre,
+            "FREE SELF-ASSESSMENT",
+            "Blindspot Check: where is your business vulnerable?",
+            "Answer 10–15 short 'What happens if …' questions and get immediate results: traffic-light status, a risk profile by category and concrete first steps for your most critical points.",
+            compact=True,
+            actions='<a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-blindspot">Start the check now</a>',
+        )
+        + """
+    <section class="brt-section brt-section--narrow" aria-labelledby="why-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="why-title" class="brt-h2">Why a Blindspot Check?</h2>
+        <p class="brt-body">Most businesses don't fail because of the risks they know — they fail because of the ones they never looked at. The Blindspot Check makes these blind spots visible: it examines 15 of the more than 100 hazard areas from our 3-level hazard catalog, spread across <strong>People</strong>, <strong>Technology</strong> and <strong>Operations</strong>.</p>
+        <p class="brt-body">Each question describes a concrete scenario. You rate how critical it would be for you — and whether you have already prepared measures. The result is your personal risk profile with a traffic-light status per question.</p>
+      </div>
+    </section>
+    <section id="check" class="brt-section brt-section--alt" aria-labelledby="check-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">INTERACTIVE CHECK</p>
+          <h2 id="check-title" class="brt-h2">The Blindspot Quick Check</h2>
+        </header>
+        <div id="brt-blindspot" class="bqc-widget brt-fade-up" aria-live="polite"></div>
+      </div>
+    </section>
+    <section class="brt-section brt-section--narrow" aria-labelledby="limits-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="limits-title" class="brt-h2">What the check does — and what it doesn't</h2>
+        <p class="brt-body">The Blindspot Check is a quick test, not a full risk analysis. It looks at selected, particularly common blind spots. An unremarkable result does not mean the remaining hazard areas hold no risks. If you want certainty, take the next step: the systematic <a href="{pre}method/">Beraterium method</a> examines all three levels of the hazard catalog — including prioritisation and an action plan through our <a href="{pre}services/">services</a>.</p>
+      </div>
+    </section>""".replace("{pre}", pre)
+        + faq_section_html(
+            BLINDSPOT_FAQ,
+            title="Frequently asked questions about the Blindspot Check",
+            section_id="faq",
+            alt=True,
+        )
+        + cta_band(pre, "Red points in your results?", "In a free intro call we discuss your most critical blind spots and what to tackle first.")
+    )
+    webapp_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "Blindspot Check",
+            "url": f"{SITE_URL}{canonical}",
+            "description": "Free online self-assessment: in 10–15 questions, solo self-employed professionals, founders and SMEs check where their business is vulnerable. Immediate results with traffic-light status and first steps.",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web",
+            "browserRequirements": "Requires JavaScript",
+            "inLanguage": "en",
+            "isAccessibleForFree": True,
+            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+            "provider": {"@id": f"{SITE_URL}/#organization"},
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    breadcrumb_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": "Tools", "item": f"{SITE_URL}/tools/"},
+                {"@type": "ListItem", "position": 3, "name": "Blindspot Check", "item": f"{SITE_URL}{canonical}"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    extra_css = f'\n  <link rel="stylesheet" href="{pre}css/brt-blindspot.css?v={BRT_ASSET_VERSION}">'
+    extra_scripts = (
+        f'\n<script type="application/json" id="brt-blindspot-config">{config_json}</script>'
+        f'\n<script src="{pre}js/brt-blindspot.js?v={BRT_ASSET_VERSION}"></script>'
+    )
+    write("tools/blindspot-check/index.html", shell(
+        depth=2,
+        title="Blindspot Check – Free business risk self-test | Beraterium",
+        description="Blindspot Check: find out in 10 minutes, for free, where your business is vulnerable. 10–15 questions, immediate results, concrete first steps.",
+        canonical=canonical,
+        active_nav="tools/blindspot-check",
+        main=main,
+        json_ld=page_schema(faq_page_schema(BLINDSPOT_FAQ), webapp_ld, breadcrumb_ld),
+        extra_css=extra_css,
+        extra_scripts=extra_scripts,
+    ))
+
+
 def gen_blog() -> None:
     pre = "../"
     posts = load_blog_posts()
@@ -1742,6 +2379,84 @@ def gen_home_blog_teaser() -> None:
     print("  updated index.html blog teaser")
 
 
+def gen_home_analytics() -> None:
+    """Home index.html: sync GA4 snippet after CookieYes."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    start = "  <!-- GA4_START -->"
+    end = "  <!-- GA4_END -->\n"
+    block = f"{start}\n{GA4_ANALYTICS_HEAD}\n{end}"
+    if start in html:
+        i = html.find(start)
+        j = html.find(end, i)
+        if j < 0:
+            print("  skip index.html home analytics (end marker not found)")
+            return
+        path.write_text(html[:i] + block + html[j + len(end) :], encoding="utf-8")
+    else:
+        anchor = "  <!-- End cookieyes banner -->\n"
+        pos = html.find(anchor)
+        if pos < 0:
+            print("  skip index.html home analytics (cookieyes anchor not found)")
+            return
+        pos += len(anchor)
+        path.write_text(html[:pos] + block + html[pos:], encoding="utf-8")
+    print("  updated index.html home analytics")
+
+
+def gen_home_nav() -> None:
+    """Home index.html: sync the main navigation from nav_html()."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    start = '<nav id="site-nav" class="site-header__nav" aria-label="Primary navigation">\n      <ul>\n'
+    end = "\n      </ul>"
+    i = html.find(start)
+    j = html.find(end, i)
+    if i < 0 or j < 0:
+        print("  skip index.html home nav (pattern not found)")
+        return
+    i += len(start)
+    path.write_text(html[:i] + nav_html(0, None) + html[j:], encoding="utf-8")
+    print("  updated index.html home nav")
+
+
+def gen_home_tools_teaser() -> None:
+    """Home index.html: teaser for the Blindspot Check before the blog teaser."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    start = "  <!-- TOOLS_TEASER_START -->"
+    end = "  <!-- TOOLS_TEASER_END -->\n"
+    section = f"""{start}
+  <section class="brt-section brt-section--alt" aria-labelledby="tools-teaser-title">
+    <div class="brt-container brt-split brt-split--text-only">
+      <div class="brt-split__text brt-fade-up">
+        <p class="brt-tag">Free self-assessment</p>
+        <h2 id="tools-teaser-title" class="brt-h2">Where is your business vulnerable? The Blindspot Check shows you in 10 minutes.</h2>
+        <p class="brt-body">10 to 15 short 'What happens if …' questions about key people, technology and day-to-day operations. Immediate results with traffic-light status and first steps, no sign-up required.</p>
+        <a class="brt-btn" href="tools/blindspot-check/">Start the Blindspot Check →</a>
+      </div>
+    </div>
+  </section>
+{end}"""
+    if start in html and end in html:
+        before = html.split(start)[0]
+        after = html.split(end)[1]
+        path.write_text(before + section + after, encoding="utf-8")
+    else:
+        anchor = "  <!-- BLOG_TEASER_START -->"
+        if anchor not in html:
+            print("  skip index.html tools teaser (pattern not found)")
+            return
+        path.write_text(html.replace(anchor, section + "\n" + anchor, 1), encoding="utf-8")
+    print("  updated index.html tools teaser")
+
+
 def gen_kontakt() -> None:
     pre = "../"
     main = (
@@ -1786,7 +2501,7 @@ def gen_kontakt() -> None:
             <p class="brt-body">Prefer to write? Use our contact form – we usually reply within one working day.</p>
             <a class="brt-btn brt-btn--outline" href="{pre}contact-form/">Go to contact form</a>
             <ul class="brt-contact-aside__links">
-              <li><a href="mailto:kontakt@beraterium.de">kontakt@beraterium.de</a></li>
+              <li><a href="mailto:info@beraterium.de">info@beraterium.de</a></li>
               <li><a href="https://www.linkedin.com/company/beraterium">LinkedIn</a></li>
             </ul>
           </aside>
@@ -2004,7 +2719,7 @@ def gen_accessibility() -> None:
           <li>Embedded third-party content (for example external widgets) is only partly under our direct control.</li>
         </ul>
         <h2 class="brt-h3">Feedback and contact</h2>
-        <p>If you encounter accessibility barriers or have improvement suggestions, contact us at <a href="mailto:kontakt@beraterium.de">kontakt@beraterium.de</a> or use our <a href="../contact-form/">contact form</a>.</p>
+        <p>If you encounter accessibility barriers or have improvement suggestions, contact us at <a href="mailto:info@beraterium.de">info@beraterium.de</a> or use our <a href="../contact-form/">contact form</a>.</p>
         <p>We review your message and respond as quickly as possible.</p>
         <h2 class="brt-h3">Statement date</h2>
         <p>This statement was created on 2026-06-26 and is reviewed regularly.</p>
@@ -2079,6 +2794,7 @@ def gen_danke() -> None:
 
 if __name__ == "__main__":
     print("Generating pages...")
+    blindspot_selfcheck()
     gen_ueber_uns()
     gen_team()
     gen_mission_vision()
@@ -2088,10 +2804,15 @@ if __name__ == "__main__":
     gen_lp_kmu()
     gen_lp_solo()
     gen_risikoradar()
+    gen_tools_index()
+    gen_blindspot_check()
     gen_blog()
     gen_blog_singles()
     gen_home_analyse()
     gen_home_team()
+    gen_home_nav()
+    gen_home_analytics()
+    gen_home_tools_teaser()
     gen_home_blog_teaser()
     gen_kontakt()
     gen_kontaktformular()

@@ -75,6 +75,17 @@
     if (!hash || hash.length < 2) return;
     var target = document.getElementById(decodeURIComponent(hash.slice(1)));
     if (!target) return;
+    if (target.id === "brt-blindspot") {
+      var blindSection = target.closest(".brt-section");
+      if (blindSection) revealHashTargetContent(blindSection);
+      forceInstantScroll(getBlindspotWidgetScrollY(target));
+      return;
+    }
+    if (target.classList.contains("brt-section")) {
+      revealHashTargetContent(target);
+      forceInstantScroll(getTeamSectionScrollY(target));
+      return;
+    }
     scrollToTeamSection(target);
   }
 
@@ -105,6 +116,14 @@
     window.scrollTo(0, Math.max(0, y));
     root.style.scrollBehavior = rootPrev;
     if (body) body.style.scrollBehavior = bodyPrev;
+  }
+
+  function getBlindspotWidgetScrollY(widget) {
+    if (!widget) return 0;
+    var header = document.querySelector(".site-header");
+    var headerH = header ? header.getBoundingClientRect().height : 96;
+    var gap = 20;
+    return Math.max(0, widget.getBoundingClientRect().top + window.pageYOffset - (headerH + gap));
   }
 
   function getTeamSectionScrollY(section) {

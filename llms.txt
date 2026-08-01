@@ -7,11 +7,18 @@
 - [Home](https://en.beraterium.de/): Enterprise risk management for mid-market businesses
 - [Services](https://en.beraterium.de/services/): Risk checks for startups, SMBs and solo
 - [Method](https://en.beraterium.de/method/): 3-level hazard catalogue, euro-based risk assessment
+- [Value guarantee](https://en.beraterium.de/benefit-guarantee/): Three pre-agreed criteria (2 hard, 1 soft) decide — if even one is not met, full refund.
+- [Relevance guarantee](https://en.beraterium.de/relevance-guarantee/): If no relevant risk above the agreed threshold is found, the client pays nothing.
 - [About](https://en.beraterium.de/about/): Why Beraterium exists
 - [Team](https://en.beraterium.de/team/): Founders and experts
 - [Risk Radar](https://en.beraterium.de/risk-radar/): Expert network for implementation
 - [Blog](https://en.beraterium.de/blog/): Practical risk management insights
 - [Contact](https://en.beraterium.de/contact/): Free 30-minute intro call
+
+## Tools (free self-assessments)
+
+- [Tools overview](https://en.beraterium.de/tools/): Free self-assessments drawn from the Beraterium method.
+- [Blindspot Check](https://en.beraterium.de/tools/blindspot-check/): Free online self-assessment (10 minutes, no sign-up) for solo self-employed professionals, founders/startups and SMEs. 10–15 "What happens if …" questions about people, technology and day-to-day operations; immediate results with traffic-light status, a risk profile per category and first steps. The check is not a full risk analysis: it covers 15 of more than 100 hazard areas of the 3-level hazard catalog.
 
 ## German site
 
@@ -19,5 +26,5 @@ The authoritative German site is at [beraterium.de](https://www.beraterium.de/).
 
 ## Contact
 
-- Email: kontakt@beraterium.de
+- Email: info@beraterium.de
 - LinkedIn: https://www.linkedin.com/company/beraterium

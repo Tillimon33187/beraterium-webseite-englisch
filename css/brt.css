@@ -1611,6 +1611,62 @@
   box-shadow: 0 4px 12px rgba(4, 30, 66, 0.25);
 }
 
+
+.brt-card--guarantee-current {
+  position: relative;
+  border-color: rgba(11, 95, 255, 0.28);
+  background: linear-gradient(180deg, #f8fbff 0%, #fff 100%);
+  box-shadow: 0 12px 40px rgba(4, 30, 66, 0.1);
+}
+
+.brt-card--guarantee-current::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: linear-gradient(90deg, var(--color-accent) 0%, #0d9488 100%);
+}
+
+.brt-guarantee-card__foot {
+  margin-top: auto;
+  padding-top: var(--space-5);
+  width: 100%;
+}
+
+.brt-card--guarantee .brt-guarantee-card__foot a {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.brt-card--guarantee .brt-guarantee-card__foot a:hover {
+  text-decoration: underline;
+}
+
+.brt-guarantee-here {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--color-accent);
+  background: rgba(11, 95, 255, 0.08);
+  border: 1px solid rgba(11, 95, 255, 0.16);
+}
+
+.brt-guarantee-here svg {
+  flex-shrink: 0;
+}
+
 .brt-card--guarantee .brt-h3 {
   margin-bottom: var(--space-4);
   font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
@@ -2712,6 +2768,73 @@
 
 .brt-quote-band--dark .brt-quote-band__text {
   color: #fff;
+}
+
+
+.brt-contrast-duo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-6);
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .brt-contrast-duo {
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+}
+
+.brt-contrast-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+
+.brt-contrast-card .brt-tag {
+  margin-bottom: var(--space-4);
+}
+
+.brt-contrast-card .brt-h2 {
+  margin-bottom: var(--space-5);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.15;
+}
+
+.brt-contrast-card .brt-body {
+  margin-bottom: var(--space-4);
+}
+
+.brt-contrast-card__footer {
+  margin-top: auto;
+  padding-top: var(--space-6);
+}
+
+.brt-contrast-card__note {
+  padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--color-accent);
+  background: var(--color-bg-alt);
+}
+
+.brt-contrast-card__note-label {
+  margin: 0 0 var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.brt-contrast-card__note .brt-body {
+  margin-bottom: 0;
 }
 
 .brt-highlight-box {
@@ -4135,7 +4258,37 @@
   outline-offset: 2px;
 }
 
+
+/* Guarantee detail pages — tighter section rhythm */
+.brt-page--inner:has(.brt-anchor-nav) .brt-quote-band {
+  padding-block: clamp(1.25rem, 3vw, 2rem);
+}
+
+.brt-page--inner .brt-section--alt.brt-section--compact:has(.brt-guarantee-duo) {
+  padding-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+.brt-page--inner .brt-section--guarantee.brt-section--compact {
+  padding-block: clamp(1rem, 2vw, 1.75rem);
+}
+
+.brt-page--inner .brt-section--alt.brt-section--compact:has(.brt-guarantee-duo) .brt-guarantee-duo {
+  margin-bottom: 0;
+}
+
+.brt-page--inner .brt-section--alt.brt-section--compact:has(.brt-guarantee-duo) .brt-section__header--center {
+  margin-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.brt-page--inner .brt-section--guarantee.brt-section--compact + .brt-section--alt {
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.brt-page--inner .brt-section--alt:has(.brt-contrast-duo) {
+  padding-block: clamp(1.75rem, 4vw, 2.75rem);
+}
 .brt-page--inner:has(.brt-anchor-nav) .brt-section[id] {
+  padding-block: clamp(2rem, 5vw, 3.25rem);
   scroll-margin-top: calc(var(--header-height) + var(--anchor-nav-height) + 0.75rem);
 }
 

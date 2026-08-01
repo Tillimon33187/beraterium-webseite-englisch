@@ -5,6 +5,16 @@
   <!-- Start cookieyes banner -->
   <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/d36bc57a067448f51ec9da2968bc257a/script.js"></script>
   <!-- End cookieyes banner -->
+  <!-- GA4_START -->
+  <!-- Google tag (gtag.js) — loads only after Analytics consent (CookieYes) -->
+  <script type="text/plain" data-cookieyes="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-BM435GHE6W"></script>
+  <script type="text/plain" data-cookieyes="analytics">
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BM435GHE6W');
+  </script>
+  <!-- GA4_END -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Risk management for SMEs, startups &amp; self-employed professionals | Beraterium</title>
@@ -108,6 +118,15 @@
           </ul>
         </li>
         <li><a href="risk-radar/">Risk Radar</a></li>
+        <li class="site-header__item site-header__item--has-menu">
+          <a href="tools/" class="site-header__parent-link" aria-expanded="false">
+            Tools
+            <svg class="site-header__caret" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <ul class="site-header__submenu" aria-label="Tools">
+            <li><a href="tools/blindspot-check/">Blindspot Check</a></li>
+          </ul>
+        </li>
         <li><a href="blog/">Blog</a></li>
       </ul>
       <div class="site-header__lang" role="navigation" aria-label="Language"><span class="site-header__lang-current" aria-current="true">EN</span><span class="site-header__lang-sep" aria-hidden="true">|</span><a class="site-header__lang-link" href="https://www.beraterium.de/" hreflang="de">DE</a></div>
@@ -321,6 +340,7 @@
           <h3 class="brt-h3">Relevance guarantee</h3>
           <p class="brt-quote">&ldquo;No relevant risk found? Money back.&rdquo;</p>
           <p class="brt-body">If the analysis does not identify a single risk with relevant financial impact (threshold agreed jointly in advance), we refund the full amount.</p>
+          <a href="relevance-guarantee/">Learn more →</a>
         </li>
         <li class="brt-card brt-card--guarantee brt-hover-lift">
           <div class="brt-guarantee__visual">
@@ -331,7 +351,8 @@
           </div>
           <h3 class="brt-h3">Value guarantee</h3>
           <p class="brt-quote">&ldquo;No measurable value? Money back.&rdquo;</p>
-          <p class="brt-body">Before we start, we agree 3&ndash;5 value criteria together. If none are met at the end, you receive a full refund. No questions asked.</p>
+          <p class="brt-body">Before we start, we agree on three value criteria together: two measurable and one emotional. If even one is not met at the end, you receive a full refund. No questions asked.</p>
+          <a href="benefit-guarantee/">Learn more →</a>
         </li>
       </ul>
       <aside class="brt-guarantee-cta brt-fade-up" aria-label="Book an intro call">
@@ -445,6 +466,19 @@
       </div>
     </div>
   </section>
+
+  <!-- TOOLS_TEASER_START -->
+  <section class="brt-section brt-section--alt" aria-labelledby="tools-teaser-title">
+    <div class="brt-container brt-split brt-split--text-only">
+      <div class="brt-split__text brt-fade-up">
+        <p class="brt-tag">Free self-assessment</p>
+        <h2 id="tools-teaser-title" class="brt-h2">Where is your business vulnerable? The Blindspot Check shows you in 10 minutes.</h2>
+        <p class="brt-body">10 to 15 short 'What happens if …' questions about key people, technology and day-to-day operations. Immediate results with traffic-light status and first steps, no sign-up required.</p>
+        <a class="brt-btn" href="tools/blindspot-check/">Start the Blindspot Check →</a>
+      </div>
+    </div>
+  </section>
+  <!-- TOOLS_TEASER_END -->
 
   <!-- BLOG_TEASER_START -->
   <section class="brt-section" aria-labelledby="blog-title">
@@ -616,6 +650,8 @@
         <li><a href="team/">Team</a></li>
         <li><a href="mission-vision/">Mission &amp; Vision</a></li>
         <li><a href="method/">Method</a></li>
+        <li><a href="benefit-guarantee/">Value Guarantee</a></li>
+        <li><a href="relevance-guarantee/">Relevance Guarantee</a></li>
       </ul>
     </section>
     <section>

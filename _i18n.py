@@ -11,6 +11,8 @@ STATIC_ROUTE_MAP: dict[str, str] = {
     "team": "team",
     "mission-vision": "mission-vision",
     "methode": "method",
+    "nutzen-garantie": "benefit-guarantee",
+    "relevanz-garantie": "relevance-guarantee",
     "angebote": "services",
     "angebote/startups": "services/startups",
     "angebote/kmu": "services/smb",

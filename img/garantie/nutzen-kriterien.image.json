@@ -1,0 +1,77 @@
+{
+  "title": "benefit-guarantee-criteria",
+  "slug": "nutzen-kriterien",
+  "language": "de",
+  "intent": "editorial",
+  "subject": "Consultant and SME owner at a bright workshop table agree on three simple success-criteria cards laid out in a row: two cards with abstract target or checklist motifs in cyan (hard, measurable criteria), one card with a softer shield or clarity motif in amber (soft criterion) — joint kick-off decision, not a sales pitch.",
+  "context": "Beraterium Nutzen-Garantie page section „Was bedeutet die Nutzen-Garantie?“ (DE) / „What the value guarantee means“ (EN). Visualises three jointly agreed success criteria before project start — two hard, one soft. Professional B2B editorial for static website split column beside explanatory text. Pairs visually with relevanz-schwelle.image.json on the sibling guarantee page.",
+  "platform_website": {
+    "orientation": "landscape",
+    "primary_export_px": {
+      "width": 1536,
+      "height": 1024
+    },
+    "aspect_ratio": "3:2 (split media beside text on guarantee subpage)",
+    "upload_source_png": "Webseite/site/img/garantie/nutzen-kriterien.png",
+    "optimized_variants": "Convert PNG to WebP as img/garantie/nutzen-kriterien.webp for _gen_pages.py IMG_NUTZEN_KRITERIEN",
+    "best_practice_notes": "Three criteria obvious at a glance (2 hard + 1 soft); calm workshop; works at ~480px column width and ~600px desktop split.",
+    "safe_zone": "Keep criteria cards and hands in central 85%; avoid critical detail in outer 8% edges (rounded card crop)."
+  },
+  "composition": {
+    "shot_type": "medium-wide",
+    "camera_angle": "slightly elevated eye-level",
+    "depth": "foreground three small criteria cards on the table, midground two people gesturing at the cards, soft blurred office background",
+    "aspect_ratios": [
+      "3:2",
+      "4:3",
+      "1:1"
+    ]
+  },
+  "lighting": {
+    "style": "soft natural window light with clean corporate falloff",
+    "direction": "from right",
+    "contrast": "medium"
+  },
+  "color_palette": {
+    "primary": "#041E42",
+    "secondary": "#0B5FFF",
+    "accent": "#F2B134",
+    "background": "#F5F7FA"
+  },
+  "style": {
+    "visual_style": "clean editorial realism",
+    "detail_level": "medium-high",
+    "mood": "collaborative, clear, fair — defining success together before work begins"
+  },
+  "optional_text_overlay": {
+    "recommended_for_blog_hero": false,
+    "display_language": "de",
+    "line_1_optional": "",
+    "typography": "No text on image — H2 and body copy render beside image.",
+    "prompt_instruction": "No readable text, numbers or logos on the cards; abstract icons and shapes only. Suggest three items via layout, not labels."
+  },
+  "negative_prompt": [
+    "no watermark",
+    "no distorted hands",
+    "no extra fingers",
+    "no readable text or numbers on cards",
+    "no third-party logos",
+    "no handshake clichés",
+    "no money-back guarantee banner text",
+    "no red alarm icons",
+    "no generic stock photo look",
+    "no low-resolution artifacts",
+    "no identifiable real persons or celebrities",
+    "no Beraterium logo unless brand-approved",
+    "no cluttered desk"
+  ],
+  "seo": {
+    "target_keyword": "Nutzen-Garantie Erfolgskriterien",
+    "alt_text_de": "Berater und Unternehmer legen im Kick-off die drei Erfolgskriterien der Nutzen-Garantie fest",
+    "alt_text_en": "Consultant and business owner agreeing the three success criteria for the value guarantee in a kick-off workshop",
+    "caption": "Drei Kriterien werden vor Projektstart gemeinsam festgelegt — zwei harte, ein weiches. Fehlt auch nur eines am Ende, greift die Garantie.",
+    "filename": "nutzen-kriterien.webp",
+    "image_title": "Nutzen-Garantie — gemeinsam festgelegte Erfolgskriterien"
+  },
+  "generation_prompt_single_block_en": "Editorial photograph 1536x1024, 3:2. Modern SME workshop room, navy (#041E42) and cyan (#0B5FFF) accents with amber (#F2B134) for the soft criterion. Two professionals (consultant + business owner, smart casual, diverse but non-identifiable) at a clean table reviewing three small success-criteria cards in a row on the tabletop. Left two cards: abstract target or checklist icons in cyan suggesting hard measurable criteria. Right card: softer shield or clarity motif in amber suggesting a qualitative soft criterion. No readable text on cards. Foreground: pen or tablet edge optional. Soft window light from right, medium contrast, collaborative fair mood — defining success together before work starts. Clean editorial realism, medium-high detail. No text, watermarks, logos, handshake clichés, guarantee banner text, alarm symbols, distorted hands. Safe zone: subject central 85% width."
+}

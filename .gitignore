@@ -5,3 +5,8 @@ node_modules
 dist
 .cache
 .venv
+.pydeps
+__pycache__
+*.pyc
+.DS_Store
+.cursor

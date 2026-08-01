@@ -1,5 +1,10 @@
 ---
 title: 'Time as a Risk Factor: What Entrepreneurs Need to Know About Time Loss'
+seo_title: 'Time as Risk Factor in Risk Management'
+primary_keyword: risk management smb
+secondary_keywords:
+  - emergency plan business
+  - founder burnout
 slug: time-as-risk-factor-entrepreneurs-risk-management
 date: '2026-07-04'
 category: Risk management
@@ -9,6 +14,7 @@ hero_image: img/blog/zeit-als-risikofaktor-unternehmer-risikomanagement-hero.png
 hero_alt: Entrepreneur reviewing time allocation on calendar beside risk dashboard in modern office
 draft: false
 related_slugs:
+  - what-is-risk-management
   - theory-practice-risk-management-standards-smb
   - emotional-leadership-smb-iceberg-model-risk
   - why-employees-make-risky-decisions
@@ -45,7 +51,7 @@ faq:
 
 ## Why time in risk management is more than a calendar
 
-Time is the one resource you cannot simply multiply — as a founder or as a company. In Risk Radar episode 18.02, Till Manfred Blania and Peter Münstermann frame the topic from a risk angle: not self-help productivity, but a factor that shifts probability and damage in daily operations. This solo episode speaks to decision-makers in solo businesses, startups, and SMBs who feel the day is full — yet little moves forward.
+Time is the one resource you cannot simply multiply — as a founder or as a company. In Risk Radar episode 18.02, Till Manfred Blania and Peter Münstermann frame the topic from a risk angle: not self-help productivity, but a factor that shifts probability and damage in daily operations — building on the basics in [What is risk management?](/blog/what-is-risk-management/). This solo episode speaks to decision-makers in solo businesses, startups, and SMBs who feel the day is full — yet little moves forward.
 
 ## What does “time is money” mean in practice?
 
@@ -94,7 +100,7 @@ Here the arc closes on the risk model: damage often fixed — probability movabl
 
 ## How emergency planning cuts outage time in euros
 
-Risk management pays off in crisis when every hour counts. Peter walks through server outage, machine stop, supply gap — if you already know who calls whom, which parts ship express, and which diagnostic steps run, you can halve downtime or better. €100,000 damage might become €30,000 — still painful, but a different range. The pharmacy example from earlier episodes still holds: €14,000 instead of €2,000 when unprepared. Till adds practice: a car dealership with outdoor containers — break-in on high-value tyres because storage was ad hoc without a thought-through scenario. Peter turns it positive: a dealership after fire that kept operating within a week using containers — damage limited because prepared. For [SMBs with complex operations](/angebote/kmu/), that is not a luxury scenario but lived time economics.
+Risk management pays off in crisis when every hour counts — a solid **business emergency plan** shortens outage time measurably. Peter walks through server outage, machine stop, supply gap — if you already know who calls whom, which parts ship express, and which diagnostic steps run, you can halve downtime or better. €100,000 damage might become €30,000 — still painful, but a different range. The pharmacy example from earlier episodes still holds: €14,000 instead of €2,000 when unprepared. Till adds practice: a car dealership with outdoor containers — break-in on high-value tyres because storage was ad hoc without a thought-through scenario. Peter turns it positive: a dealership after fire that kept operating within a week using containers — damage limited because prepared. For [SMBs with complex operations](/angebote/kmu/), that is not a luxury scenario but lived time economics.
 
 ## Conclusion: Use time deliberately — before it derails you
 
