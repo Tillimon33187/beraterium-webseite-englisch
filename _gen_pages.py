@@ -69,6 +69,7 @@ IMG_ANGEBOT_KMU_HERO = "img/angebote/kmu/hero.webp"
 IMG_ANGEBOT_SOLO_HERO = "img/angebote/solo/hero.webp"
 IMG_RELEVANZ_SCHWELLE = "img/garantie/relevanz-schwelle.webp"
 IMG_NUTZEN_KRITERIEN = "img/garantie/nutzen-kriterien.webp"
+IMG_BLINDSPOT_WARUM = "img/tools/blindspot-warum.webp"
 
 ALT_TILL = "Till Manfred Blania, Managing Director Beraterium"
 ALT_PETER = "Peter Münstermann, Beraterium"
@@ -2067,12 +2068,15 @@ def gen_blindspot_check() -> None:
             compact=True,
             actions='<a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-blindspot">Start the check now</a>',
         )
-        + """
-    <section class="brt-section brt-section--narrow" aria-labelledby="why-title">
-      <div class="brt-container brt-fade-up">
-        <h2 id="why-title" class="brt-h2">Why a Blindspot Check?</h2>
-        <p class="brt-body">Most businesses don't fail because of the risks they know — they fail because of the ones they never looked at. The Blindspot Check makes these blind spots visible: it examines 15 of the more than 100 hazard areas from our 3-level hazard catalog, spread across <strong>People</strong>, <strong>Technology</strong> and <strong>Operations</strong>.</p>
-        <p class="brt-body">Each question describes a concrete scenario. You rate how critical it would be for you — and whether you have already prepared measures. The result is your personal risk profile with a traffic-light status per question.</p>
+        + f"""
+    <section class="brt-section" aria-labelledby="why-title">
+      <div class="brt-container brt-split">
+        <div class="brt-split__text brt-fade-up">
+          <h2 id="why-title" class="brt-h2">Why a Blindspot Check?</h2>
+          <p class="brt-body">Most businesses don't fail because of the risks they know — they fail because of the ones they never looked at. The Blindspot Check makes these blind spots visible: it examines 15 of the more than 100 hazard areas from our 3-level hazard catalog, spread across <strong>People</strong>, <strong>Technology</strong> and <strong>Operations</strong>.</p>
+          <p class="brt-body">Each question describes a concrete scenario. You rate how critical it would be for you — and whether you have already prepared measures. The result is your personal risk profile with a traffic-light status per question.</p>
+        </div>
+        {split_media_html(IMG_BLINDSPOT_WARUM, "Blindspot Check reveals overlooked business risks in people, technology and operations", 2, contain=True)}
       </div>
     </section>
     <section id="check" class="brt-section brt-section--alt" aria-labelledby="check-title">

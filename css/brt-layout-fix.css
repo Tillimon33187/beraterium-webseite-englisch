@@ -261,3 +261,12 @@
 .brt-card--catalog.brt-hover-lift:hover .brt-card__link .brt-h3:hover {
   color: var(--color-accent);
 }
+
+/* KI-Transparenz-Hinweis am Artikelende (auto via _cms._append_ai_disclosure) */
+.brt-article__ai-disclosure {
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}

@@ -513,10 +513,28 @@ def resolve_article_faq(
     return []
 
 
+AI_DISCLOSURE_TEXT = (
+    "This text was created with AI assistance and editorially reviewed."
+)
+
+
+def article_ai_disclosure_html(text: str = AI_DISCLOSURE_TEXT) -> str:
+    return (
+        f'\n<p class="brt-article__ai-disclosure brt-meta">{escape(text)}</p>'
+    )
+
+
+def _append_ai_disclosure(html: str) -> str:
+    if "brt-article__ai-disclosure" in html:
+        return html
+    return html + article_ai_disclosure_html()
+
+
 def _postprocess_article_html(html: str, excerpt: str) -> tuple[str, list[dict[str, str]], str, str]:
     html = _unwrap_list_paragraphs(html)
     html = _promote_keypoints(html)
     html, youtube_id = _extract_podcast_youtube(html)
+    html = _append_ai_disclosure(html)
     toc = _extract_toc(html)
     lead = _clean_excerpt(excerpt)
     if lead:

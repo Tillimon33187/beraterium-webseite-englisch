@@ -2114,6 +2114,10 @@
   line-height: 1.65;
 }
 
+.brt-split__text .brt-body + .brt-btn {
+  margin-top: var(--space-8);
+}
+
 /* Founder block — Über uns */
 .brt-founder {
   background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-alt) 100%);

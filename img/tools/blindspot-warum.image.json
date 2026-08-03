@@ -1,0 +1,91 @@
+{
+  "title": "blindspot-check-why-section",
+  "slug": "blindspot-warum",
+  "language": "de",
+  "intent": "editorial",
+  "subject": "Geschäftsführer/in am aufgeräumten Schreibtisch mit Laptop: Auf dem Bildschirm ein strukturiertes Risiko-Dashboard — links klar erkennbare Karten (bekannte Risiken), rechts ein ausgeblendeter blinder Fleck mit Fragezeichen, der durch Beraterium-Blau sichtbar wird; drei dezente Icon-Badges für Mensch, Technik, Operatives; optionale kleine Ampel-Punkte.",
+  "context": "Beraterium Blindspot-Check-Seite (/tools/blindspot-check/), Abschnitt „Warum ein Blindspot Check?“ — Split-Layout: Text links, Bild rechts (Desktop). Thema: übersehene Risiken sichtbar machen, nicht Angst erzeugen. Gleiches Bild DE+EN (Icons statt Text). Stil wie Startseite analyse-situation / Garantie-Split-Bilder.",
+  "platform_website": {
+    "orientation": "landscape",
+    "primary_export_px": { "width": 1920, "height": 1440 },
+    "aspect_ratio": "4:3 (split media neben Text auf Blindspot-Check-Seite)",
+    "upload_source_png": "Webseite/site/img/tools/blindspot-warum.png",
+    "optimized_variants": "Build erzeugt blindspot-warum.webp plus responsive WebP via _optimize_images.py; Einbindung über split_media_html in _gen_pages.py",
+    "best_practice_notes": "Ein klares Fokusmotiv; blinder Fleck + blaue Hervorhebung auf einen Blick erkennbar; heller Hintergrund; funktioniert bei ~480px Spaltenbreite und Desktop-Split.",
+    "safe_zone": "Hauptmotiv in mittleren 85 %; unten rechts ~18 % für KI-Vermerk freihalten; keine kritischen Details am äußeren Rand (abrundeter Karten-Crop)."
+  },
+  "composition": {
+    "shot_type": "medium-wide",
+    "camera_angle": "leicht schräg, Augenhöhe",
+    "depth": "Vordergrund: Ecke des Schreibtischs mit Stift; Mittelgrund: Person in Smart Casual am Laptop mit abstraktem Risiko-UI; Hintergrund: helles modernes Büro, weich unscharf",
+    "aspect_ratios": ["4:3", "3:2", "1:1"]
+  },
+  "lighting": {
+    "style": "weiches natürliches Tageslicht, clean corporate",
+    "direction": "von links (Fenster)",
+    "contrast": "mittel"
+  },
+  "color_palette": {
+    "primary": "#041E42",
+    "secondary": "#0B5FFF",
+    "accent": "#E8F0FF",
+    "traffic_light": {
+      "green": "#16A34A",
+      "yellow": "#B8860B",
+      "red": "#DC2626"
+    },
+    "background": "#F7F8FA"
+  },
+  "style": {
+    "visual_style": "clean editorial realism mit dezentem UI-Overlay",
+    "detail_level": "medium-high",
+    "mood": "konzentriert, klar, vertrauenswürdig — Klarheit statt Alarm"
+  },
+  "ai_disclosure": {
+    "required": true,
+    "label_de": "KI-generiertes Bild",
+    "label_en": "AI-generated image",
+    "placement": "unten rechts, ca. 2,5 % Rand",
+    "prompt_instruction_de": "Unten rechts gut lesbarer Vermerk 'KI-generiertes Bild' in weißer Sans-Serif auf halbtransparentem dunkelblauem Badge (#041E42, ~70 % Deckkraft). Muss in Vollbild UND Thumbnail lesbar sein.",
+    "prompt_instruction_en": "Bottom-right: clearly legible caption 'KI-generiertes Bild' in white sans-serif on a semi-transparent dark navy badge (#041E42, ~70% opacity). Must be readable at full width and thumbnail size."
+  },
+  "optional_text_overlay": {
+    "recommended_for_blog_hero": false,
+    "display_language": "de",
+    "prompt_instruction": "Kein lesbarer Text auf dem Bildschirm — nur abstrakte Karten, Icons und Formen; Ausnahme: KI-Vermerk unten rechts."
+  },
+  "negative_prompt": [
+    "no watermarks or text except the small AI-disclosure label bottom right",
+    "no distorted hands or extra fingers",
+    "no readable words, numbers or euro amounts on screen (exception: KI label bottom right only)",
+    "no third-party logos or brand names",
+    "no Beraterium logo in the image",
+    "no red alarm icons, warning triangles or hacker clichés",
+    "no explosions, panic or fear imagery",
+    "no generic stock-photo grin",
+    "no low-resolution artifacts",
+    "no identifiable real persons or celebrities",
+    "no cluttered composition",
+    "no duplicate or overlapping KI labels"
+  ],
+  "seo": {
+    "target_keyword": "blindspot check unternehmensrisiken",
+    "alt_text_de": "Blindspot Check macht übersehene Unternehmensrisiken in den Bereichen Mensch, Technik und Operatives sichtbar",
+    "alt_text_en": "Blindspot Check reveals overlooked business risks in people, technology and operations",
+    "caption_de": "Der Blindspot Check macht blinde Flecken sichtbar — bevor sie zum Problem werden.",
+    "filename": "blindspot-warum.webp",
+    "image_title": "Warum ein Blindspot Check — blinde Flecken erkennen"
+  },
+  "generation_prompt_single_block_de": "Fotorealistisches Editorial-Bild, Querformat 1920×1440, 4:3. Helles modernes Büro, Navy (#041E42) und Beraterium-Blau (#0B5FFF) als Akzente auf dezentem UI-Overlay. Mittelgrund: konzentrierte/r Geschäftsführer/in (30–50, Smart Casual, nicht identifizierbar) an aufgeräumtem Schreibtisch mit Laptop. Auf dem Bildschirm: abstraktes Risiko-Dashboard — links 3–4 ordentliche Karten (bekannte Risiken, nur abstrakte Formen, kein lesbarer Text), rechts ein ausgeblendeter/leerer Bereich mit Fragezeichen als blinder Fleck, dieser Bereich sanft mit #0B5FFF hervorgehoben. Darunter drei kleine Icon-Badges: Person, Server/Technik, Prozess/Checkliste. Optional drei winzige Ampel-Punkte in Grün (#16A34A), Gelb (#B8860B), Rot (#DC2626), sehr dezent. Vordergrund: Stift am Tisch. Weiches Tageslicht von links, ruhige analytische Stimmung. Unten rechts: gut lesbarer Vermerk 'KI-generiertes Bild' in weißer Sans-Serif auf halbtransparentem dunkelblauem Badge (#041E42, ~70 % Deckkraft). Kein Logo, keine anderen Texte, keine Alarm-Symbole, keine verzerrten Hände, kein Hacker-Klischee.",
+  "generation_prompt_single_block_en": "Editorial photograph 1920x1440, 4:3 aspect ratio. Bright modern office, navy (#041E42) and Beraterium blue (#0B5FFF) accents on a subtle UI overlay. Midground: focused business owner (30–50, smart casual, non-identifiable) at a tidy desk with laptop. On screen: abstract risk dashboard — left side 3–4 neat cards representing known risks (abstract shapes only, no readable text), right side a faded empty zone with question mark as a blind spot, softly highlighted in #0B5FFF. Below: three small icon badges for people, technology/server, operations/process. Optional three tiny traffic-light dots in green (#16A34A), yellow (#B8860B), red (#DC2626), very subtle. Foreground: pen on desk. Soft window light from left, calm analytical mood. Bottom-right: clearly legible caption 'KI-generiertes Bild' in white sans-serif on semi-transparent dark navy badge (#041E42, ~70% opacity) — readable at thumbnail size. No logo, no other readable text, no alarm symbols, no distorted hands, no hacker clichés.",
+  "post_processing_fallback": {
+    "when": "Falls Generator den KI-Vermerk unleserlich weglässt",
+    "ki_label_text": "KI-generiertes Bild",
+    "ki_label_position": "bottom-right, white text on dark navy rounded badge (#041E42, ~70% opacity)"
+  },
+  "generator_hints": {
+    "recommended_aspect_ratio": "4:3",
+    "recommended_resolution": "1920x1440",
+    "upload_after_generation": "PNG als Webseite/site/img/tools/blindspot-warum.png speichern, dann: cd Webseite/site && python3 _optimize_images.py"
+  }
+}
