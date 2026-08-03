@@ -7,7 +7,7 @@ secondary_keywords:
   - prepare business handover
   - generational change business
 slug: business-succession-overlooked-risks
-date: '2026-07-15'
+date: '2026-07-24'
 category: SME
 author: till-blania
 excerpt: 'Succession brings knowledge transfer, leadership acceptance and financing together. These risk areas are most often overlooked before handover.'
@@ -33,6 +33,18 @@ faq:
   - question: How does Beraterium prepare succession for bank and advisory board?
     answer: "In the 6-week clarity roadmap for SMEs, succession risk is captured like any other risk, assessed in euros and documented in the risk portfolio report. Bank and advisory board receive a presentable picture — not only a letter of intent but prioritised risks with measures."
 ---
+
+* In succession, knowledge transfer, leadership acceptance and financing collide. These risk areas are most often overlooked before handover.
+
+  * Three risk fields in every succession: knowledge transfer (implicit leadership know-how), leadership acceptance (trust of staff and customers) and financing structure.
+
+  * Between 2026 and 2030 around 186,000 successions are due in Germany – late starters negotiate with bank and successor under time pressure.
+
+  * A notarial contract covers shares and liability – but not whether knowledge was transferred or customers trust the successor.
+
+  * Succession succeeds with documented knowledge, active customer handover and transparent liability risks from the past.
+
+  * A risk portfolio report in euros makes succession preparation presentable for bank and board – not just a letter of intent.
 
 ## Which risks are overlooked in succession – the short answer
 

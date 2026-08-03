@@ -6,7 +6,7 @@ secondary_keywords:
   - cyber attack emergency help smb
   - report cyber attack bsi
 slug: cyber-attack-what-to-do-smb
-date: '2026-07-15'
+date: '2026-07-12'
 category: SME
 author: till-blania
 excerpt: 'After a cyber attack, the first 2 hours count. The emergency checklist for SMEs, reporting duties and deadlines – plus prevention without an IT team.'
@@ -32,6 +32,18 @@ faq:
   - question: How does Beraterium place cyber risk in the overall risk analysis?
     answer: Cyber risks are one of several hazard classes in Beraterium's three-tier hazard catalogue. They are not viewed in isolation but assessed in euros together with outage, market and financial risks and prioritised in the risk matrix – so you see whether cyber is truly the most urgent risk or another topic should come first.
 ---
+
+* After a cyber attack, the first 2 hours count. The immediate action checklist for SMBs, reporting duties and deadlines – plus prevention without an IT team.
+
+  * In an emergency, isolate first: disconnect affected systems from the network, do not delete or decrypt anything, bring in experts – speed beats perfection.
+
+  * Several reporting deadlines run in parallel: GDPR 72 hours when data leaks, NIS2 24/72 hours for regulated companies, notify insurance immediately.
+
+  * The most effective prevention measures need no IT department: two-factor authentication, offline backups with restore tests, automatic updates, phishing training.
+
+  * A written emergency plan with responsibilities and contacts on paper is critical – when systems fail, only what is reachable outside IT helps.
+
+  * Cyber is rarely the only risk: in the 3-level hazard catalogue it is prioritised in euros alongside operational, market and financial risks.
 
 ## What to do after a cyber attack – the short answer
 

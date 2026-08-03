@@ -11,16 +11,17 @@ draft: false
 related_slugs: []
 ---
 
-## Take control of your risks before they control you
+* Risk is not a monster but a constant companion of your entrepreneurship – and that is precisely where its strategic power lies when you make it visible.
 
-  * 12 December 2025
+  * Those who think about risk only technically overlook the biggest lever: people with private burdens, emotions and different perceptions of risk.
 
-  * Risk is not a monster but a constant companion of your entrepreneurship – and that is precisely where its strategic power lies when you make it visible.
-  * Those who think about risk only technically overlook the biggest lever: people with their private burdens, emotions and completely different perceptions of risk.
-  * Every identified risk can be turned into a growth opportunity – for example by deriving clear recruiting, onboarding and scaling strategies from staff bottlenecks.
-  * The first step towards professional risk management is an honest 360° view through your own company plus open conversations with key people instead of gut feeling and glossing over problems.
-  * Courage without risk awareness is recklessness: what matters is to think first about maximum damage, then derive probability and concrete measures.
-  * Structured risk analyses bring calm to your thinking, protect you from panic decisions in a crisis and turn you from someone driven by events into a shaper of your company.
+  * Every identified risk can become a growth opportunity – for example turning staff bottlenecks into recruiting and scaling strategies.
+
+  * The first step is an honest 360° view through the company plus conversations with key people instead of gut feeling and glossing over problems.
+
+  * Courage without risk awareness is recklessness: think first about maximum damage, then derive probability and measures.
+
+  * Structured risk analyses protect against panic decisions and turn you from someone driven by events into a shaper of your company.
 
 ## Risk is part of your entrepreneurial routine – whether you want it or not
 

@@ -15,12 +15,17 @@ draft: false
 related_slugs: []
 ---
 
-  * **Patents and trade marks apply only where you register them.** Whoever protects only in Germany or the EU can be "taken over" in China or the USA by others – the patent specification is public. Whoever wants to expand should register protection early in relevant markets (e.g. China).
-  * **Having rights does not mean you can enforce them.** Contracts, NDAs and non-compete clauses help – but enforcement costs time, money and is often difficult. Organisational and cultural measures are equally important.
-  * **Not everything is patentable.** Technical products and processes yes; trade marks, design, utility models separately. Internal know-how, processes, formulations often not – there NDAs, documentation and culture help.
-  * **Know-how leakage: knowledge has a half-life**, but loss of key people and missing offboarding can hit the company harder than what the ex-employee "takes with them". Good culture and smooth offboarding reduce risk and reputational damage.
-  * **5 practical tips:** (1) Invest in trade mark/patent protection in production and sales markets (e.g. China) upfront. (2) Document processes and process-critical staff. (3) Culture where knowledge and people are valued. (4) Protect everything protectable; for the rest: be faster and more innovative. (5) Ensure knowledge transfer from experienced staff.
-  * **Innovation and structure are often more important than patents.** Pixar, Apple, Coca-Cola (recipe only in the safe) show: with a good idea, good processes and competitive advantage you can succeed even without comprehensive patent protection – if you stay on the ball.
+* Patents and trade marks apply only where you register them. Whoever protects only in Germany or the EU can be taken over in China or the USA – the patent specification is public.
+
+  * Patents and trade marks apply only in registered markets – if you expand internationally, register protection early in production and sales markets.
+
+  * Having rights does not mean you can enforce them: NDAs and contracts help, but enforcement costs time, money and nerves.
+
+  * Not everything is patentable – internal know-how, processes and formulations need documentation, culture and knowledge transfer instead of patents.
+
+  * Know-how leakage often hurts more than knowledge taken away: losing the person, missing offboarding and undocumented processes are the real risk.
+
+  * Innovation, structure and speed are often more important than comprehensive patent protection – protect what you can, but do not rely on legal measures alone.
 
 ## Why talk about intellectual property and patent protection now?
 

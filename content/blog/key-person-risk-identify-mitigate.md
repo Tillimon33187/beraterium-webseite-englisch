@@ -6,7 +6,7 @@ secondary_keywords:
   - key person risk
   - key person risk smb
 slug: key-person-risk-identify-mitigate
-date: '2026-07-15'
+date: '2026-08-01'
 category: Risk management
 author: till-blania
 excerpt: 'Key person risk hits SMEs, startups and solo self-employed people differently. How to spot indispensable people – and protect against their loss.'
@@ -32,6 +32,18 @@ faq:
   - question: How does Beraterium capture key people systematically?
     answer: In Beraterium's three-tier hazard catalogue, loss of key people is its own hazard class. The analysis checks for each critical function who carries it, whether knowledge is documented and what an outage costs. The result feeds into the risk matrix and is prioritised against all other business risks.
 ---
+
+* Key person risk hits SMBs, startups and solo self-employed people differently. How to identify indispensable people – and secure the business.
+
+  * Someone is a key person if two of three test questions are yes: process stops, knowledge only in their head, customer relationships depend on them personally.
+
+  * For solos the person is the business; in SMBs MDs or lead experts often hold exclusive knowledge; in startups product and investor trust concentrate on founders.
+
+  * Four immediate measures: document knowledge, set written deputisation rules, split customer relationships across two people, create an emergency folder.
+
+  * Key person insurance cushions financial damage – but does not replace knowledge sharing or deputisation.
+
+  * In the 3-level hazard catalogue each outage scenario is evaluated in euros and prioritised against cyber, liquidity and other risks.
 
 ## What is key person risk – briefly explained?
 

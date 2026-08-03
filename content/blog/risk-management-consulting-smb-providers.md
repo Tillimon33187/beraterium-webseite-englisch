@@ -7,7 +7,7 @@ secondary_keywords:
   - risk analysis smb
   - risk management without bureaucracy
 slug: risk-management-consulting-smb-providers
-date: '2026-07-15'
+date: '2026-07-16'
 category: SME
 author: till-blania
 excerpt: 'Risk management advisory in the mid-market: four provider types from Big Four auditors to DIY – which fits your SME and how to tell.'
@@ -33,6 +33,18 @@ faq:
   - question: How do I recognise a good risk management adviser for the mid-market?
     answer: "Three things: they assess risks in concrete euro amounts instead of vague colour scales; they prioritise the few most effective measures instead of long catalogues; and they support implementation instead of only delivering a report."
 ---
+
+* Risk management advisory for the mid-market: four provider types from Big Four auditors to DIY – which fits your SMB and how to tell.
+
+  * Four provider types: Big Four/ISO consulting, specialised SMB advisors, insurance brokers and DIY – the difference is in the deliverable, not just price.
+
+  * ISO certification mainly pays off with audit duty or customer requirement – for most SMBs, actionability matters more than a certificate on the wall.
+
+  * Specialised mid-market advisors evaluate risks in euros instead of traffic lights and support implementation – not just the report.
+
+  * Insurance brokers cover insurable individual risks but not the full picture: key person, customer concentration and succession are often uninsurable.
+
+  * A good advisor prioritises a few effective measures, evaluates in euros and honestly says when a broker or certifier is the better choice.
 
 ## Who offers risk management advisory for the mid-market?
 

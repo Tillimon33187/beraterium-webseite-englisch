@@ -7,7 +7,7 @@ secondary_keywords:
   - false self-employment check
   - customer concentration freelancer
 slug: risks-self-employed-freelancers
-date: '2026-07-15'
+date: '2026-07-28'
 category: Solo
 author: till-blania
 excerpt: 'The three biggest risks for the self-employed: loss of capacity to work, customer concentration and false self-employment. How to spot them – and who helps.'
@@ -33,6 +33,18 @@ faq:
   - question: Who helps self-employed people with risk protection?
     answer: For insurable individual risks, an insurance broker helps; for tax and legal questions, a tax adviser or solicitor. For the full picture – which risks really matter and in what order – Beraterium supports solo self-employed people with the 2-week risk compass, which assesses all risks in euros.
 ---
+
+* The three biggest risks for self-employed people: loss of earning capacity, customer concentration and false self-employment. How to spot them – and who can help.
+
+  * As a solo self-employed person you are the business: illness or burnout mean immediate loss of revenue – no sick pay, no backup.
+
+  * From around 40% revenue share with one customer, concentration becomes risky; from 83% you also risk suspicion of false self-employment.
+
+  * False self-employment builds up gradually – pension insurance can demand social security contributions retroactively over many years.
+
+  * Reserves for three to six months, sick pay insurance and a written emergency plan significantly reduce outage risk.
+
+  * Beraterium evaluates all three core risks in the 2-week risk compass in euros – with prioritised next steps instead of long to-do lists.
 
 ## What are the biggest risks for self-employed people and freelancers?
 

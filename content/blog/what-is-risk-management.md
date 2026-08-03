@@ -11,6 +11,18 @@ draft: false
 related_slugs: []
 ---
 
+* Risk management is more than avoiding losses – it identifies uncertainty, assesses it and makes it steerable.
+
+  * A hazard is the possibility of disruption – a risk only arises when probability of occurrence and magnitude of damage are combined.
+
+  * The basic formula: risk = probability of occurrence × magnitude of damage – making hazards comparable and prioritisable.
+
+  * The risk matrix systematically ranks risks and shows where prevention delivers the greatest benefit.
+
+  * Risk management creates clarity and room for action – not fear, but confident steering of uncertainty.
+
+  * For SMBs, startups and solo self-employed people it is not a corporate luxury but the basis for stable growth.
+
 Risk management is more than damage avoidance – it is the art of recognising uncertainty, assessing it and steering it deliberately.  
 In this article we explain the basics: what is a hazard? How does a risk arise from it? And why is understanding probability of occurrence and magnitude of damage decisive for business success?
 

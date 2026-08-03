@@ -11,9 +11,19 @@ draft: false
 related_slugs: []
 ---
 
-## The real reasons for risky behaviour in companies – what SMEs need to know to avoid failures
+* Why do employees make risky decisions – even when they know the possible consequences? In SMBs the biggest risks often arise through people, not technology.
 
-  * 27 November 2025
+  * Most risks arise through routine, overload, unspoken expectations and social dynamics – not through missing rules alone.
+
+  * Overconfidence from experience is quiet and dangerous: those who have done the same move a thousand times lose respect for what could go wrong.
+
+  * Management pressure through scarce resources and permanent urgency reinforces risky behaviour – speed is rewarded, care is not.
+
+  * The true origin of many failures is missing communication: not reporting what feels wrong because nobody wants to cause trouble.
+
+  * SMBs reduce risk sustainably through open communication, realistic expectations and recognition for care instead of speed alone.
+
+## The real reasons for risky behaviour in companies – what SMEs need to know to avoid failures
 
 **Why do employees make risky decisions – even when they know the possible consequences?**  
 In many small and mid-sized companies the biggest risks arise not through technology or missing processes but through people: through routine, overload, unspoken expectations and social dynamics in the team.

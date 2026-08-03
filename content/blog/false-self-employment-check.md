@@ -6,7 +6,7 @@ secondary_keywords:
   - status determination freelancer
   - false self-employment how many clients
 slug: false-self-employment-check
-date: '2026-07-15'
+date: '2026-07-20'
 category: Solo
 author: till-blania
 excerpt: 'Spot false self-employment – the key criteria, the 83% rule of thumb, the status determination process and what a back-payment claim costs.'
@@ -32,6 +32,18 @@ faq:
   - question: How does Beraterium help with false self-employment risk?
     answer: Beraterium assesses false self-employment risk as part of the 2-week risk compass – together with outage and customer concentration risk. The result is an euro assessment of the concrete scenario and prioritised measures, such as diversifying clients or a status determination.
 ---
+
+* Recognising false self-employment – key criteria, the 83% rule of thumb, the status determination process and what a back-payment can cost.
+
+  * False self-employment applies when freelance work looks like employment in practice – one client, instructions, fixed hours.
+
+  * If more than 83% of revenue comes from one client, suspicion rises quickly – but the nature of the working relationship matters more than the number.
+
+  * Status determination by German pension insurance creates legal certainty – ideally apply in the first month before contribution risks build up.
+
+  * In the worst case the client faces retroactive payments over years – for the freelancer, loss of the client and economic existential risk.
+
+  * Beraterium evaluates status risk in the 2-week risk compass in euros – with measures such as diversification, contract adjustment or status determination.
 
 ## What is false self-employment – briefly explained?
 

@@ -11,6 +11,18 @@ draft: false
 related_slugs: []
 ---
 
+* In the first episode of the "Risk Radar" podcast, Till Blania and Peter Münstermann present the idea behind Beraterium: risk management made simple, practical and human.
+
+  * SMBs and startups face the same risks as corporations – only with far fewer resources; Beraterium makes risk management tangible on equal terms.
+
+  * Peter brings corporate information security experience, Till startup culture and HR analysis – together they combine methodology and humanity.
+
+  * The approach is modular and practical: no ISO filing cabinets but actionability through honest inventory and joint implementation.
+
+  * An example from the episode: a forgotten GmbH managing director appointment – formally small, existentially large; exactly such blind spots the Beraterium approach finds.
+
+  * Risk management does not mean fear but being prepared – the podcast shares weekly insights for safe, healthy growth.
+
 In the first episode of the **"Risk Radar"** podcast, **Till Blania** and **Peter Münstermann** present the idea behind **Beraterium**: risk management made simple, practical and human.
 
 With long-standing experience from the corporate and startup worlds, they show how companies can recognise risks early and grow safely – without bureaucracy, but with structure, clarity and responsibility.

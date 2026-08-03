@@ -7,7 +7,7 @@ secondary_keywords:
   - cash flow shortfall
   - customer concentration risk
 slug: cashflow-analysis-risk-management-smb
-date: '2026-07-15'
+date: '2026-07-08'
 category: SME
 author: till-blania
 excerpt: 'A cash flow analysis shows whether your business can cover ongoing payments – regardless of profit. It makes liquidity risks visible early in SMEs.'
@@ -33,6 +33,18 @@ faq:
   - question: What happens to cash flow when a major customer drops away?
     answer: When a customer with a high revenue share leaves, planned inflows disappear immediately while fixed costs continue. The higher the customer concentration, the faster a cash shortfall follows. That is why customer concentration is one of the most important early indicators in cash flow risk.
 ---
+
+* A cash flow analysis shows whether your company can cover ongoing payments – regardless of profit. It makes liquidity risks visible early for SMBs.
+
+  * Profit and cash flow are not the same: a company can be profitable and still become insolvent when invoices stay open or repayments run.
+
+  * Three early warning signals for liquidity risk: cash reserve runway, debtor days, and customer concentration – observable without expensive software.
+
+  * Metrics show that a risk exists – Beraterium also evaluates liquidity risk in euros so you can compare what really matters.
+
+  * Losing a major customer is the classic shock event: incoming payments stop immediately while fixed costs continue – especially with high customer concentration.
+
+  * A rolling liquidity forecast is the cheapest tool against nasty surprises – updated monthly, deepened before major decisions.
 
 ## What is a cash flow analysis – and why is it risk management?
 
