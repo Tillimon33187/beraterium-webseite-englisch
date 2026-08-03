@@ -6,7 +6,7 @@ secondary_keywords:
   - key person risk
   - key person risk smb
 slug: key-person-risk-identify-mitigate
-date: '2026-07-15'
+date: '2026-08-01'
 category: Risk management
 author: till-blania
 excerpt: 'Key person risk hits SMEs, startups and solo self-employed people differently. How to spot indispensable people – and protect against their loss.'

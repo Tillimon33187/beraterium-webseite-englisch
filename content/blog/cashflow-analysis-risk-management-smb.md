@@ -7,7 +7,7 @@ secondary_keywords:
   - cash flow shortfall
   - customer concentration risk
 slug: cashflow-analysis-risk-management-smb
-date: '2026-07-15'
+date: '2026-07-08'
 category: SME
 author: till-blania
 excerpt: 'A cash flow analysis shows whether your business can cover ongoing payments – regardless of profit. It makes liquidity risks visible early in SMEs.'

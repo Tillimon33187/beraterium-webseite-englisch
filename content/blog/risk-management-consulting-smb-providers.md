@@ -7,7 +7,7 @@ secondary_keywords:
   - risk analysis smb
   - risk management without bureaucracy
 slug: risk-management-consulting-smb-providers
-date: '2026-07-15'
+date: '2026-07-16'
 category: SME
 author: till-blania
 excerpt: 'Risk management advisory in the mid-market: four provider types from Big Four auditors to DIY – which fits your SME and how to tell.'

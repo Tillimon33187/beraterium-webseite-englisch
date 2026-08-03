@@ -7,7 +7,7 @@ secondary_keywords:
   - prepare business handover
   - generational change business
 slug: business-succession-overlooked-risks
-date: '2026-07-15'
+date: '2026-07-24'
 category: SME
 author: till-blania
 excerpt: 'Succession brings knowledge transfer, leadership acceptance and financing together. These risk areas are most often overlooked before handover.'

@@ -6,7 +6,7 @@ secondary_keywords:
   - cyber attack emergency help smb
   - report cyber attack bsi
 slug: cyber-attack-what-to-do-smb
-date: '2026-07-15'
+date: '2026-07-12'
 category: SME
 author: till-blania
 excerpt: 'After a cyber attack, the first 2 hours count. The emergency checklist for SMEs, reporting duties and deadlines – plus prevention without an IT team.'

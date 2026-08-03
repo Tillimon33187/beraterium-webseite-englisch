@@ -6,7 +6,7 @@ secondary_keywords:
   - status determination freelancer
   - false self-employment how many clients
 slug: false-self-employment-check
-date: '2026-07-15'
+date: '2026-07-20'
 category: Solo
 author: till-blania
 excerpt: 'Spot false self-employment – the key criteria, the 83% rule of thumb, the status determination process and what a back-payment claim costs.'

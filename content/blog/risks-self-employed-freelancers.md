@@ -7,7 +7,7 @@ secondary_keywords:
   - false self-employment check
   - customer concentration freelancer
 slug: risks-self-employed-freelancers
-date: '2026-07-15'
+date: '2026-07-28'
 category: Solo
 author: till-blania
 excerpt: 'The three biggest risks for the self-employed: loss of capacity to work, customer concentration and false self-employment. How to spot them – and who helps.'
