@@ -55,6 +55,7 @@ BLOG_SLUG_MAP: dict[str, str] = {
     "geistiges-eigentum-patentschutz-praxistipps": "intellectual-property-patent-protection-tips",
     "gesundheit-gruender-risikomanagement-ernaehrung": "founder-health-risk-management-nutrition",
     "iran-konflikt-oelpreis-lieferketten-unternehmen": "iran-conflict-oil-price-supply-chains",
+    "ki-unternehmen-risiken-agenten-marie-ossenkopf": "ai-business-risks-agents-marie-ossenkopf",
     "ki-und-risikomanagement-mensch-im-mittelpunkt": "ai-and-risk-management-people-first",
     "mensch-vertrauen-risikomanagement": "people-trust-risk-management",
     "mitarbeitersensibilisierung-risikobewusste-kultur": "employee-awareness-risk-conscious-culture",
