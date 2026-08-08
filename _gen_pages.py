@@ -403,13 +403,14 @@ def hero(
     </section>"""
 
 
-def cta_band(pre: str, h2: str, body: str, btn: str = "Book a free intro call") -> str:
+def cta_band(pre: str, h2: str, body: str, btn: str = "Book a free intro call", *, note: str = "") -> str:
+    note_html = f'\n        <p class="brt-meta brt-body--on-dark">{note}</p>' if note else ""
     return f"""
     <section class="brt-cta-band brt-cta-band--dark brt-section" aria-labelledby="final-cta">
       <div class="brt-container brt-cta-band__inner brt-fade-up">
         <h2 id="final-cta" class="brt-h2 brt-h2--on-dark">{h2}</h2>
         <p class="brt-body brt-body--on-dark">{body}</p>
-        <a class="brt-btn brt-btn--on-dark brt-btn--lg" href="{pre}contact/">{btn}</a>
+        <a class="brt-btn brt-btn--on-dark brt-btn--lg" href="{pre}contact/">{btn}</a>{note_html}
       </div>
     </section>"""
 
@@ -683,184 +684,224 @@ def steps_flow_section(*, en: bool = False) -> str:
 
 
 
+def _render_case_study_panel(study: dict, index: int, labels: dict) -> str:
+    active = " is-active" if index == 0 else ""
+    hidden = "" if index == 0 else " hidden"
+    meta_items = "".join(
+        f'<li><span>{labels[key]}</span> {value}</li>'
+        for key, value in study["meta"]
+    )
+    stats = "".join(
+        f'<li class="brt-case-study__stat"><strong>{num}</strong><span>{text}</span></li>'
+        for num, text in study["stats"]
+    )
+    return f"""            <article class="brt-case-study{active}" id="case-panel-{index}" role="tabpanel" aria-labelledby="case-tab-{index}" data-case-study-panel{hidden}>
+              <div class="brt-case-study__grid">
+                <div class="brt-case-study__challenge">
+                  <p class="brt-case-study__label">{labels["challenge"]}</p>
+                  <h3 class="brt-case-study__title">{study["title"]}</h3>
+                  <ul class="brt-case-study__meta">
+                    {meta_items}
+                  </ul>
+                  <p class="brt-case-study__text">{study["text"]}</p>
+                </div>
+                <div class="brt-case-study__body">
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">{labels["approach"]}</p>
+                    <h4 class="brt-case-study__headline">{study["approach_headline"]}</h4>
+                    <p class="brt-body">{study["approach_body"]}</p>
+                  </div>
+                  <div class="brt-case-study__block">
+                    <p class="brt-case-study__label">{labels["outcome"]}</p>
+                    <ul class="brt-case-study__stats">
+                      {stats}
+                    </ul>
+                  </div>
+                  <blockquote class="brt-case-study__quote"><p>{study["quote"]}</p></blockquote>
+                </div>
+              </div>
+            </article>"""
+
+
 def case_studies_section(pre: str, *, en: bool = False) -> str:
+    stufe1_link = f'<a href="{pre}angebote/">Risikoanalyse Stufe&nbsp;1</a>'
     if en:
-        return """
+        stufe1_headline = f'<a href="{pre}services/">Stage&nbsp;1 risk analysis</a>'
+        cfg = {
+            "tag": "FROM THE FIELD",
+            "title": "Case studies from the field",
+            "lede": "Five anonymised examples – how Stage&nbsp;1 risk analysis works in different phases, and where Stage&nbsp;2 turns insight into action.",
+            "tablist_label": "Case studies",
+            "prev_label": "Previous case study",
+            "next_label": "Next case study",
+            "note": "All details anonymised – no conclusions about individuals possible.",
+            "labels": {
+                "challenge": "Starting point",
+                "approach": "Approach",
+                "outcome": "Outcome",
+                "industry": "Industry",
+                "phase": "Phase",
+                "team": "Team",
+            },
+        }
+        studies = [
+            {
+                "tab": "Financial services",
+                "title": "Startup founder, pre-launch",
+                "meta": [("industry", "Financial services"), ("phase", "Pre-launch / structuring"), ("team", "1 founder + external partners")],
+                "text": "Financing and regulation were on his radar – but there was no shared framework to compare all risk fields and no portfolio with clear priorities. Topics were discussed in isolation, not as one picture.",
+                "approach_headline": stufe1_headline,
+                "approach_body": "We worked through the core hazard matrix systematically: guiding question, damage scenario, euro bands, likelihood and inventory – what already mitigates the risk.",
+                "stats": [("1", "Top priority: analysis &amp; decision models"), ("4", "Second tier: cyber, capital, market, reputation"), ("1", "Key partner exit made explicit"), ("✓", "Roadmap after launch")],
+                "quote": "&ldquo;I knew there were risks. I just didn&rsquo;t know which came first – and which I&rsquo;d need to reassess after launch.&rdquo;",
+            },
+            {
+                "tab": "Creative crafts",
+                "title": "Solo self-employed, growing studio",
+                "meta": [("industry", "Creative crafts"), ("phase", "Running business, scaling offer"), ("team", "1 person, project support")],
+                "text": "Many open fronts, little time – but no shared priority. What to tackle first without spinning in circles was unclear. She carries every risk alone: customers, IT, premises, contracts, social media.",
+                "approach_headline": "Stage&nbsp;1 + Stage&nbsp;2",
+                "approach_body": "Stage&nbsp;1 revealed four equally weighted top risks. In Stage&nbsp;2 we turned each into action logic – cyber, reputation, physical total loss and organisation – with effort vs. impact trade-offs.",
+                "stats": [("4", "Top risks: IT/cyber, reputation, total loss, processes"), ("A–D", "Stage&nbsp;2 blocks with next steps"), ("3", "Phases: now, 1–3 months, follow-ups"), ("↓", "Capacity freed for top risks")],
+                "quote": "&ldquo;Stage&nbsp;1 showed which risks really carry the building – Stage&nbsp;2 how to tackle them without burning out.&rdquo;",
+            },
+            {
+                "tab": "Health tech",
+                "title": "MedTech founder in scaling phase",
+                "meta": [("industry", "Health tech / MedTech"), ("phase", "Launch &amp; corporate health pilots"), ("team", "1 founder, bootstrapped")],
+                "text": "Product on the market, strategic focus on corporate health programmes rather than pure e-commerce – but no shared framework to compare all 16 hazard fields. Individual topics were discussed, not as one portfolio.",
+                "approach_headline": stufe1_headline,
+                "approach_body": "Industry-specific MedTech questionnaire: health impact evidence, regulation, supply chain and copyable advantage – assessed separately for BGM and e-commerce channels.",
+                "stats": [("4", "Stage&nbsp;1 priorities: impact, regulation, supply chain, copyability"), ("2", "BGM vs. e-commerce rated separately"), ("1", "Patent/trademark China flagged"), ("✓", "Roadmap after corporate health pilot")],
+                "quote": "&ldquo;I assumed regulation would be top of the list. In the end there were four equal fields – and two of them I hadn&rsquo;t even considered for e-commerce.&rdquo;",
+            },
+            {
+                "tab": "Recruiting",
+                "title": "Recruitment firm, medical focus",
+                "meta": [("industry", "Recruiting / staffing"), ("phase", "Established business, growth"), ("team", "4 shareholders, equity-funded")],
+                "text": "Strong market demand, broad industry diversification – but no shared view of which risks carry the business. Many fields already covered by existing processes; three blind spots surfaced.",
+                "approach_headline": stufe1_headline,
+                "approach_body": "Recruiting-specific questionnaire with 15 hazard fields: recession, reputation, customer concentration and a follow-up question on phishing/ransomware – not in the standard catalogue.",
+                "stats": [("4", "Stage&nbsp;1: recession, reputation, concentration, cyber"), ("7", "Inventory fields already covered"), ("25", "Industries diversified"), ("✓", "Phishing/ransomware as blind spot")],
+                "quote": "&ldquo;We thought we had the basics covered. Then came the ransomware question – and we had no answer.&rdquo;",
+            },
+            {
+                "tab": "Additive manufacturing",
+                "title": "Wood 3D printing startup, R&amp;D phase",
+                "meta": [("industry", "Additive manufacturing / wood 3D printing"), ("phase", "Research &amp; founding, project business"), ("team", "Founder team, university setting")],
+                "text": "Development bureau rather than series production; anchor client in rail infrastructure – but unclear who owns which risk. Scalability depends on process reproducibility, not the printer alone.",
+                "approach_headline": stufe1_headline,
+                "approach_body": "Wood 3D printing questionnaire: product liability, sustainability claims, roles, fire risk, client concentration and funding – with team alignment on damage scenarios.",
+                "stats": [("6", "Stage&nbsp;1: liability, sustainability, roles, fire, DB, liquidity"), ("1", "Reproducibility as bottleneck"), ("3", "Fields N/A – revisit when scaling"), ("✓", "English report planned")],
+                "quote": "&ldquo;We thought the printer was the risk. What actually carries the building: liability, circularity claims and who is responsible for what.&rdquo;",
+            },
+        ]
+    else:
+        cfg = {
+            "tag": "AUS DER PRAXIS",
+            "title": "Case Studies aus der Praxis",
+            "lede": "Fünf anonymisierte Einblicke – wie Risikoanalyse Stufe&nbsp;1 in unterschiedlichen Phasen wirkt und wo Stufe&nbsp;2 aus Erkenntnis konkrete Bearbeitung macht.",
+            "tablist_label": "Case Studies",
+            "prev_label": "Vorherige Case Study",
+            "next_label": "Nächste Case Study",
+            "note": "Alle Angaben anonymisiert – ohne Rückschlüsse auf Personen möglich.",
+            "labels": {
+                "challenge": "Ausgangssituation",
+                "approach": "Ansatz",
+                "outcome": "Ergebnis",
+                "industry": "Branche",
+                "phase": "Phase",
+                "team": "Team",
+            },
+        }
+        studies = [
+            {
+                "tab": "Finanzdienstleistungen",
+                "title": "Startup-Gründer vor der Auflage",
+                "meta": [("industry", "Finanzdienstleistungen"), ("phase", "Vorgründung / Strukturierung"), ("team", "1 Gründer, externe Partner")],
+                "text": "Finanzierung und Regulatorik waren im Blick – aber kein gemeinsames Raster, um alle Felder zu vergleichen, und kein Portfolio mit Prioritäten. Einzelthemen waren besprochen, nicht als ein Gesamtbild.",
+                "approach_headline": stufe1_link,
+                "approach_body": "Systematische Kerngefahren-Matrix: Leitfrage, Schadenszenario, Euro-Stufen, Eintrittswahrscheinlichkeit und Inventar – was das Risiko bereits mindert.",
+                "stats": [("1", "Top-Priorität: Analyse- & Entscheidungsmodelle"), ("4", "Zweite Ebene: Cyber, Kapitalgeber, Markt, Reputation"), ("1", "Schlüsselpartner-Ausstieg explizit"), ("✓", "Roadmap nach Unternehmensstart")],
+                "quote": "&bdquo;Ich wusste, dass es Risiken gibt. Ich wusste nur nicht, welche zuerst – und welche ich nach dem Start neu bewerten muss.&ldquo;",
+            },
+            {
+                "tab": "Kreativhandwerk",
+                "title": "Solo-Selbstständige im laufenden Betrieb",
+                "meta": [("industry", "Kreativhandwerk"), ("phase", "Laufender Betrieb, Wachstum"), ("team", "1 Person, projektweise Unterstützung")],
+                "text": "Viele Baustellen, wenig Zeit – aber keine gemeinsame Priorität. Was zuerst angehen, ohne sich im Hamsterrad zu verlieren, war unklar. Alle Risiken trägt sie allein: Kunden, IT, Räume, Verträge, Social Media.",
+                "approach_headline": "Stufe&nbsp;1 + Stufe&nbsp;2",
+                "approach_body": "Stufe&nbsp;1 machte vier gleich gewichtete Top-Risiken sichtbar. In Stufe&nbsp;2 wurden daraus Bearbeitungslogiken – IT/Cyber, Reputation, physischer Totalausfall und Organisation – mit Aufwand-Wirkungs-Abwägung.",
+                "stats": [("4", "Top-Risiken: IT/Cyber, Reputation, Totalausfall, Prozesse"), ("A–D", "Stufe-2-Blöcke mit nächsten Schritten"), ("3", "Phasen: Sofort, 1–3 Monate, Folgetermine"), ("↓", "Kapazität für Top-Risiken frei")],
+                "quote": "&bdquo;Stufe&nbsp;1 hat gezeigt, welche wirklich das Gebäude tragen – Stufe&nbsp;2, wie ich sie ohne Selbstzerstörung angehen kann.&ldquo;",
+            },
+            {
+                "tab": "Health-Tech",
+                "title": "MedTech-Gründer in der Skalierungsphase",
+                "meta": [("industry", "Health-Tech / MedTech"), ("phase", "Markteintritt &amp; BGM-Pilotprojekte"), ("team", "1 Gründer, bootstrap-finanziert")],
+                "text": "Produkt am Markt, strategischer Fokus auf betriebliches Gesundheitsmanagement statt reinem E-Commerce – aber kein gemeinsames Raster für alle 16 Gefahrenfelder. Einzelthemen waren besprochen, nicht als Portfolio.",
+                "approach_headline": stufe1_link,
+                "approach_body": "Branchenspezifischer MedTech-Fragenkatalog: Wirkungsnachweis, Regulatorik, Lieferkette und kopierbarer Vorteil – getrennt bewertet für BGM- und E-Commerce-Kanal.",
+                "stats": [("4", "Stufe-1-Prioritäten: Wirkung, Regulatorik, Lieferkette, Kopierbarkeit"), ("2", "BGM vs. E-Commerce getrennt"), ("1", "Patent/Marke China als Prüfpunkt"), ("✓", "Fortschreibung nach BGM-Pilotphase")],
+                "quote": "&bdquo;Ich dachte, Regulatorik steht ganz oben. Am Ende waren es vier gleichrangige Felder – und zwei kannte ich aus dem E-Commerce gar nicht.&ldquo;",
+            },
+            {
+                "tab": "Recruiting",
+                "title": "Personalvermittler mit Medizin-Fokus",
+                "meta": [("industry", "Recruiting / Personalvermittlung"), ("phase", "Etabliertes Geschäft, Wachstum"), ("team", "4 Gesellschafter, Eigenkapital")],
+                "text": "Starke Marktnachfrage, breite Branchenstreuung – aber kein gemeinsames Bild, welche Risiken das Unternehmen tragen. Viele Felder durch bestehende Prozesse abgedeckt; drei blinde Flecken sichtbar gemacht.",
+                "approach_headline": stufe1_link,
+                "approach_body": "Recruiting-Fragenkatalog mit 15 Gefahrenfeldern: Rezession, Reputation, Klumpenrisiko und ergänzend Phishing/Ransomware als Zusatzfrage – nicht im Standard-Katalog.",
+                "stats": [("4", "Stufe 1: Rezession, Reputation, Klumpenrisiko, Cyber"), ("7", "Inventar-Felder bereits abgedeckt"), ("25", "Branchen diversifiziert"), ("✓", "Phishing/Ransomware als blinder Fleck")],
+                "quote": "&bdquo;Wir dachten, die Basics sitzen. Dann kam die Frage nach Ransomware – und wir hatten keine Antwort.&ldquo;",
+            },
+            {
+                "tab": "Additive Fertigung",
+                "title": "Holz-3D-Druck-Startup in der Entwicklungsphase",
+                "meta": [("industry", "Additive Fertigung / Holz-3D-Druck"), ("phase", "Forschung &amp; Gründung, Projektgeschäft"), ("team", "Gründerteam, universitäres Umfeld")],
+                "text": "Entwicklungsbüro statt Serienfertigung; zentraler Auftraggeber aus dem Bahnsektor – aber unklar, wer welches Risiko trägt. Skalierung hängt an Reproduzierbarkeit des Prozesses, nicht am Drucker allein.",
+                "approach_headline": stufe1_link,
+                "approach_body": "Holz-3D-Druck-Fragenkatalog: Produkthaftung, Nachhaltigkeitsversprechen, Rollen, Brandrisiko, Kundenkonzentration und Förderung – mit Teamabstimmung zu Schadensszenarien.",
+                "stats": [("6", "Stufe 1: Haftung, Nachhaltigkeit, Rollen, Brand, DB, Liquidität"), ("1", "Reproduzierbarkeit als Engpass"), ("3", "Felder N.R. – bei Skalierung nachziehen"), ("✓", "Englische Auswertung geplant")],
+                "quote": "&bdquo;Wir dachten, der Drucker ist das Risiko. Tatsächlich trägt das Gebäude: Haftung, Zirkularitätsversprechen und wer wofür zuständig ist.&ldquo;",
+            },
+        ]
+
+    tabs = []
+    for i, study in enumerate(studies):
+        active = " is-active" if i == 0 else ""
+        selected = "true" if i == 0 else "false"
+        tab_index = "" if i == 0 else ' tabindex="-1"'
+        tabs.append(
+            f'<button type="button" class="brt-case-studies__tab{active}" role="tab" id="case-tab-{i}" aria-selected="{selected}" aria-controls="case-panel-{i}" data-case-study-tab{tab_index}>{study["tab"]}</button>'
+        )
+    panels = "\n".join(_render_case_study_panel(study, i, cfg["labels"]) for i, study in enumerate(studies))
+
+    return f"""
     <section class="brt-section brt-case-studies" aria-labelledby="case-studies-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">FROM THE FIELD</p>
-          <h2 id="case-studies-title" class="brt-h2">Case studies from the field</h2>
-          <p class="brt-body">Two anonymised examples – how the BlindSpot Check works in different phases, and where Stage&nbsp;2 turns insight into action.</p>
+          <p class="brt-tag">{cfg["tag"]}</p>
+          <h2 id="case-studies-title" class="brt-h2">{cfg["title"]}</h2>
+          <p class="brt-body">{cfg["lede"]}</p>
         </header>
         <div class="brt-case-studies__widget brt-fade-up" data-case-studies>
-          <div class="brt-case-studies__tabs" role="tablist" aria-label="Case studies">
-            <button type="button" class="brt-case-studies__tab is-active" role="tab" id="case-tab-0" aria-selected="true" aria-controls="case-panel-0" data-case-study-tab>Financial services</button>
-            <button type="button" class="brt-case-studies__tab" role="tab" id="case-tab-1" aria-selected="false" aria-controls="case-panel-1" data-case-study-tab tabindex="-1">Creative crafts</button>
+          <div class="brt-case-studies__tabs" role="tablist" aria-label="{cfg["tablist_label"]}">
+            {"".join(tabs)}
           </div>
           <div class="brt-case-studies__panels">
-            <article class="brt-case-study is-active" id="case-panel-0" role="tabpanel" aria-labelledby="case-tab-0" data-case-study-panel>
-              <div class="brt-case-study__grid">
-                <div class="brt-case-study__challenge">
-                  <p class="brt-case-study__label">Starting point</p>
-                  <h3 class="brt-case-study__title">Startup founder, pre-launch</h3>
-                  <ul class="brt-case-study__meta">
-                    <li><span>Industry</span> Financial services</li>
-                    <li><span>Phase</span> Pre-launch / structuring</li>
-                    <li><span>Team</span> 1 founder + external partners</li>
-                  </ul>
-                  <p class="brt-case-study__text">Financing and regulation were on his radar – but there was no shared framework to compare all risk fields and no portfolio with clear priorities. Topics were discussed in isolation, not as one picture.</p>
-                </div>
-                <div class="brt-case-study__body">
-                  <div class="brt-case-study__block">
-                    <p class="brt-case-study__label">Approach</p>
-                    <h4 class="brt-case-study__headline">BlindSpot Check (Stage&nbsp;1)</h4>
-                    <p class="brt-body">We worked through the core hazard matrix systematically: guiding question, damage scenario, euro bands, likelihood and inventory – what already mitigates the risk.</p>
-                  </div>
-                  <div class="brt-case-study__block">
-                    <p class="brt-case-study__label">Outcome</p>
-                    <ul class="brt-case-study__stats">
-                      <li class="brt-case-study__stat"><strong>1</strong><span>Top priority: quality of analysis &amp; decision models – not financing</span></li>
-                      <li class="brt-case-study__stat"><strong>4</strong><span>Equal second tier: cyber, capital providers, market, reputation</span></li>
-                      <li class="brt-case-study__stat"><strong>1</strong><span>Key partner exit scenario made explicit – redundancy question opened</span></li>
-                      <li class="brt-case-study__stat"><strong>✓</strong><span>Roadmap to revisit phase-dependent risks after launch</span></li>
-                    </ul>
-                  </div>
-                  <blockquote class="brt-case-study__quote"><p>&ldquo;I knew there were risks. I just didn&rsquo;t know which came first – and which I&rsquo;d need to reassess after launch.&rdquo;</p></blockquote>
-                </div>
-              </div>
-            </article>
-            <article class="brt-case-study" id="case-panel-1" role="tabpanel" aria-labelledby="case-tab-1" data-case-study-panel hidden>
-              <div class="brt-case-study__grid">
-                <div class="brt-case-study__challenge">
-                  <p class="brt-case-study__label">Starting point</p>
-                  <h3 class="brt-case-study__title">Solo self-employed, growing studio</h3>
-                  <ul class="brt-case-study__meta">
-                    <li><span>Industry</span> Creative crafts</li>
-                    <li><span>Phase</span> Running business, scaling offer</li>
-                    <li><span>Team</span> 1 person, project support</li>
-                  </ul>
-                  <p class="brt-case-study__text">Many open fronts, little time – but no shared priority. What to tackle first without spinning in circles was unclear. She carries every risk alone: customers, IT, premises, contracts, social media.</p>
-                </div>
-                <div class="brt-case-study__body">
-                  <div class="brt-case-study__block">
-                    <p class="brt-case-study__label">Approach</p>
-                    <h4 class="brt-case-study__headline">Stage&nbsp;1 + Stage&nbsp;2</h4>
-                    <p class="brt-body">Stage&nbsp;1 revealed four equally weighted top risks. In Stage&nbsp;2 we turned each into action logic – cyber, reputation, physical total loss and organisation – with effort vs. impact trade-offs.</p>
-                  </div>
-                  <div class="brt-case-study__block">
-                    <p class="brt-case-study__label">Outcome</p>
-                    <ul class="brt-case-study__stats">
-                      <li class="brt-case-study__stat"><strong>4</strong><span>Top risks: IT/cyber, reputation, physical total loss, missing processes</span></li>
-                      <li class="brt-case-study__stat"><strong>A–D</strong><span>Stage&nbsp;2 blocks with concrete next steps per area</span></li>
-                      <li class="brt-case-study__stat"><strong>3</strong><span>Phases: now, 1–3 months, follow-up sessions</span></li>
-                      <li class="brt-case-study__stat"><strong>↓</strong><span>Non-core work made measurable – capacity freed for top risks</span></li>
-                    </ul>
-                  </div>
-                  <blockquote class="brt-case-study__quote"><p>&ldquo;Stage&nbsp;1 showed which risks really carry the building – Stage&nbsp;2 how to tackle them without burning out.&rdquo;</p></blockquote>
-                </div>
-              </div>
-            </article>
+{panels}
           </div>
           <div class="brt-case-studies__nav">
-            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--prev" data-case-study-prev aria-label="Previous case study">
+            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--prev" data-case-study-prev aria-label="{cfg["prev_label"]}">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--next" data-case-study-next aria-label="Next case study">
+            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--next" data-case-study-next aria-label="{cfg["next_label"]}">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
             </button>
           </div>
         </div>
-        <p class="brt-meta brt-case-studies__note brt-fade-up">All details anonymised – no conclusions about individuals possible.</p>
-      </div>
-    </section>"""
-    return """
-    <section class="brt-section brt-case-studies" aria-labelledby="case-studies-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">AUS DER PRAXIS</p>
-          <h2 id="case-studies-title" class="brt-h2">Case Studies aus der Praxis</h2>
-          <p class="brt-body">Zwei anonymisierte Einblicke – wie der Blindspot Check in unterschiedlichen Phasen wirkt und wo Stufe&nbsp;2 aus Erkenntnis konkrete Bearbeitung macht.</p>
-        </header>
-        <div class="brt-case-studies__widget brt-fade-up" data-case-studies>
-          <div class="brt-case-studies__tabs" role="tablist" aria-label="Case Studies">
-            <button type="button" class="brt-case-studies__tab is-active" role="tab" id="case-tab-0" aria-selected="true" aria-controls="case-panel-0" data-case-study-tab>Finanzdienstleistungen</button>
-            <button type="button" class="brt-case-studies__tab" role="tab" id="case-tab-1" aria-selected="false" aria-controls="case-panel-1" data-case-study-tab tabindex="-1">Kreativhandwerk</button>
-          </div>
-          <div class="brt-case-studies__panels">
-            <article class="brt-case-study is-active" id="case-panel-0" role="tabpanel" aria-labelledby="case-tab-0" data-case-study-panel>
-              <div class="brt-case-study__grid">
-                <div class="brt-case-study__challenge">
-                  <p class="brt-case-study__label">Ausgangssituation</p>
-                  <h3 class="brt-case-study__title">Startup-Gründer vor der Auflage</h3>
-                  <ul class="brt-case-study__meta">
-                    <li><span>Branche</span> Finanzdienstleistungen</li>
-                    <li><span>Phase</span> Vorgründung / Strukturierung</li>
-                    <li><span>Team</span> 1 Gründer, externe Partner</li>
-                  </ul>
-                  <p class="brt-case-study__text">Finanzierung und Regulatorik waren im Blick – aber kein gemeinsames Raster, um alle Felder zu vergleichen, und kein Portfolio mit Prioritäten. Einzelthemen waren besprochen, nicht als ein Gesamtbild.</p>
-                </div>
-                <div class="brt-case-study__body">
-                  <div class="brt-case-study__block">
-                    <p class="brt-case-study__label">Ansatz</p>
-                    <h4 class="brt-case-study__headline">Blindspot Check (Stufe&nbsp;1)</h4>
-                    <p class="brt-body">Systematische Kerngefahren-Matrix: Leitfrage, Schadenszenario, Euro-Stufen, Eintrittswahrscheinlichkeit und Inventar – was das Risiko bereits mindert.</p>
-                  </div>
-                  <div class="brt-case-study__block">
-                    <p class="brt-case-study__label">Ergebnis</p>
-                    <ul class="brt-case-study__stats">
-                      <li class="brt-case-study__stat"><strong>1</strong><span>Top-Priorität: Qualität von Analyse- &amp; Entscheidungsmodellen – nicht Finanzierung</span></li>
-                      <li class="brt-case-study__stat"><strong>4</strong><span>Gleichrangige zweite Ebene: Cyber, Kapitalgeber, Markt, Reputation</span></li>
-                      <li class="brt-case-study__stat"><strong>1</strong><span>Schlüsselpartner-Ausstieg explizit – Redundanz-Frage eröffnet</span></li>
-                      <li class="brt-case-study__stat"><strong>✓</strong><span>Roadmap zur Fortschreibung phasenabhängiger Risiken nach Auflage</span></li>
-                    </ul>
-                  </div>
-                  <blockquote class="brt-case-study__quote"><p>&bdquo;Ich wusste, dass es Risiken gibt. Ich wusste nur nicht, welche zuerst – und welche ich nach dem Start neu bewerten muss.&ldquo;</p></blockquote>
-                </div>
-              </div>
-            </article>
-            <article class="brt-case-study" id="case-panel-1" role="tabpanel" aria-labelledby="case-tab-1" data-case-study-panel hidden>
-              <div class="brt-case-study__grid">
-                <div class="brt-case-study__challenge">
-                  <p class="brt-case-study__label">Ausgangssituation</p>
-                  <h3 class="brt-case-study__title">Solo-Selbstständige im laufenden Betrieb</h3>
-                  <ul class="brt-case-study__meta">
-                    <li><span>Branche</span> Kreativhandwerk</li>
-                    <li><span>Phase</span> Laufender Betrieb, Wachstum</li>
-                    <li><span>Team</span> 1 Person, projektweise Unterstützung</li>
-                  </ul>
-                  <p class="brt-case-study__text">Viele Baustellen, wenig Zeit – aber keine gemeinsame Priorität. Was zuerst angehen, ohne sich im Hamsterrad zu verlieren, war unklar. Alle Risiken trägt sie allein: Kunden, IT, Räume, Verträge, Social Media.</p>
-                </div>
-                <div class="brt-case-study__body">
-                  <div class="brt-case-study__block">
-                    <p class="brt-case-study__label">Ansatz</p>
-                    <h4 class="brt-case-study__headline">Stufe&nbsp;1 + Stufe&nbsp;2</h4>
-                    <p class="brt-body">Stufe&nbsp;1 machte vier gleich gewichtete Top-Risiken sichtbar. In Stufe&nbsp;2 wurden daraus Bearbeitungslogiken – IT/Cyber, Reputation, physischer Totalausfall und Organisation – mit Aufwand-Wirkungs-Abwägung.</p>
-                  </div>
-                  <div class="brt-case-study__block">
-                    <p class="brt-case-study__label">Ergebnis</p>
-                    <ul class="brt-case-study__stats">
-                      <li class="brt-case-study__stat"><strong>4</strong><span>Top-Risiken: IT/Cyber, Reputation, physischer Totalausfall, fehlende Prozesse</span></li>
-                      <li class="brt-case-study__stat"><strong>A–D</strong><span>Stufe-2-Blöcke mit konkreten nächsten Schritten pro Bereich</span></li>
-                      <li class="brt-case-study__stat"><strong>3</strong><span>Phasen: Sofort, 1–3 Monate, Folgetermine</span></li>
-                      <li class="brt-case-study__stat"><strong>↓</strong><span>Nicht-Kerngeschäft messbar reduzierbar – Kapazität für Top-Risiken</span></li>
-                    </ul>
-                  </div>
-                  <blockquote class="brt-case-study__quote"><p>&bdquo;Stufe&nbsp;1 hat gezeigt, welche wirklich das Gebäude tragen – Stufe&nbsp;2, wie ich sie ohne Selbstzerstörung angehen kann.&ldquo;</p></blockquote>
-                </div>
-              </div>
-            </article>
-          </div>
-          <div class="brt-case-studies__nav">
-            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--prev" data-case-study-prev aria-label="Vorherige Case Study">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-            </button>
-            <button type="button" class="brt-testimonials__btn brt-testimonials__btn--next" data-case-study-next aria-label="Nächste Case Study">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-          </div>
-        </div>
-        <p class="brt-meta brt-case-studies__note brt-fade-up">Alle Angaben anonymisiert – ohne Rückschlüsse auf Personen möglich.</p>
+        <p class="brt-meta brt-case-studies__note brt-fade-up">{cfg["note"]}</p>
       </div>
     </section>"""
 
@@ -869,10 +910,22 @@ def guarantee(
     pre: str,
     h2: str = "Double guarantee",
     *,
-    tag: str = "The risk is on us",
+    tag: str | None = None,
     subtitle: str = "Two clear promises &mdash; if we don&rsquo;t deliver, you get a full refund.",
+    du: bool = False,
 ) -> str:
     img = f"{pre}img/team/"
+    if tag is None:
+        tag = "Your risk is on us" if du else "Your risk is on us"
+    nutzen_body = (
+        "Before we start, we agree 3&ndash;5 value criteria together. If none are met at the end, you receive a full refund. No questions asked."
+        if du
+        else "Before we start, we agree 3&ndash;5 value criteria together. If none are met at the end, you receive a full refund. No questions asked."
+    )
+    cta_lead = "Let&rsquo;s turn your risk into clarity." if du else "Let&rsquo;s turn your risk into clarity."
+    cta_sub = "Book a free, no-obligation intro call today."
+    team_name = "Your Beraterium team"
+    team_note = "We&rsquo;re here for you."
     return f"""
     <section class="brt-section brt-section--guarantee" aria-labelledby="garantie-title">
       <div class="brt-container">
@@ -892,6 +945,7 @@ def guarantee(
             <h3 class="brt-h3">Relevance guarantee</h3>
             <p class="brt-quote">&ldquo;No relevant risk found? Money back.&rdquo;</p>
             <p class="brt-body">If the analysis does not identify a single risk with relevant financial impact (threshold agreed jointly in advance), we refund the full amount.</p>
+            <a href="{pre}relevance-guarantee/">Learn more &rarr;</a>
           </li>
           <li class="brt-card brt-card--guarantee brt-hover-lift">
             <div class="brt-guarantee__visual">
@@ -902,7 +956,8 @@ def guarantee(
             </div>
             <h3 class="brt-h3">Value guarantee</h3>
             <p class="brt-quote">&ldquo;No measurable value? Money back.&rdquo;</p>
-            <p class="brt-body">Before we start, we agree 3&ndash;5 value criteria together. If none are met at the end, you receive a full refund. No questions asked.</p>
+            <p class="brt-body">{nutzen_body}</p>
+            <a href="{pre}benefit-guarantee/">Learn more &rarr;</a>
           </li>
         </ul>
         <aside class="brt-guarantee-cta brt-fade-up" aria-label="Book an intro call">
@@ -910,18 +965,18 @@ def guarantee(
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
           </div>
           <div class="brt-guarantee-cta__copy">
-            <p class="brt-guarantee-cta__lead">Let&rsquo;s turn your risk into clarity.</p>
-            <p class="brt-guarantee-cta__sub">Book a free, no-obligation intro call today.</p>
+            <p class="brt-guarantee-cta__lead">{cta_lead}</p>
+            <p class="brt-guarantee-cta__sub">{cta_sub}</p>
           </div>
-          <a class="brt-btn brt-btn--white" href="{pre}contact/">Book an appointment now →</a>
+          <a class="brt-btn brt-btn--white" href="{pre}contact/">Book an appointment now &rarr;</a>
           <div class="brt-guarantee-cta__team">
             <div class="brt-guarantee-cta__avatars" aria-hidden="true">
               <img src="{img}till-blania.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
               <img src="{img}peter-muenstermann.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
             </div>
             <div>
-              <p class="brt-guarantee-cta__team-name">Your Beraterium team</p>
-              <p class="brt-guarantee-cta__team-note">We&rsquo;re here for you.</p>
+              <p class="brt-guarantee-cta__team-name">{team_name}</p>
+              <p class="brt-guarantee-cta__team-note">{team_note}</p>
             </div>
           </div>
         </aside>
@@ -1977,15 +2032,17 @@ def gen_risikoradar() -> None:
 
 
 BLINDSPOT_FAQ = [
-    ("What is the Blindspot Check?",
-     "The Blindspot Check is a free online self-assessment by Beraterium. In 10 to 15 questions you check where your business is vulnerable — around key people, technology and day-to-day operations. You get your results immediately, no sign-up required."),
-    ("How long does the Blindspot Check take?",
+    ("What is the Blindspot Quick Check?",
+     "The Blindspot Quick Check is a free online self-assessment by Beraterium. In 10 to 15 questions you check where your business is vulnerable — around key people, technology and day-to-day operations. You get your results immediately, no sign-up required."),
+    ("What is the difference from Stage 1 of the risk analysis?",
+     "The Quick Check on this page is a simplified self-assessment: 15 selected hazard areas, traffic-light rating, no conversation. Stage 1 of the risk analysis is a moderated process with an industry-specific questionnaire, damage scenarios in euros, likelihood, inventory and a prioritised risk portfolio — typically in a joint session."),
+    ("How long does the Blindspot Quick Check take?",
      "About 10 minutes. Depending on your audience choice you answer 10 to 15 short 'What happens if …' questions and see your results right afterwards."),
-    ("Is the Blindspot Check free?",
+    ("Is the Blindspot Quick Check free?",
      "Yes, the check is completely free and can be used without registration. Optionally, you can have the results sent to you as a PDF report by email."),
-    ("Does the check replace a full risk analysis?",
-     "No. The Blindspot Check covers a selection from more than 100 hazard areas of our 3-level hazard catalog. A good result does not mean all risks are ruled out — that is what Beraterium's systematic risk analysis is for."),
-    ("Who is the Blindspot Check for?",
+    ("Does the Quick Check replace a full risk analysis?",
+     "No. The Quick Check covers a selection from more than 100 hazard areas of our 3-level hazard catalog. A good result does not mean all risks are ruled out — that is what Beraterium's Stage 1 and Stage 2 risk analysis is for."),
+    ("Who is the Blindspot Quick Check for?",
      "For solo self-employed professionals, founders and startups, and small and medium-sized enterprises (SMEs). The questions adapt to your choice: solo self-employed answer 10 questions, founders and SMEs 15 each."),
     ("What happens to my answers?",
      "The evaluation runs directly in your browser. You only provide personal data if you request the optional PDF report — in that case our privacy policy applies. We do not store IP addresses."),
@@ -2063,8 +2120,8 @@ def gen_blindspot_check() -> None:
         hero(
             pre,
             "FREE SELF-ASSESSMENT",
-            "Blindspot Check: where is your business vulnerable?",
-            "Answer 10–15 short 'What happens if …' questions and get immediate results: traffic-light status, a risk profile by category and concrete first steps for your most critical points.",
+            "Blindspot Quick Check: where is your business vulnerable?",
+            "Answer 10–15 short 'What happens if …' questions and get immediate results: traffic-light status, a risk profile by category and concrete first steps for your most critical points. The Quick Check is the simplified online version — Stage 1 of the risk analysis goes much deeper.",
             compact=True,
             actions='<a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-blindspot">Start the check now</a>',
         )
@@ -2072,8 +2129,8 @@ def gen_blindspot_check() -> None:
     <section class="brt-section" aria-labelledby="why-title">
       <div class="brt-container brt-split">
         <div class="brt-split__text brt-fade-up">
-          <h2 id="why-title" class="brt-h2">Why a Blindspot Check?</h2>
-          <p class="brt-body">Most businesses don't fail because of the risks they know — they fail because of the ones they never looked at. The Blindspot Check makes these blind spots visible: it examines 15 of the more than 100 hazard areas from our 3-level hazard catalog, spread across <strong>People</strong>, <strong>Technology</strong> and <strong>Operations</strong>.</p>
+          <h2 id="why-title" class="brt-h2">Why a Blindspot Quick Check?</h2>
+          <p class="brt-body">Most businesses don't fail because of the risks they know — they fail because of the ones they never looked at. The Blindspot Quick Check makes these blind spots visible: it examines 15 of the more than 100 hazard areas from our 3-level hazard catalog, spread across <strong>People</strong>, <strong>Technology</strong> and <strong>Operations</strong>.</p>
           <p class="brt-body">Each question describes a concrete scenario. You rate how critical it would be for you — and whether you have already prepared measures. The result is your personal risk profile with a traffic-light status per question.</p>
         </div>
         {split_media_html(IMG_BLINDSPOT_WARUM, "Blindspot Check reveals overlooked business risks in people, technology and operations", 2, contain=True)}
@@ -2084,19 +2141,61 @@ def gen_blindspot_check() -> None:
         <header class="brt-section__header brt-fade-up">
           <p class="brt-tag">INTERACTIVE CHECK</p>
           <h2 id="check-title" class="brt-h2">The Blindspot Quick Check</h2>
+          <p class="brt-body brt-section__lede">Start the simplified self-test here — online, in about 10 minutes, no appointment. It does not replace Stage 1 of the risk analysis, but gives you an honest first look at typical blind spots.</p>
         </header>
         <div id="brt-blindspot" class="bqc-widget brt-fade-up" aria-live="polite"></div>
       </div>
     </section>
+    <section class="brt-section" aria-labelledby="compare-title">
+      <div class="brt-container brt-fade-up">
+        <header class="brt-section__header">
+          <p class="brt-tag">TWO FORMATS</p>
+          <h2 id="compare-title" class="brt-h2">Quick Check vs. Stage&nbsp;1 risk analysis</h2>
+        </header>
+        <ul class="brt-guarantee-duo brt-stagger">
+          <li class="brt-card">
+            <h3 class="brt-h3">Blindspot Quick Check (this page)</h3>
+            <ul class="brt-list">
+              <li>Online self-test, start immediately</li>
+              <li>10–15 selected questions from the hazard catalog</li>
+              <li>Traffic-light rating and category profile</li>
+              <li>No conversation, no detailed industry tailoring</li>
+              <li>Free and no sign-up</li>
+            </ul>
+          </li>
+          <li class="brt-card">
+            <h3 class="brt-h3">Stage&nbsp;1 risk analysis (moderated process)</h3>
+            <ul class="brt-list">
+              <li>Joint session with Beraterium</li>
+              <li>Industry-specific questionnaire (15–16 hazard fields)</li>
+              <li>Damage scenarios in euros, likelihood, inventory</li>
+              <li>Prioritised risk portfolio instead of isolated topics</li>
+              <li>Foundation for Stage&nbsp;2 with action plan</li>
+            </ul>
+            <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}services/">Services &amp; stages →</a></p>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="method-title">
+      <div class="brt-container brt-fade-up">
+        <header class="brt-section__header">
+          <p class="brt-tag">CORE IDEA</p>
+          <h2 id="method-title" class="brt-h2">How the risk analysis works — and what the Quick Check takes from it</h2>
+        </header>
+        <p class="brt-body">The Beraterium method uses a structured hazard catalog: for each relevant field we clarify the guiding question, damage scenario, possible damage in euros, likelihood and <em>inventory</em> — what you already have to mitigate the risk. The result is not a collection of isolated topics, but a comparable risk portfolio with clear priorities.</p>
+        <p class="brt-body">The Blindspot Quick Check uses the same logic in a strongly simplified form: concrete 'What happens if …' scenarios, your assessment of criticality and whether preparation exists. It shows direction and blind spots — Stages 1 and 2 of the risk analysis deepen and prioritise systematically across the full catalog. More on the method: <a href="{pre}method/">Beraterium method</a>.</p>
+      </div>
+    </section>
     <section class="brt-section brt-section--narrow" aria-labelledby="limits-title">
       <div class="brt-container brt-fade-up">
-        <h2 id="limits-title" class="brt-h2">What the check does — and what it doesn't</h2>
-        <p class="brt-body">The Blindspot Check is a quick test, not a full risk analysis. It looks at selected, particularly common blind spots. An unremarkable result does not mean the remaining hazard areas hold no risks. If you want certainty, take the next step: the systematic <a href="{pre}method/">Beraterium method</a> examines all three levels of the hazard catalog — including prioritisation and an action plan through our <a href="{pre}services/">services</a>.</p>
+        <h2 id="limits-title" class="brt-h2">What the Quick Check does — and what it doesn't</h2>
+        <p class="brt-body">The Blindspot Quick Check is a quick test, not a full risk analysis. It looks at selected, particularly common blind spots. An unremarkable result does not mean the remaining hazard areas hold no risks. If you want certainty, take the next step: <a href="{pre}services/">Stage 1 of the risk analysis</a> examines all relevant fields of the hazard catalog — including prioritisation; Stage 2 delivers the action plan.</p>
       </div>
     </section>""".replace("{pre}", pre)
         + faq_section_html(
             BLINDSPOT_FAQ,
-            title="Frequently asked questions about the Blindspot Check",
+            title="Frequently asked questions about the Blindspot Quick Check",
             section_id="faq",
             alt=True,
         )
@@ -3338,12 +3437,18 @@ def gen_landingpage(cfg: dict) -> None:
         for title, body, href, link_label in cfg["overview_cards"]
     )
 
+    hero_cta2 = cfg.get("hero_cta2")
+    hero_cta2_html = (
+        f'<a class="brt-btn brt-btn--outline" href="{pre}{hero_cta2["href"]}">{hero_cta2["label"]}</a>'
+        if hero_cta2
+        else '<a class="brt-btn brt-btn--outline" href="#faq">Frequently asked questions \u2192</a>'
+    )
     main = (
         hero(
             pre, cfg["tag"], cfg["h1"], cfg["lead"],
             actions=(
                 f'<a class="brt-btn" href="{pre}contact/">{cfg["hero_cta"]}</a>'
-                f'<a class="brt-btn brt-btn--outline" href="#faq">Frequently asked questions \u2192</a>'
+                f'{hero_cta2_html}'
             ),
         )
         + f"""
@@ -3371,6 +3476,7 @@ def gen_landingpage(cfg: dict) -> None:
         + lp_steps_section_html(cfg)
         + lp_facts_table_html(cfg.get("facts_table"))
         + lp_deep_sections_html(cfg.get("deep_sections", []), start=1)
+        + (guarantee(pre, du=cfg.get("du", False)) if cfg.get("guarantee_section") else "")
         + f"""
     <section class="brt-section" aria-labelledby="overview-title">
       <div class="brt-container">
@@ -3384,7 +3490,7 @@ def gen_landingpage(cfg: dict) -> None:
     </section>"""
         + lp_related_blog_section(cfg.get("blog_slugs", []))
         + faq_section(cfg["faq"], alt=True)
-        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], cfg["hero_cta"])
+        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], cfg["hero_cta"], note=cfg.get("cta_note", ""))
     )
 
     breadcrumb_ld = json.dumps(
@@ -4137,6 +4243,340 @@ LP_CONFIGS: list[dict] = [
         "description": 'Due Diligence für Startups: Risiken erkennen, in Euro bewerten und investor-ready werden. Der 4-Wochen-Check. Book a free intro call.',
         "service_name": '4-Wochen-Risiko-Check für Startups',
         "breadcrumb_name": 'Investor Due Diligence',
+    },
+    {
+        # Offer one-pager (2026-08-08). Keyword intent: risk analysis startup cost / process / pricing
+        "slug": "risk-analysis-startup",
+        "du": True,
+        "audience": "Startups and founders",
+        "tag": "STARTUP RISK ANALYSIS",
+        "h1": "Risk analysis for your startup: process and pricing",
+        "lead": (
+            "The 360° Risk Analysis shows your startup&rsquo;s top 5&ndash;10 risks, assessed in euros "
+            "and prioritised &mdash; from key-person dependency to runway. You get analysis, strategy "
+            "session and budget planning as a fixed-price bundle for &euro;3,475, completed in "
+            "2&ndash;4 weeks. Not there yet? The free Blindspot Quick Check reveals your biggest "
+            "blind spots in 10 minutes."
+        ),
+        "hero_cta": "Book a free intro call",
+        "hero_cta2": {"label": "Blindspot Quick Check (10 min)", "href": "tools/blindspot-check/"},
+        "guarantee_section": True,
+        "criteria_tag": "FIT CHECK",
+        "criteria_h2": "Is a risk analysis right for your startup?",
+        "criteria_intro": "A structured risk analysis is worth it if at least one of these applies:",
+        "criteria": [
+            "You have reached product&ndash;market fit or are close",
+            "Your team has 3&ndash;20 people",
+            "An investor conversation or due diligence review is coming up or on the horizon",
+            "At least one risk (key person, runway, major customer) would seriously hurt the business",
+        ],
+        "stats_aria": "Startup risk analysis at a glance",
+        "stats": [
+            ("2&ndash;4 weeks", "from analysis to final report"),
+            ("Top 5&ndash;10", "risks assessed in euros and prioritised"),
+            ("&euro;3,475", "fixed price for analysis, strategy and budget"),
+            ("2&times; money back", "relevance and value guarantee"),
+        ],
+        "pain_tag": "THREE RISKS INVESTORS SPOT",
+        "pain_h2": "What happens if these three risks stay hidden?",
+        "pain_intro": "As a founder you carry risks that stay invisible day to day &mdash; until an investor or an outage makes them obvious.",
+        "pain_cards": [
+            ("Key-person risk", 'Does product or sales depend on one person &mdash; often you? If you drop out, the startup stalls. More: <a href="../../solutions/key-person-risk/">Identify key-person risk</a>.'),
+            ("Runway and burn rate", "Roughly 32% of failed startups run out of cash, not product. Without a clear picture, runway only becomes a topic when it is too late."),
+            ("Due diligence", 'Investors ask for your risk assessment. Without a structured risk picture it reads as uncertainty &mdash; not control. More: <a href="../../solutions/investor-due-diligence/">Prepare for investor due diligence</a>.'),
+        ],
+        "overview_tag": "NEXT STEPS",
+        "overview_h2": "How does the risk analysis connect to our other services?",
+        "overview_intro": "The risk analysis is the entry point &mdash; depending on the outcome, further focused steps follow.",
+        "overview_cards": [
+            ("The method", "The 3-level hazard catalogue: collect hazards, assess risks in euros, prioritise measures.", "method/", "View method"),
+            ("Services for startups", "All startup packages &mdash; from a short analysis to the full 360° risk analysis.", "services/startups/", "Startup services"),
+            ("Full pricing", "Complete price list for all 32 services &mdash; analysis, workshops and training.", "pricing/", "View pricing"),
+            ("Blindspot Quick Check", "Free self-assessment: 10 minutes to surface your biggest blind spots.", "tools/blindspot-check/", "Start quick check"),
+        ],
+        "faq": [
+            ("What does a risk analysis for startups cost?", "The 360° Risk Analysis (RA-01) costs &euro;3,475 as a fixed price for analysis, strategy session and budget planning &mdash; bought separately the three parts would cost &euro;5,150. For a smaller entry there is analysis only (RA-02) at &euro;1,725 or startup risk-analysis preparation (ZUS-05) at &euro;295."),
+            ("How long does the risk analysis take?", "The 360° Risk Analysis includes three workshops, each with its own report and follow-up call &mdash; from booking to final deliverable the process usually takes 2&ndash;4 weeks, depending on your team&rsquo;s availability."),
+            ("What happens in the free intro call?", "In a 30-minute intro call we clarify where your startup stands, which risks are already visible and which package fits your stage &mdash; no obligation and no sales pressure."),
+            ("What do I receive in writing?", "After each workshop you get a report: the prioritised risk list in euros, the strategy and implementation plan, and the budget plan with cost&ndash;benefit view &mdash; together a complete, investor-ready document."),
+            ("What if I am not sure my startup needs this yet?", "If product&ndash;market fit, investor interest or a tangible risk are not there yet, the free Blindspot Quick Check is often enough as a first step &mdash; it shows where you stand in 10 minutes."),
+            ("What if the analysis finds no relevant risk?", "Then the relevance guarantee applies: if the analysis finds no risk above the agreed threshold, Beraterium refunds the full fee. The value guarantee additionally ensures the agreed criteria are actually met."),
+        ],
+        "deep_sections": [
+            {
+                "tag": "SCOPE (RA-01)",
+                "h2": "What is included in fixed price RA-01 (&euro;3,475)?",
+                "intro": (
+                    "All three analysis building blocks &mdash; analysis, strategy and budget &mdash; in one "
+                    "continuous process with your team. The bundle costs less than booking separately "
+                    "(&euro;5,150 individually) and is the recommended entry for startups under investor or growth pressure."
+                ),
+                "items": [
+                    "Analysis workshop: identify top 5&ndash;10 risks, assess in euros and by likelihood",
+                    "Strategy workshop: develop concrete, actionable measures for the top risks &mdash; with implementation plan",
+                    "Budget workshop: weigh internal resources vs external providers, guided by damage figures from the analysis",
+                    "Each phase ends with a report and a follow-up call with leadership",
+                ],
+            },
+        ],
+        "steps_section": {
+            "tag": "HOW IT WORKS",
+            "h2": "How does the risk analysis for your startup work?",
+            "intro": "Five clear steps &mdash; no guesswork about effort.",
+            "steps": [
+                ("Intro call (30 min)", "We clarify your starting point, goal and whether RA-01, RA-02 or ZUS-05 fits your stage."),
+                ("Analysis workshop", "Together we identify your startup&rsquo;s top 5&ndash;10 risks and assess them in euros."),
+                ("Report with prioritised risks", "You receive the prioritised risk list in writing &mdash; basis for investor or bank conversations."),
+                ("Strategy session", "For the top risks we develop concrete, actionable measures with an implementation plan."),
+                ("Budget planning", "You decide how much budget goes into which measure &mdash; guided by actual damage from the analysis."),
+            ],
+        },
+        "facts_table": {
+            "tag": "PACKAGE COMPARISON",
+            "h2": "Which package fits your stage?",
+            "intro": "Three entry points by startup stage and budget &mdash; from a compact check to the full 360° risk analysis.",
+            "caption": "Package comparison ZUS-05, RA-02 and RA-01 for startups",
+            "headers": ["Package", "Duration", "Outcome", "Price"],
+            "rows": [
+                ("ZUS-05 Risk analysis preparation", "Session + review", "Typical risk fields for your sector mapped &mdash; basis for investor talks", "&euro;295"),
+                ("RA-02 Risk consulting (analysis)", "1 workshop (2&ndash;3 h) + report", "Top 5&ndash;10 risks identified, assessed in euros and prioritised", "&euro;1,725"),
+                ("RA-01 360° Risk Analysis", "3 workshops + 3 reports", "Analysis, strategy and budget planning in one fixed-price bundle", "&euro;3,475"),
+            ],
+        },
+        "blog_slugs": [
+            "startup-mistakes-avoid-risk-management",
+            "key-person-risk-identify-mitigate",
+            "what-is-risk-management",
+        ],
+        "cta_h2": "Clarify your top risks &mdash; free and no obligation",
+        "cta_body": "Book an intro call &mdash; 30 minutes, no sales pressure. We explain our method and you will know where you stand.",
+        "cta_note": 'Not there yet? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> &mdash; 10 minutes, free.',
+        "title": "Startup risk analysis: pricing & process | Beraterium",
+        "description": "Startup risk analysis: process, duration and pricing from &euro;295. Top 5&ndash;10 risks in euros, &euro;3,475 bundle. Book a free intro call.",
+        "service_name": "360° Risk Analysis for startups",
+        "breadcrumb_name": "Startup risk analysis",
+    },
+    {
+        # Offer one-pager (2026-08-08). Keyword intent: risk analysis SME cost / process / pricing
+        "slug": "risk-analysis-smb",
+        "du": False,
+        "audience": "SMEs and mid-market businesses",
+        "tag": "SME RISK ANALYSIS",
+        "h1": "Risk analysis for your SME: process and pricing",
+        "lead": (
+            "The 360° Risk Analysis delivers your company&rsquo;s top 5&ndash;10 risks, assessed in euros "
+            "and prioritised &mdash; from director liability to dependencies in grown processes. "
+            "Analysis, strategy session and budget planning come as a fixed-price bundle for "
+            "&euro;3,475, completed in around 6 weeks. Still unsure? The free Blindspot Quick Check "
+            "shows your biggest blind spots in 10 minutes."
+        ),
+        "hero_cta": "Book a free intro call",
+        "hero_cta2": {"label": "Blindspot Quick Check (10 min)", "href": "tools/blindspot-check/"},
+        "guarantee_section": True,
+        "criteria_tag": "FIT CHECK",
+        "criteria_h2": "Is a risk analysis right for your company?",
+        "criteria_intro": "A structured risk analysis is worth it if at least one of these applies:",
+        "criteria": [
+            "Your company has 10&ndash;80 employees",
+            "Processes and responsibilities grew over years but were never systematically reviewed",
+            "As management you carry personal liability, e.g. under NIS2 or other regulation",
+            "Succession, a bank or advisory board conversation is coming up or on the horizon",
+        ],
+        "stats_aria": "SME risk analysis at a glance",
+        "stats": [
+            ("Around 6 weeks", "from analysis to complete risk picture"),
+            ("Top 5&ndash;10", "risks assessed in euros and prioritised"),
+            ("&euro;3,475", "fixed price for analysis, strategy and budget"),
+            ("2&times; money back", "relevance and value guarantee"),
+        ],
+        "pain_tag": "THREE MID-MARKET RISKS",
+        "pain_h2": "What happens if these three risks stay hidden?",
+        "pain_intro": "In a grown mid-market business, risks often hide in processes nobody questions any more.",
+        "pain_cards": [
+            ("Director liability and NIS2", 'NIS2 and other regulation make risk management a management duty &mdash; without documented analysis you are personally liable. More: <a href="../../solutions/nis2/">Check NIS2 applicability</a>.'),
+            ("Succession", 'Around 186,000 business handovers are due in Germany by 2030. Without a solid risk picture, transition is hard for bank, board or successor to assess. More: <a href="../../solutions/succession/">Succession risks</a>.'),
+            ("Dependencies in grown processes", 'Key people, single suppliers or undocumented knowledge build up unnoticed over years &mdash; and only surface in a crisis. More: <a href="../../solutions/key-person-risk/">Identify key-person risk</a>.'),
+        ],
+        "overview_tag": "NEXT STEPS",
+        "overview_h2": "How does the risk analysis connect to our other services?",
+        "overview_intro": "The risk analysis is the entry point &mdash; depending on the outcome, further focused steps follow.",
+        "overview_cards": [
+            ("The method", "The 3-level hazard catalogue: collect hazards, assess risks in euros, prioritise measures.", "method/", "View method"),
+            ("Services for SMEs", "All mid-market packages &mdash; from a short analysis to the full 360° risk analysis.", "services/smb/", "SME services"),
+            ("Full pricing", "Complete price list for all 32 services &mdash; analysis, workshops and training.", "pricing/", "View pricing"),
+            ("Blindspot Quick Check", "Free self-assessment: 10 minutes to surface your biggest blind spots.", "tools/blindspot-check/", "Start quick check"),
+        ],
+        "faq": [
+            ("What does a risk analysis for SMEs cost?", "The 360° Risk Analysis (RA-01) costs &euro;3,475 as a fixed price for analysis, strategy session and budget planning &mdash; bought separately the three parts would cost &euro;5,150. For a smaller entry there is analysis only (RA-02) at &euro;1,725."),
+            ("How long does the risk analysis take for an SME?", "The 360° Risk Analysis includes three workshops, each with its own report and follow-up with leadership &mdash; the full process usually takes around 6 weeks, depending on your team&rsquo;s availability."),
+            ("What happens in the free intro call?", "In a 30-minute intro call we clarify your starting point, possible risk fields and which package fits your company &mdash; no obligation and no sales pressure."),
+            ("What do we receive in writing?", "After each workshop you get a report: the prioritised risk list in euros, the strategy and implementation plan, and the budget plan with cost&ndash;benefit view &mdash; together a complete, bank-ready risk picture."),
+            ("What if we are not sure we need this yet?", "If it is still unclear whether structured risk management is needed, the free Blindspot Quick Check is often enough as a first step &mdash; it shows where your company stands in 10 minutes."),
+            ("What if the analysis finds no relevant risk?", "Then the relevance guarantee applies: if the analysis finds no risk above the agreed threshold, Beraterium refunds the full fee. The value guarantee additionally ensures the agreed criteria are actually met."),
+        ],
+        "deep_sections": [
+            {
+                "tag": "SCOPE (RA-01)",
+                "h2": "What is included in fixed price RA-01 (&euro;3,475)?",
+                "intro": (
+                    "All three analysis building blocks &mdash; analysis, strategy and budget &mdash; in one "
+                    "continuous process with your team. The bundle costs less than booking separately "
+                    "(&euro;5,150 individually) and is the recommended entry for SMEs."
+                ),
+                "items": [
+                    "Analysis workshop: identify top 5&ndash;10 risks, assess in euros and by likelihood",
+                    "Strategy workshop: develop concrete, actionable measures for the top risks &mdash; with implementation plan",
+                    "Budget workshop: weigh internal resources vs external providers, guided by damage figures from the analysis",
+                    "Each phase ends with a report and a follow-up call with leadership",
+                ],
+            },
+        ],
+        "steps_section": {
+            "tag": "HOW IT WORKS",
+            "h2": "How does the risk analysis for your company work?",
+            "intro": "Five clear steps &mdash; no guesswork about effort.",
+            "steps": [
+                ("Intro call (30 min)", "We clarify your starting point and which package fits your company."),
+                ("Analysis workshop", "Together we identify your top 5&ndash;10 risks and assess them in euros."),
+                ("Report with prioritised risks", "You receive the prioritised risk list in writing &mdash; basis for bank or board conversations."),
+                ("Strategy session", "For the top risks we develop concrete, actionable measures with an implementation plan."),
+                ("Budget planning", "You decide how much budget goes into which measure &mdash; guided by actual damage from the analysis."),
+            ],
+        },
+        "facts_table": {
+            "tag": "PACKAGE COMPARISON",
+            "h2": "Which package fits your company?",
+            "intro": "Two main entry points for mid-market businesses &mdash; from analysis only to the full 360° bundle.",
+            "caption": "Package comparison RA-02 and RA-01 for SMEs",
+            "headers": ["Package", "Duration", "Outcome", "Price"],
+            "rows": [
+                ("RA-02 Risk consulting (analysis)", "1 workshop (2&ndash;3 h) + report", "Top 5&ndash;10 risks identified, assessed in euros and prioritised", "&euro;1,725"),
+                ("RA-01 360° Risk Analysis", "3 workshops + 3 reports", "Analysis, strategy and budget planning in one fixed-price bundle", "&euro;3,475"),
+            ],
+        },
+        "blog_slugs": [
+            "cyber-attack-what-to-do-smb",
+            "business-succession-overlooked-risks",
+            "risk-management-consulting-smb-providers",
+        ],
+        "cta_h2": "Clarify your top risks &mdash; free and no obligation",
+        "cta_body": "Book an intro call &mdash; 30 minutes, no sales pressure. We explain our method and you will know where you stand.",
+        "cta_note": 'Still unsure? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> &mdash; 10 minutes, free.',
+        "title": "SME risk analysis: pricing & process | Beraterium",
+        "description": "Risk analysis for your SME: process, duration and &euro;3,475 fixed price. Top 5&ndash;10 risks in euros, double guarantee. Book a free intro call.",
+        "service_name": "360° Risk Analysis for SMEs",
+        "breadcrumb_name": "SME risk analysis",
+    },
+    {
+        # Offer one-pager (2026-08-08). Keyword intent: risk analysis self-employed cost / freelancer
+        "slug": "risk-analysis-solo",
+        "du": True,
+        "audience": "Solo self-employed professionals and freelancers",
+        "tag": "SOLO RISK ANALYSIS",
+        "h1": "Risk analysis for self-employed professionals: process and pricing",
+        "lead": (
+            "Risk consulting shows your top 5&ndash;10 self-employment risks, assessed in euros "
+            "&mdash; from incapacity to client concentration. You get a workshop with report and "
+            "follow-up from &euro;1,725; for a first overview the compact risk check from &euro;97 "
+            "is enough. Not there yet? The free Blindspot Quick Check reveals your biggest blind "
+            "spots in 10 minutes."
+        ),
+        "hero_cta": "Book a free intro call",
+        "hero_cta2": {"label": "Blindspot Quick Check (10 min)", "href": "tools/blindspot-check/"},
+        "guarantee_section": True,
+        "criteria_tag": "FIT CHECK",
+        "criteria_h2": "Is a risk analysis right for your self-employment?",
+        "criteria_intro": "A structured risk analysis is worth it if at least one of these applies:",
+        "criteria": [
+            "Your revenue depends entirely on you as a person &mdash; if you stop, revenue stops",
+            "You employ 1&ndash;5 people or work with a fixed network of collaborators",
+            "One main client accounts for a large share of your revenue",
+            "You have no clear picture of what an outage would actually cost you",
+        ],
+        "stats_aria": "Solo risk analysis at a glance",
+        "stats": [
+            ("From &euro;97", "for the compact risk check (30 min)"),
+            ("Top 5&ndash;10", "risks assessed in euros and prioritised"),
+            ("From &euro;1,725", "for full risk consulting with report"),
+            ("2&times; money back", "relevance and value guarantee"),
+        ],
+        "pain_tag": "THREE RISKS WITH NO BACKUP",
+        "pain_h2": "What happens if these three risks stay hidden?",
+        "pain_intro": "As a solo professional you carry every risk alone &mdash; no works council, no cover, no IT department.",
+        "pain_cards": [
+            ("Incapacity", 'There is no employer sick pay &mdash; 4&ndash;6 weeks off or burnout can threaten your livelihood while fixed costs continue. More: <a href="../../solutions/self-employed-protection/">Protect yourself as self-employed</a>.'),
+            ("Client concentration", 'If one main client drives most of your revenue, their budget cycle decides your survival. More: <a href="../../blog/risks-self-employed-freelancers/">Risks for self-employed professionals</a>.'),
+            ("No cover", 'Without colleagues or a network contact with access to your projects, everything stops when you do &mdash; including towards clients. More: <a href="../../solutions/key-person-risk/">Identify key-person risk</a>.'),
+        ],
+        "overview_tag": "NEXT STEPS",
+        "overview_h2": "How does the risk analysis connect to our other services?",
+        "overview_intro": "The risk analysis is the entry point &mdash; depending on the outcome, further focused steps follow.",
+        "overview_cards": [
+            ("The method", "The 3-level hazard catalogue: collect hazards, assess risks in euros, prioritise measures.", "method/", "View method"),
+            ("Services for solo professionals", "All solo packages &mdash; from compact check to full risk consulting.", "services/solo/", "Solo services"),
+            ("Full pricing", "Complete price list for all 32 services &mdash; analysis, workshops and training.", "pricing/", "View pricing"),
+            ("Blindspot Quick Check", "Free self-assessment: 10 minutes to surface your biggest blind spots.", "tools/blindspot-check/", "Start quick check"),
+        ],
+        "faq": [
+            ("What does a risk analysis for self-employed professionals cost?", "The compact risk check costs &euro;97 (30 minutes) for a first assessment. Full risk consulting with workshop, report and follow-up costs &euro;1,725."),
+            ("How long does the risk analysis take?", "The compact risk check takes 30 minutes. Full risk consulting includes a 2&ndash;3 hour workshop plus report and follow-up &mdash; completed within a few days."),
+            ("What happens in the free intro call?", "In a 30-minute intro call we clarify where you stand, which risks are already visible and whether the compact check or full consulting fits you."),
+            ("What do I receive in writing?", "You get a report with your top 5&ndash;10 risks, assessed by damage in euros and likelihood &mdash; a basis for insurance or bank conversations."),
+            ("What if I am not sure I need this yet?", "If you cannot yet estimate your biggest risks, the free Blindspot Quick Check is often enough as a first step &mdash; it shows where you stand in 10 minutes."),
+            ("What if the outcome is not useful?", "Then the relevance guarantee applies: if the analysis finds no risk above the agreed threshold, Beraterium refunds the full fee. The value guarantee additionally ensures the agreed criteria are actually met."),
+        ],
+        "deep_sections": [
+            {
+                "tag": "SCOPE (RA-02)",
+                "h2": "What do you get with risk consulting (RA-02)?",
+                "intro": (
+                    "One workshop (2&ndash;3 hours), facilitated by us. Goal: turn gut feeling into a "
+                    "prioritised list assessed in euros &mdash; without jumping straight into implementation planning."
+                ),
+                "items": [
+                    "Each risk assessed by damage in euros and likelihood",
+                    "Top 5&ndash;10 risks named and prioritised &mdash; basis for insurance or bank talks",
+                    "Outcome documented as a report, including follow-up call to interpret results",
+                    "Ideal if you want clarity on your risk picture first, without immediate measure planning",
+                ],
+            },
+        ],
+        "steps_section": {
+            "tag": "HOW IT WORKS",
+            "h2": "How does the risk analysis work for you?",
+            "intro": "Five clear steps &mdash; no guesswork about effort.",
+            "steps": [
+                ("Intro call (30 min)", "We clarify your starting point and whether the compact check or full consulting fits you."),
+                ("Analysis workshop", "Together we identify your top 5&ndash;10 risks and assess them in euros."),
+                ("Report with prioritised risks", "You receive the prioritised risk list in writing &mdash; basis for insurance or bank conversations."),
+                ("Follow-up call", "We interpret the results together and answer open questions on prioritisation."),
+                ("Next steps", "You decide which measures to tackle first &mdash; alone or with implementation support."),
+            ],
+        },
+        "facts_table": {
+            "tag": "PACKAGE COMPARISON",
+            "h2": "Which package fits you?",
+            "intro": "Three entry points &mdash; from compact check to full 360° analysis if your business grows.",
+            "caption": "Package comparison ZUS-02, RA-02 and RA-01 for solo professionals",
+            "headers": ["Package", "Duration", "Outcome", "Price"],
+            "rows": [
+                ("ZUS-02 Short risk check", "30 minutes", "Rough read on your risk status, top 3 risks plus immediate pointers", "&euro;97"),
+                ("RA-02 Risk consulting (analysis)", "1 workshop (2&ndash;3 h) + report", "Top 5&ndash;10 risks identified, assessed in euros and prioritised", "&euro;1,725"),
+                ("RA-01 360° Risk Analysis", "3 workshops + 3 reports", "Analysis, strategy and budget planning in one bundle &mdash; e.g. when your team grows", "&euro;3,475"),
+            ],
+        },
+        "blog_slugs": [
+            "risks-self-employed-freelancers",
+            "false-self-employment-check",
+            "key-person-risk-identify-mitigate",
+        ],
+        "cta_h2": "Clarify your top risks &mdash; free and no obligation",
+        "cta_body": "Book an intro call &mdash; 30 minutes, no sales pressure. We explain our method and you will know where you stand.",
+        "cta_note": 'Not there yet? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> &mdash; 10 minutes, free.',
+        "title": "Self-employed risk analysis: pricing | Beraterium",
+        "description": "Risk analysis for self-employed professionals: process, duration and pricing from &euro;97. Top 5&ndash;10 risks in euros. Book a free intro call.",
+        "service_name": "Risk consulting for solo self-employed professionals",
+        "breadcrumb_name": "Solo risk analysis",
     },
 ]
 

@@ -27,6 +27,9 @@
 - [Self-employed protection](https://www.beraterium.com/solutions/self-employed-protection/): Incapacity, client concentration and false self-employment for solo professionals.
 - [Key person risk](https://www.beraterium.com/solutions/key-person-risk/): What happens when a key person is unavailable — for SMEs, startups and solo.
 - [Investor due diligence](https://www.beraterium.com/solutions/investor-due-diligence/): Make your startup investor-ready; risk portfolio in 4 weeks.
+- [Startup risk analysis: pricing & process](https://www.beraterium.com/solutions/risk-analysis-startup/): Process, duration and fixed price of the 360° Risk Analysis (€3,475) for startups — top 5–10 risks assessed in euros.
+- [SME risk analysis: pricing & process](https://www.beraterium.com/solutions/risk-analysis-smb/): Process, duration and fixed price of the 360° Risk Analysis (€3,475) for mid-market businesses — top 5–10 risks assessed in euros.
+- [Self-employed risk analysis: pricing](https://www.beraterium.com/solutions/risk-analysis-solo/): Process, duration and pricing of risk consulting (from €97) for solo professionals — top 5–10 risks assessed in euros.
 
 ## Guides (selected articles)
 - [Risk management consulting for SMEs: provider comparison](https://www.beraterium.com/blog/risk-management-consulting-smb-providers/): Four provider types (Big 4, specialist SME consultant, insurance broker, DIY) — which fits and what it costs.
