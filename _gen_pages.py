@@ -104,16 +104,41 @@ COOKIEYES_HEAD = """  <!-- Start cookieyes banner -->
 
 GA4_MEASUREMENT_ID = "G-BM435GHE6W"
 
-GA4_ANALYTICS_HEAD = f"""  <!-- Google tag (gtag.js) — loads only after Analytics consent (CookieYes) -->
-  <script type="text/plain" data-cookieyes="analytics">
+GA4_ANALYTICS_HEAD = f"""  <!-- Google Consent Mode v2 + GA4 (CookieYes sets analytics_storage) -->
+  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){{dataLayer.push(arguments);}}
+    gtag('consent', 'default', {{
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted',
+      wait_for_update: 500
+    }});
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id={GA4_MEASUREMENT_ID}"></script>
+  <script>
     gtag('js', new Date());
     gtag('config', '{GA4_MEASUREMENT_ID}');
-    var s = document.createElement('script');
-    s.async = true;
-    s.src = 'https://www.googletagmanager.com/gtag/js?id={GA4_MEASUREMENT_ID}';
-    document.head.appendChild(s);
+    function brtGrantAnalyticsConsent() {{
+      gtag('consent', 'update', {{ analytics_storage: 'granted' }});
+    }}
+    document.addEventListener('cookieyes_consent_update', function (event) {{
+      var accepted = (event.detail && event.detail.accepted) || [];
+      if (accepted.indexOf('analytics') !== -1) brtGrantAnalyticsConsent();
+    }});
+    document.addEventListener('DOMContentLoaded', function () {{
+      setTimeout(function () {{
+        try {{
+          if (typeof getCkyConsent === 'function' && getCkyConsent().categories.analytics) {{
+            brtGrantAnalyticsConsent();
+          }}
+        }} catch (e) {{}}
+      }}, 800);
+    }});
   </script>"""
 
 NAV = [
