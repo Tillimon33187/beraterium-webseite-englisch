@@ -64,6 +64,7 @@ BLOG_SLUG_MAP: dict[str, str] = {
     "mitarbeitersensibilisierung-risikobewusste-kultur": "employee-awareness-risk-conscious-culture",
     "mittelstand-fokus-risikomanagement": "mid-market-focus-risk-management",
     "risiken-bewusst-eingehen": "taking-risks-consciously",
+    "risikoanalyse-startup-solo-selbststaendige-methode": "risk-analysis-startup-solo-self-employed-method",
     "risikoradar-community-experten-unternehmer": "risk-radar-community-experts-entrepreneurs",
     "risk-radar-episode-1-who-is-beraterium": "risk-radar-episode-1-who-is-beraterium",
     "sicherheit-unternehmen-risikomanagement-kmu": "business-security-risk-management-smb",

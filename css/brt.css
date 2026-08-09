@@ -6229,6 +6229,9 @@
 }
 
 .brt-case-study__stat {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
   padding: var(--space-4);
   border: 1px solid var(--color-line);
   border-radius: var(--radius);
@@ -6237,6 +6240,7 @@
 
 .brt-case-study__stat strong {
   display: block;
+  flex-shrink: 0;
   margin-bottom: var(--space-2);
   font-size: 1.375rem;
   line-height: 1;
@@ -6245,9 +6249,12 @@
 
 .brt-case-study__stat span {
   display: block;
+  flex: 1 1 auto;
   font-size: 0.8125rem;
-  line-height: 1.45;
+  line-height: 1.5;
   color: var(--color-ink-soft);
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 .brt-case-study__quote {
@@ -6284,9 +6291,6 @@
     min-height: 100%;
   }
 
-  .brt-case-study__stats {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 599px) {
