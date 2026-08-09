@@ -105,12 +105,15 @@ COOKIEYES_HEAD = """  <!-- Start cookieyes banner -->
 GA4_MEASUREMENT_ID = "G-BM435GHE6W"
 
 GA4_ANALYTICS_HEAD = f"""  <!-- Google tag (gtag.js) — loads only after Analytics consent (CookieYes) -->
-  <script type="text/plain" data-cookieyes="analytics" async src="https://www.googletagmanager.com/gtag/js?id={GA4_MEASUREMENT_ID}"></script>
   <script type="text/plain" data-cookieyes="analytics">
     window.dataLayer = window.dataLayer || [];
     function gtag(){{dataLayer.push(arguments);}}
     gtag('js', new Date());
     gtag('config', '{GA4_MEASUREMENT_ID}');
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id={GA4_MEASUREMENT_ID}';
+    document.head.appendChild(s);
   </script>"""
 
 NAV = [
