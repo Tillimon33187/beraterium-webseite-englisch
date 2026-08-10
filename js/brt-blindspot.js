@@ -19,6 +19,11 @@
   }
 
   var S = CFG.strings;
+
+  function track(name, params) {
+    if (typeof window.brtTrack === "function") window.brtTrack(name, params);
+  }
+
   var state = {
     segment: null,      /* Segment-Objekt */
     questions: [],      /* Fragen des gewählten Segments */
@@ -252,6 +257,10 @@
         state.pageIdx = 0;
         state.answers = {};
         state.submissionId = uuid();
+        track("blindspot_segment", {
+          segment_id: seg.id || "",
+          page_path: location.pathname,
+        });
         setView(viewHowto());
       });
       list.appendChild(btn);
@@ -271,7 +280,14 @@
     v.appendChild(el("p", "bqc-note brt-body", esc(S.howto_note)));
     var btn = el("button", "brt-btn brt-btn--lg", esc(S.howto_button));
     btn.type = "button";
-    btn.addEventListener("click", function () { setView(viewQuestions()); });
+    btn.addEventListener("click", function () {
+      track("blindspot_start", {
+        segment_id: (state.segment && state.segment.id) || "",
+        question_count: state.questions.length,
+        page_path: location.pathname,
+      });
+      setView(viewQuestions());
+    });
     var actions = el("div", "bqc-actions");
     actions.appendChild(btn);
     v.appendChild(actions);
@@ -395,6 +411,15 @@
 
     state.result = computeResult();
     submitAnswers(state.result);
+    track("blindspot_complete", {
+      segment_id: (state.segment && state.segment.id) || "",
+      score_band: state.result.band.key,
+      score_percent: state.result.percent,
+      red_count: state.result.counts.red,
+      yellow_count: state.result.counts.yellow,
+      green_count: state.result.counts.green,
+      page_path: location.pathname,
+    });
 
     window.setTimeout(function () { setView(viewResult()); }, 3500);
     return v;
@@ -601,6 +626,11 @@
           }
           status.textContent = S.report_success;
           status.className = "bqc-report__status bqc-report__status--ok";
+          track("blindspot_report_submit", {
+            segment_id: (state.segment && state.segment.id) || "",
+            score_band: state.result && state.result.band ? state.result.band.key : "",
+            page_path: location.pathname,
+          });
         }, delay);
       }).catch(function (err) {
         sending.hidden = true;

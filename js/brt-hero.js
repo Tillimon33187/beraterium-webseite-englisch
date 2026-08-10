@@ -87,6 +87,13 @@
       topicButton.addEventListener("click", function () {
         var targetIndex = Number(topicButton.dataset.slideIndex);
         if (Number.isNaN(targetIndex)) return;
+        if (typeof window.brtTrack === "function") {
+          window.brtTrack("hero_topic_click", {
+            hero_topic: topicButton.dataset.tag || "",
+            slide_index: targetIndex,
+            page_path: location.pathname,
+          });
+        }
         setSlide(targetIndex);
       });
     });

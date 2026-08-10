@@ -628,6 +628,14 @@
     });
   }
 
+  function initPrintButton() {
+    document.querySelectorAll("[data-brt-print]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        window.print();
+      });
+    });
+  }
+
   function initBerateriumSite() {
     initTeamExpandToggle();
     initTeamBioToggle();
@@ -636,6 +644,7 @@
     initCardsSlider();
     initStepsFlowScroll();
     initCompareColumnHover();
+    initPrintButton();
 
     if (location.hash) {
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -1128,6 +1137,13 @@
 
         wrap.classList.add("brt-article__video-wrap--playing");
         wrap.replaceChild(iframe, poster);
+        if (typeof window.brtTrack === "function") {
+          window.brtTrack("video_play", {
+            video_provider: "youtube",
+            video_id: videoId,
+            page_path: location.pathname,
+          });
+        }
       });
     });
   }
