@@ -47,6 +47,7 @@ STATIC_ROUTE_MAP: dict[str, str] = {
     "agb": "terms",
     "danke": "thank-you",
     "404": "404",
+    "tools/ra-vorbereitung": "tools/ra-preparation",
 }
 
 # Blog slug mapping: DE slug -> EN slug
