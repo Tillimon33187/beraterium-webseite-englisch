@@ -56,6 +56,8 @@ faq:
   * Five impulses to try: allow emotions, conscious quiet phases (e.g. a short silent sitting), self-observation in the hamster wheel, the question of satisfaction here and now, trying new methods several times instead of judging after one attempt.
 
 ## Why Risiko Radar episode 17 talks about "below the surface" at all
+Leadership and culture risks belong in the SMB risk picture — see [risk management consulting for SMBs](/services/smb/).
+
 
 Risk management lives on what is measurable and documentable – and that is exactly where a typical gap arises: interpersonal dynamics, unwritten expectations and emotional patterns often steer decisions, priorities and workload more strongly than any risk matrix suggests. In episode 17 of Risiko Radar, Till and Peter speak with guest Andreas about personal development, systemic and emotional aspects of leadership and how this translates into concrete business processes. This article summarises the discussion factually and places it for founders, managing directors and risk owners in SMEs and growing teams – without confusing esotericism with a substitute for clean steering, and without romanticising emotions as the sole solution.
 

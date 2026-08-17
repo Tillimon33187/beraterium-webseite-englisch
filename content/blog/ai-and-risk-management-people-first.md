@@ -20,6 +20,8 @@ related_slugs: []
   * **Concrete steps:** Analyse how deeply AI matters for your business model. Training and clear usage rules for AI. Do not put sensitive data into external AI systems (e.g. US-hosted). Prioritise processes – only what really creates value is worth automating.
 
 ## Why talk about AI and risks now?
+Technology does not replace [structured risk assessment](/method/) — it supports people in setting priorities.
+
 
 In everyday life and business we use AI more and more often: for texts, images, processes, analysis. At the same time the stance often still holds: "The internet was also such a topic – maybe I don't need it." With AI that is risky. It will not simply disappear. The question is no longer **whether**, but **how** we use it – and which risks we take doing so.
 

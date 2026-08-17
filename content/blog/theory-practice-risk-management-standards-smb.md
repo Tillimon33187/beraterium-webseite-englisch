@@ -47,7 +47,7 @@ faq:
 
 ## Why theory and practice on risk standards so often diverge
 
-Search for risk management and you quickly land on norms, checklists and certificates — the theoretical frame. In the business, people, time pressure and habit decide whether that becomes action. In episode 18 of Risiko Radar, Till Manfred Blania and Peter Münstermann walk through everyday assumptions: where standards orient, where they suggest false security — and where the gap between paper and practice actually opens. Not as a rejection of rules, but as guidance for managing directors and risk owners in SMEs who sense that "everything is regulated" and something still jams.
+Search for risk management and you quickly land on norms, checklists and certificates — the theoretical frame. Deeper [training in risk management](/training/) builds on that foundation. In the business, people, time pressure and habit decide whether that becomes action. In episode 18 of Risiko Radar, Till Manfred Blania and Peter Münstermann walk through everyday assumptions: where standards orient, where they suggest false security — and where the gap between paper and practice actually opens. Not as a rejection of rules, but as guidance for managing directors and risk owners in SMEs who sense that "everything is regulated" and something still jams.
 
 ## What does an ISO certificate really deliver — and what does it not?
 

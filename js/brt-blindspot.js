@@ -107,6 +107,26 @@
     return null;
   }
 
+  function pickField(q, field, segmentId) {
+    if (!q) return "";
+    if (segmentId === "solo" && q[field + "_solo"]) return q[field + "_solo"];
+    if (segmentId === "gruender" && q[field + "_gruender"]) return q[field + "_gruender"];
+    if (segmentId === "kmu" && q[field + "_kmu"]) return q[field + "_kmu"];
+    return q[field] != null ? q[field] : "";
+  }
+
+  function resolveQuestion(q, segmentId) {
+    if (!q) return q;
+    return {
+      id: q.id,
+      cat: q.cat,
+      text: pickField(q, "text", segmentId),
+      short: pickField(q, "short", segmentId),
+      why: pickField(q, "why", segmentId),
+      step: pickField(q, "step", segmentId)
+    };
+  }
+
   function chunk(arr, size) {
     var out = [];
     for (var i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
@@ -158,7 +178,12 @@
       perCategory: perCategory,
       redQuestions: perQuestion
         .filter(function (pq) { return pq.light === "red"; })
-        .map(function (pq) { return questionById(pq.id); })
+        .map(function (pq) {
+          for (var i = 0; i < state.questions.length; i++) {
+            if (state.questions[i].id === pq.id) return state.questions[i];
+          }
+          return resolveQuestion(questionById(pq.id), state.segment && state.segment.id);
+        })
     };
   }
 
@@ -252,7 +277,9 @@
       btn.type = "button";
       btn.addEventListener("click", function () {
         state.segment = seg;
-        state.questions = seg.question_ids.map(questionById);
+        state.questions = seg.question_ids.map(function (id) {
+          return resolveQuestion(questionById(id), seg.id);
+        });
         state.pages = chunk(state.questions, CFG.questionsPerPage);
         state.pageIdx = 0;
         state.answers = {};

@@ -27,7 +27,7 @@ The mid-market is seen as the backbone of the economy – yet many companies stu
 
 Many mid-market companies are regarded as the backbone of the German economy – reliable, grounded and high-performing. Yet behind this stability there is often a paradox: whilst orders grow and responsibility increases, time for strategy, structure and future planning falls by the wayside. Everyday work becomes a permanent firefighting exercise – and what worked for a long time hits its limits.
 
-This article shows which patterns of thinking and action hold the mid-market back – and how targeted prioritisation, open communication and pragmatic risk management help restore the ability to act.
+This article shows which patterns of thinking and action hold the mid-market back – and how targeted prioritisation, open communication and pragmatic risk management help restore the ability to act. A [structured risk check for SMBs](/services/smb/) is the practical entry point.
 
 ## Reaction instead of strategy – when everyday life dictates thinking
 

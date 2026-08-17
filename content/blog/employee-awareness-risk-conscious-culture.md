@@ -22,6 +22,8 @@ related_slugs: []
   * **Risk does not wait.** Even with low probability damage can be high – leaders should act instead of saying "nothing's happened so far".
 
 ## Why employee awareness matters for founders and SMEs
+Culture and method work together — the [3-level hazard catalogue](/method/) makes team risks visible.
+
 
 Risks affect everyone in the business – not only those officially "in charge of risk". At the same time it helps little when certificates hang on the wall and the inspection passes, but in everyday life an employee acts negligently and e.g. a small error triggers large damage. Then insurance often does not pay, and dispute with the employee over compensation rarely moves things forward. For founders and SMEs this means: a culture is needed that is understood and lived – a culture of open eyes, open ears and communication. Only then can staff recognise dangers and risks and also implement the measures taken. This article summarises where practice sticks, which foundation is needed and how to reach systematic but not overwhelming employee awareness.
 

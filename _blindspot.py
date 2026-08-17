@@ -91,7 +91,12 @@ CATEGORIES: dict[str, str] = {
     "operativ": "Operations",
     "wachstum": "Growth & strategy",
     "markt": "Market & stability",
+    "top_themen": "Top topics",
 }
+
+ACTIVE_TOP_THEMEN: list[str] = ["tt1", "tt2"]
+
+_BASE_IDS = ["m1", "m2", "m3", "m4", "t1", "t2", "t3", "o1", "o2", "o3"]
 
 # ---------------------------------------------------------------------------
 # Question catalog 2.0
@@ -106,9 +111,14 @@ QUESTIONS: list[dict] = [
         "id": "m1",
         "cat": "mensch",
         "short": "Your own absence",
+        "short_solo": "Absence without plan B",
         "text": (
             "What happens if you are out tomorrow – and suddenly no one can "
             "make decisions?"
+        ),
+        "text_solo": (
+            "What happens if you are unexpectedly unavailable — and ongoing "
+            "client projects, appointments or deliveries are left without a plan B?"
         ),
         "layer": "Key persons — hazard catalog 7.2.1/7.2.2",
         "why": (
@@ -126,9 +136,19 @@ QUESTIONS: list[dict] = [
         "id": "m2",
         "cat": "mensch",
         "short": "Knowledge loss on departure",
+        "short_gruender": "Co-founder knowledge loss",
+        "short_solo": "Knowledge only with you",
         "text": (
             "What happens if your most important employee leaves… and no one "
             "knows exactly what they actually did?"
+        ),
+        "text_gruender": (
+            "What happens if a co-founder leaves… and no one knows exactly which "
+            "contacts, contracts and decisions they owned?"
+        ),
+        "text_solo": (
+            "What happens if you are out — and no one knows how your key "
+            "processes, passwords and client contacts work?"
         ),
         "layer": "Knowledge transfer / turnover — hazard catalog 2.4.2, 7.2.3",
         "why": (
@@ -147,9 +167,19 @@ QUESTIONS: list[dict] = [
         "id": "m3",
         "cat": "mensch",
         "short": "Team without shared direction",
+        "short_gruender": "Founder team off track",
+        "short_solo": "Busy, not moving forward",
         "text": (
             "What happens if your team is busy working… but not actually pulling "
             "in the same direction?"
+        ),
+        "text_gruender": (
+            "What happens if you as founders are busy working… but not actually "
+            "pulling in the same direction?"
+        ),
+        "text_solo": (
+            "What happens if you work a lot… but not on the things that actually "
+            "move your business forward?"
         ),
         "layer": "Leadership / objectives — hazard catalog 2.6.1/2.6.2",
         "why": (
@@ -166,9 +196,19 @@ QUESTIONS: list[dict] = [
         "id": "m4",
         "cat": "mensch",
         "short": "Invisible conflicts",
+        "short_gruender": "Founder team tensions",
+        "short_solo": "Clients, freelancers & conflict",
         "text": (
             "What happens if conflicts in the team are not visible – but "
             "decisions keep getting slower?"
+        ),
+        "text_gruender": (
+            "What happens if tensions between co-founders stay invisible – but "
+            "decisions keep getting slower?"
+        ),
+        "text_solo": (
+            "What happens if you are permanently overloaded, a client escalates "
+            "or a freelancer drops out — and you don't address the conflict?"
         ),
         "layer": "Hidden conflicts — hazard catalog 2.5.4, 2.6.4",
         "why": (
@@ -184,32 +224,41 @@ QUESTIONS: list[dict] = [
     # ----- TECHNOLOGY (base) -----
     {
         "id": "t1",
-        "cat": "technik",
-        "short": "Hack & loss of trust",
+        "cat": "operativ",
+        "short": "Loss of trust & reputation",
         "text": (
-            "What happens if your system gets hacked – and you lose not just "
-            "data, but trust?"
+            "What happens if clients, partners or investors lose trust in you "
+            "— for example after an incident, poor communication or negative "
+            "reports about you?"
         ),
-        "layer": "Cyber attacks / data security — hazard catalog 1.1.2, 1.2",
+        "text_solo": (
+            "What happens if clients or partners lose trust in you — for example "
+            "after a mistake, poor communication or negative reviews?"
+        ),
+        "layer": "Reputation / trust — hazard catalog 1.2, 4.4, 7.4",
         "why": (
-            "An attack hits twice: first systems and data fail, then the trust "
-            "of clients and partners suffers. Without backups, reporting "
-            "channels and a communication plan, an IT incident becomes an "
-            "existential question."
+            "Loss of trust often works more slowly than a technical outage but "
+            "hits just as hard: orders slip, referrals dry up, negotiations "
+            "get tougher. Without clear communication and remediation, one "
+            "incident becomes a lasting image problem."
         ),
         "step": (
-            "Set up regular, tested backups, enforce two-factor authentication "
-            "and prepare a simple emergency and communication plan for the "
-            "attack scenario."
+            "Define who speaks externally in a reputation crisis, which facts "
+            "go to clients first and how you communicate transparency without "
+            "panic. Keep statement and FAQ templates ready."
         ),
     },
     {
         "id": "t2",
         "cat": "technik",
-        "short": "Tools don't match your growth",
+        "short": "Software doesn't match growth",
         "text": (
-            "What happens if your tools work today… but no longer fit your "
-            "growth tomorrow?"
+            "What happens if your software stack (accounting, CRM, cloud storage, "
+            "project tools) works today… but no longer scales with you tomorrow?"
+        ),
+        "text_solo": (
+            "What happens if your software stack (accounting, CRM, cloud storage, "
+            "project tools) works today… but no longer scales with you tomorrow?"
         ),
         "layer": "Outdated technology / digitalisation — hazard catalog 5.4.1, 5.5.2",
         "why": (
@@ -225,22 +274,22 @@ QUESTIONS: list[dict] = [
     },
     {
         "id": "t3",
-        "cat": "technik",
-        "short": "Dependence on one provider",
+        "cat": "operativ",
+        "short": "Dependence on provider, supplier & partner",
         "text": (
-            "What happens if your entire digital infrastructure depends on one "
-            "provider – and they suddenly change the rules?"
+            "What happens if your business depends heavily on one software provider, "
+            "supplier or strategic partner — and they suddenly change the rules or "
+            "drop out?"
         ),
-        "layer": "Provider concentration risk — hazard catalog 1.4.3, 7.4.1",
+        "layer": "Provider/partner concentration — hazard catalog 1.4.3, 7.4.1",
         "why": (
-            "Price increases, feature changes or an account suspension by a "
-            "single provider can hit operations, data and client access at the "
-            "same time — with no short-term alternative."
+            "Price increases, termination, supply stops or changed terms from a single "
+            "provider, supplier or partner can hit production, delivery and revenue at "
+            "the same time — with no short-term alternative."
         ),
         "step": (
-            "List critical provider dependencies, back up data exports "
-            "regularly and define at least one fallback (alternative or interim "
-            "solution) for your most important services."
+            "List critical dependencies (software, suppliers, partners), check export "
+            "and backup options and define at least one fallback for each top dependency."
         ),
     },
     # ----- OPERATIONS (base) -----
@@ -268,9 +317,15 @@ QUESTIONS: list[dict] = [
         "id": "o2",
         "cat": "operativ",
         "short": "Processes depend on you",
+        "short_kmu": "Wrong advice",
         "text": (
             "What happens if your processes only work as long as you personally "
             "keep an eye on everything?"
+        ),
+        "text_kmu": (
+            "What happens if you turn to the wrong advisers for important decisions "
+            "— tax advisers, lawyers or consultants — and lose time, money and "
+            "sometimes even more money through bad advice?"
         ),
         "layer": "Process dependence — hazard catalog 5.5.3, 7.2.1",
         "why": (
@@ -368,13 +423,13 @@ QUESTIONS: list[dict] = [
         "cat": "wachstum",
         "short": "False core assumptions",
         "text": (
-            "What happens if your entire platform is built on assumptions that "
+            "What happens if your business model is built on assumptions that "
             "suddenly turn out to be wrong?"
         ),
         "layer": "Strategic assumptions — hazard catalog 7.3.1, 5.4.2",
         "why": (
             "Business models often rest on a few untested core assumptions — "
-            "about willingness to pay, regulation or platform partners. If one "
+            "about willingness to pay, regulation or key partners. If one "
             "tips, the model tips."
         ),
         "step": (
@@ -504,34 +559,220 @@ QUESTIONS: list[dict] = [
             "responsibilities, communication."
         ),
     },
+    {
+        "id": "k6",
+        "cat": "mensch",
+        "short": "Skills shortage",
+        "text": (
+            "What happens if you urgently need skilled staff — and roles stay "
+            "unfilled for months or overtime is the only answer left?"
+        ),
+        "layer": "Workforce / recruiting — hazard catalog 2.4, 7.2.3",
+        "why": (
+            "Unfilled key roles delay projects, overload the existing team and "
+            "drive wage costs. If you only react once a role has been open for "
+            "months, you often lose internal know-how and sometimes client trust."
+        ),
+        "step": (
+            "Prioritise the most critical open roles, define realistic requirements "
+            "and a lean hiring process. Consider upskilling, freelancers or "
+            "partnerships as a bridge."
+        ),
+    },
+    {
+        "id": "l1",
+        "cat": "markt",
+        "short": "Market turns quietly",
+        "text": (
+            "What happens if your business has been stable for years… but the "
+            "market is quietly turning against you?"
+        ),
+        "layer": "Market change — hazard catalog 4.4.3/4.4.4, 7.4.2",
+        "why": (
+            "Gradual changes — new competitors, shifting client behaviour, "
+            "substitutes — stay invisible in day-to-day work. By the time the "
+            "numbers show it, others already have the lead."
+        ),
+        "step": (
+            "Once a year, ask honestly: who is winning your target clients and "
+            "why? Track early indicators (inquiries, conversion rates) monthly."
+        ),
+    },
+    {
+        "id": "l2",
+        "cat": "markt",
+        "short": "Everything depends on you",
+        "text": (
+            "What happens if your business only runs while you — or a single "
+            "subcontractor — are available?"
+        ),
+        "layer": "Key persons — hazard catalog 7.2, 7.1",
+        "why": (
+            "Client relationships, specialist knowledge and decisions that hang "
+            "on one person become a bottleneck when illness, holiday or "
+            "freelancer absence hits."
+        ),
+        "step": (
+            "Name critical dependencies in writing, document knowledge and "
+            "identify backup partners for important freelancers."
+        ),
+    },
+    {
+        "id": "l3",
+        "cat": "markt",
+        "short": "Grown processes without overview",
+        "text": (
+            "What happens if your workflows grew over time… and even you lose "
+            "the overview?"
+        ),
+        "layer": "Outdated business processes — hazard catalog 3.6.3, 5.5.3",
+        "why": (
+            "Historically grown routines hide duplicated work and single points "
+            "of failure. Every new tool or major client gets more expensive when "
+            "no one knows the thread."
+        ),
+        "step": (
+            "Write down your three most important workflows end to end, cut "
+            "obvious legacy steps and create a short checklist per workflow."
+        ),
+    },
+    {
+        "id": "l4",
+        "cat": "markt",
+        "short": "Creeping cost pressure",
+        "text": (
+            "What happens if rising costs slowly squeeze you without it being "
+            "obvious at first?"
+        ),
+        "layer": "Financial planning — hazard catalog 3.5, 4.3.2, 5.5.1",
+        "why": (
+            "Energy, software, purchases, taxes: if costs rise faster than your "
+            "prices, margin erodes unnoticed. Without a reserve, a margin "
+            "problem becomes a cash-flow problem."
+        ),
+        "step": (
+            "Track costs and margin monthly per service, review prices annually "
+            "and build a liquidity reserve as a fixed item."
+        ),
+    },
+    {
+        "id": "l5",
+        "cat": "markt",
+        "short": "Unprepared for external shocks",
+        "text": (
+            "What happens if an external change arrives — and you realise you "
+            "were never prepared for it?"
+        ),
+        "layer": "Environment / regulation / contingency — hazard catalog 4.1, 6, 3.1",
+        "why": (
+            "Regulation, supply chains or market shocks hit unprepared "
+            "self-employed professionals with full force — prepared ones lose "
+            "days, unprepared ones lose months."
+        ),
+        "step": (
+            "Name the three most relevant external scenarios for your industry "
+            "and create a one-page contingency plan per scenario."
+        ),
+    },
+    {
+        "id": "tt1",
+        "cat": "top_themen",
+        "short": "Phishing, hacking & AI attacks",
+        "text": (
+            "What happens if someone on your team — or via your AI workflows — "
+            "gains access to systems or data through phishing, hacking, malicious "
+            "images or prompt injection — and no one knows what to do immediately?"
+        ),
+        "text_solo": (
+            "What happens if you or your AI tools lose access to systems or data "
+            "through phishing, hacking, malicious images or prompt injection — "
+            "and you don't know what to do immediately?"
+        ),
+        "layer": "Cyber / social engineering / AI — hazard catalog 1.1.2, RA Z1",
+        "why": (
+            "Phishing and AI-based attacks hit individuals and teams alike. "
+            "Without training, reporting channels and rules for AI workflows, "
+            "one click or manipulated prompt can mean data loss or account "
+            "lockout."
+        ),
+        "step": (
+            "Annual phishing awareness, two-factor authentication for email and "
+            "cloud, clear AI rules (no real client data in public tools) and a "
+            "one-page emergency plan."
+        ),
+    },
+    {
+        "id": "tt2",
+        "cat": "top_themen",
+        "short": "Liquidity reserve",
+        "text": (
+            "What happens if you urgently need money — and neither personal nor "
+            "company reserves are sufficient?"
+        ),
+        "text_solo": (
+            "What happens if you urgently need money — and neither personal nor "
+            "business reserves are sufficient?"
+        ),
+        "layer": "Liquidity / reserves — hazard catalog 3.5, 4.3.2",
+        "why": (
+            "Without personal and business reserves, every unexpected bill, "
+            "downtime or investment need becomes an existential risk — "
+            "especially when revenue fluctuates or payments are delayed."
+        ),
+        "step": (
+            "Maintain a monthly liquidity overview, define a target reserve "
+            "(e.g. 3 months fixed costs) and document the private/business split."
+        ),
+    },
+    {
+        "id": "tt3",
+        "cat": "top_themen",
+        "short": "Privacy & AI law",
+        "text": (
+            "What happens if legal topics — data protection, AI regulation, "
+            "contracts — burden you even though you've been putting them off?"
+        ),
+        "text_solo": (
+            "What happens if legal topics — data protection, AI use, contracts — "
+            "burden you even though you've been putting them off?"
+        ),
+        "layer": "Law / GDPR / AI Act — hazard catalog 6, RA Z4",
+        "why": (
+            "Data protection breaches and unclear AI use can trigger fines, "
+            "contract penalties and reputational damage. What 'works' day to "
+            "day often won't survive client or authority scrutiny."
+        ),
+        "step": (
+            "Check data protection basics (processing records, DPAs), document "
+            "AI use and get external advice on your biggest legal risks."
+        ),
+    },
 ]
 
 apply_report_content(QUESTIONS)
 
 # ---------------------------------------------------------------------------
-# Audience sets
+# Audience sets (17 questions each: 10 base + ACTIVE_TOP_THEMEN + 5 extension)
 # ---------------------------------------------------------------------------
-
-_BASE_IDS = ["m1", "m2", "m3", "m4", "t1", "t2", "t3", "o1", "o2", "o3"]
 
 SEGMENTS: list[dict] = [
     {
         "id": "gruender",
         "label": "Founders & startups",
         "cta": "Start the Blindspot Check for founders",
-        "question_ids": _BASE_IDS + ["s1", "s2", "s3", "s4", "s5"],
+        "question_ids": _BASE_IDS + ACTIVE_TOP_THEMEN + ["s1", "s2", "s3", "s4", "s5"],
     },
     {
         "id": "solo",
         "label": "Solo self-employed",
         "cta": "Start the Blindspot Check for solo self-employed",
-        "question_ids": list(_BASE_IDS),
+        "question_ids": _BASE_IDS + ACTIVE_TOP_THEMEN + ["l1", "l2", "l3", "l4", "l5"],
     },
     {
         "id": "kmu",
         "label": "Small & medium-sized enterprises",
         "cta": "Start the Blindspot Check for SMEs",
-        "question_ids": _BASE_IDS + ["k1", "k2", "k3", "k4", "k5"],
+        "question_ids": _BASE_IDS + ACTIVE_TOP_THEMEN + ["k1", "k2", "k3", "k4", "k5", "k6"],
     },
 ]
 
@@ -674,6 +915,23 @@ UI_STRINGS: dict = {
 # Frontend configuration
 # ---------------------------------------------------------------------------
 
+_FRONTEND_QUESTION_KEYS = (
+    "id",
+    "cat",
+    "short",
+    "text",
+    "why",
+    "step",
+    "short_gruender",
+    "short_solo",
+    "text_gruender",
+    "text_solo",
+    "why_gruender",
+    "why_solo",
+    "step_gruender",
+    "step_solo",
+)
+
 def blindspot_frontend_config(
     *,
     locale: str = "en",
@@ -698,7 +956,7 @@ def blindspot_frontend_config(
         "resultBands": RESULT_BANDS,
         "categories": CATEGORIES,
         "questions": [
-            {k: q[k] for k in ("id", "cat", "short", "text", "why", "step")}
+            {k: q[k] for k in _FRONTEND_QUESTION_KEYS if k in q}
             for q in QUESTIONS
         ],
         "segments": SEGMENTS,
@@ -715,18 +973,35 @@ def blindspot_config_json(**kwargs) -> str:
 # Selfcheck (called by the build)
 # ---------------------------------------------------------------------------
 
+# ponytail: SME has 18 questions (k6 skills shortage), founders/solo 17 each
+_SEGMENT_QUESTION_COUNTS: dict[str, int] = {
+    "gruender": 17,
+    "solo": 17,
+    "kmu": 18,
+}
+
 def selfcheck() -> None:
     ids = [q["id"] for q in QUESTIONS]
     assert len(ids) == len(set(ids)), "Blindspot: question ids not unique"
-    assert len(QUESTIONS) == 20, f"Blindspot: expected 20 questions, found {len(QUESTIONS)}"
+    for qid in ACTIVE_TOP_THEMEN:
+        assert qid in ids, f"Blindspot: ACTIVE_TOP_THEMEN references unknown {qid}"
     for q in QUESTIONS:
-        for key in ("id", "cat", "short", "text", "layer", "why", "step"):
+        for key in ("id", "cat", "short", "text", "layer", "why", "step", "yellow_note"):
             assert q.get(key), f"Blindspot: question {q.get('id', '?')} missing '{key}'"
+        tips = q.get("tips")
+        assert isinstance(tips, list) and len(tips) >= 2, (
+            f"Blindspot: question {q.get('id', '?')} needs at least 2 tips"
+        )
         assert q["cat"] in CATEGORIES, f"Blindspot: unknown category {q['cat']}"
     for seg in SEGMENTS:
         unknown = [qid for qid in seg["question_ids"] if qid not in ids]
         assert not unknown, f"Blindspot: segment {seg['id']} references {unknown}"
         assert len(seg["question_ids"]) == len(set(seg["question_ids"]))
+        assert len(seg["question_ids"]) == _SEGMENT_QUESTION_COUNTS[seg["id"]], (
+            f"Blindspot: segment {seg['id']} needs "
+            f"{_SEGMENT_QUESTION_COUNTS[seg['id']]} questions, "
+            f"has {len(seg['question_ids'])}"
+        )
     assert RESULT_BANDS[-1]["max_pct"] == 100
 
 

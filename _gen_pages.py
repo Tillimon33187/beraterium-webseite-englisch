@@ -8,6 +8,8 @@ from pathlib import Path
 
 from _blindspot import blindspot_config_json
 from _blindspot import selfcheck as blindspot_selfcheck
+from _ra_prep import ra_prep_config_json
+from _ra_prep import selfcheck as ra_prep_selfcheck
 from _i18n import EN_SITE_URL, hreflang_links, language_switcher_html
 
 from _pricing import PRICE_CATEGORIES, format_eur, offer_price_text
@@ -1816,8 +1818,8 @@ def gen_lp_startups() -> None:
             "Expert introductions when needed", "Risk update after 2 months"]},
     ]
     main = (
-        hero(pre, "RISK CHECK FOR STARTUPS", "In 4 weeks you know which risks slow your growth",
-             "For founders and startup CEOs with 2–10 people. You build, you run – we make sure no blind spot holds you back.",
+        hero(pre, "RISK CHECK FOR STARTUPS", "Structured startup risk management in 4 weeks",
+             "For founders and startup CEOs with 2–10 people: facilitated startup risk management with hazards valued in euros — before investor due diligence or a costly blind spot.",
              split=True, media_label="Founding team during a risk check with Beraterium",
              media_src=IMG_ANGEBOT_STARTUPS_HERO,
              actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a><a class="brt-btn brt-btn--outline" href="#optionen">See the 3 options →</a>')
@@ -1827,7 +1829,7 @@ def gen_lp_startups() -> None:
         <header class="brt-section__header brt-fade-up">
           <p class="brt-tag">SOUND FAMILIAR?</p>
           <h2 id="problem-title" class="brt-h2">Risks? &ldquo;Yeah, sure – someday.&rdquo; But someday is usually too late.</h2>
-          <p class="brt-body">You have a thousand things in your head at once: product, customers, hiring, cash. Risk analysis sounds like enterprise, like spreadsheet monsters, like bureaucracy – so you put it off.</p>
+          <p class="brt-body">You have a thousand things in your head at once: product, customers, hiring, cash. Startup risk management sounds like enterprise bureaucracy — spreadsheet monsters and checklists — so you put off a structured risk assessment.</p>
         </header>
         <ul class="brt-cards-3col brt-stagger">
           <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The external problem</h3><p class="brt-body">You have no structured picture of your risks. What could cost you €30,000 tomorrow, you do not know today.</p></li>
@@ -1853,6 +1855,7 @@ def gen_lp_startups() -> None:
         + pricing_cards(pre, opts)
         + guarantee(pre, "Your risk is on us")
         + faq_section([
+            ("What is startup risk management?", "Startup risk management means identifying hazards that could slow growth or stop the company, assessing them in euros and likelihood, and prioritising measures — without enterprise overhead. Beraterium uses a 3-level hazard catalogue tailored to founding teams."),
             ("How much time does it cost me?", "About 2 hours per session, 1–2 sessions plus kick-off in total. We handle the rest."),
             ("Is it worth it this early?", "Especially early: a key-person or cash risk can stop a young startup completely."),
             ("What if there are only two of us?", "No problem. We facilitate so even a small founding team reaches a realistic assessment."),
@@ -1861,8 +1864,8 @@ def gen_lp_startups() -> None:
         + cta_band(pre, "Ready to know your biggest risks?",
                    "Book an intro call – free, no sales pitch. You leave with a DIY guide, however you decide.")
     )
-    lp_shell(2, "startups", "Risk management for startups – 4-week risk check | Beraterium",
-             "Key-person, cash, legal and tech risks under control: in 4 weeks you know your biggest risks as a founder – facilitated, valued in euros, with guarantee.", True, main)
+    lp_shell(2, "startups", "Startup Risk Management: 4-Week Risk Check | Beraterium",
+             "Structured startup risk management in 4 weeks: key-person, cash, legal and tech risks valued in euros. Free intro call — no sales pitch. Double guarantee.", True, main)
 
 
 def gen_lp_kmu() -> None:
@@ -2140,8 +2143,8 @@ def gen_blindspot_check() -> None:
     canonical = "/tools/blindspot-check/"
     config_json = blindspot_config_json(
         locale="en",
-        submit_url="https://script.google.com/macros/s/AKfycbxOVMHI01byul3j0QqJ-MGgDdnw9l_HMKwgoyZlHteAftWo7rnGN7I-R9r77XJvCqmSDQ/exec",
-        report_url="https://script.google.com/macros/s/AKfycbxOVMHI01byul3j0QqJ-MGgDdnw9l_HMKwgoyZlHteAftWo7rnGN7I-R9r77XJvCqmSDQ/exec",
+        submit_url="https://script.google.com/macros/s/AKfycbyPc0XZXUu9ok3-5rkXJNlAYbj5WsmzVq9vyuquKJmtjPKhgSfqXPDQMM63lC2OreIVIQ/exec",
+        report_url="https://script.google.com/macros/s/AKfycbyPc0XZXUu9ok3-5rkXJNlAYbj5WsmzVq9vyuquKJmtjPKhgSfqXPDQMM63lC2OreIVIQ/exec",
         booking_url=f"{pre}contact/",
         privacy_url=f"{pre}privacy/",
     )
@@ -2274,6 +2277,57 @@ def gen_blindspot_check() -> None:
         active_nav="tools/blindspot-check",
         main=main,
         json_ld=page_schema(faq_page_schema(BLINDSPOT_FAQ), webapp_ld, breadcrumb_ld),
+        extra_css=extra_css,
+        extra_scripts=extra_scripts,
+    ))
+
+
+RA_PREP_SUBMIT_URL = ""
+
+
+def gen_ra_prep() -> None:
+    pre = "../../"
+    canonical = "/tools/ra-preparation/"
+    config_json = ra_prep_config_json(
+        locale="en",
+        submit_url=RA_PREP_SUBMIT_URL,
+        privacy_url=f"{pre}privacy/",
+        terms_url=f"{pre}terms/",
+    )
+    main = (
+        hero(
+            pre,
+            "RISK ANALYSIS",
+            "Prepare for your risk analysis",
+            "Use this questionnaire to prepare for your workshop with Beraterium. Your answers help us plan the session effectively — about 15–20 minutes.",
+            compact=True,
+            actions='<a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-ra-prep">Start questionnaire</a>',
+        )
+        + f"""
+    <section id="questionnaire" class="brt-section brt-section--alt" aria-labelledby="rap-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">PREPARATION</p>
+          <h2 id="rap-title" class="brt-h2">Risk analysis questionnaire</h2>
+          <p class="brt-body brt-section__lede">Please complete all fields that apply to you. Contact details plus privacy and terms acceptance are required.</p>
+        </header>
+        <div id="brt-ra-prep" class="rap-widget brt-fade-up" aria-live="polite"></div>
+      </div>
+    </section>"""
+    )
+    extra_css = f'\n  <link rel="stylesheet" href="{pre}css/brt-ra-prep.css?v={BRT_ASSET_VERSION}">'
+    extra_scripts = (
+        f'\n<script type="application/json" id="brt-ra-prep-config">{config_json}</script>'
+        f'\n<script src="{pre}js/brt-ra-prep.js?v={BRT_ASSET_VERSION}"></script>'
+    )
+    write("tools/ra-preparation/index.html", shell(
+        depth=2,
+        title="RA preparation – questionnaire | Beraterium",
+        description="Preparation questionnaire for your Beraterium risk analysis: company details, goals and workshop preparation in 15–20 minutes.",
+        canonical=canonical,
+        active_nav=None,
+        main=main,
+        noindex=True,
         extra_css=extra_css,
         extra_scripts=extra_scripts,
     ))
@@ -4303,7 +4357,7 @@ LP_CONFIGS: list[dict] = [
         "du": True,
         "audience": "Startups and founders",
         "tag": "STARTUP RISK ANALYSIS",
-        "h1": "Risk analysis for your startup: process and pricing",
+        "h1": "Startup risk management: risk analysis process and pricing",
         "lead": (
             "The 360° Risk Analysis shows your startup&rsquo;s top 5&ndash;10 risks, assessed in euros "
             "and prioritised &mdash; from key-person dependency to runway. You get analysis, strategy "
@@ -4404,8 +4458,8 @@ LP_CONFIGS: list[dict] = [
         "cta_h2": "Clarify your top risks &mdash; free and no obligation",
         "cta_body": "Book an intro call &mdash; 30 minutes, no sales pressure. We explain our method and you will know where you stand.",
         "cta_note": 'Not there yet? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> &mdash; 10 minutes, free.',
-        "title": "Startup risk analysis: pricing & process | Beraterium",
-        "description": "Startup risk analysis: process, duration and pricing from &euro;295. Top 5&ndash;10 risks in euros, &euro;3,475 bundle. Book a free intro call.",
+        "title": "Startup Risk Management: Analysis & Pricing | Beraterium",
+        "description": "Startup risk management in practice: process, duration and pricing from &euro;295. Top risks valued in euros, &euro;3,475 bundle. Free intro call.",
         "service_name": "360° Risk Analysis for startups",
         "breadcrumb_name": "Startup risk analysis",
     },
@@ -5352,6 +5406,7 @@ def gen_home_footer() -> None:
 if __name__ == "__main__":
     print("Generating pages...")
     blindspot_selfcheck()
+    ra_prep_selfcheck()
     gen_ueber_uns()
     gen_team()
     gen_mission_vision()
@@ -5373,6 +5428,7 @@ if __name__ == "__main__":
     gen_risikoradar()
     gen_tools_index()
     gen_blindspot_check()
+    gen_ra_prep()
     gen_blog()
     gen_blog_singles()
     gen_home_analyse()

@@ -29,7 +29,7 @@ related_slugs: []
 
 ## Why talk about intellectual property and patent protection now?
 
-Whether startup or established Mittelstand: ideas, brands, processes and staff knowledge are often the core of the business. At the same time not everything is legally protectable – and even where it is, protection applies only where you register it. Whoever thinks internationally (sales, production, suppliers) must think early about patents, trade marks and handling know-how. This episode covers the basics: what is patentable at all? Where do risks around intellectual property lurk? And what can companies do – beyond contracts?
+Whether startup or established Mittelstand: ideas, brands, processes and staff knowledge are often the core of the business. At the same time not everything is legally protectable – and even where it is, protection applies only where you register it. Whoever thinks internationally (sales, production, suppliers) must think early about patents, trade marks and handling know-how — and assess risks through [risk management consulting](/services/). This episode covers the basics: what is patentable at all? Where do risks around intellectual property lurk? And what can companies do – beyond contracts?
 
 ## What is patentable – and what is not?
 

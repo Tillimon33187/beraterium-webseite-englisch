@@ -30,6 +30,8 @@ With long-standing experience from the corporate and startup worlds, they show h
 Their approach: individual solutions instead of standards, people at the centre, and the conviction that genuine risk management creates both security and opportunity.
 
 ## Risk management reimagined – with heart, experience and common sense
+Beraterium is [risk management consulting for SMBs, startups and solo founders](/services/) — facilitated, valued in euros, with a double guarantee.
+
 
 With the first episode of the _"Risk Radar"_ podcast, **Till Blania** and **Peter Münstermann** introduce the people and the idea behind **Beraterium**, an initiative that finally makes risk management tangible and actionable for small and mid-sized companies.
 

@@ -53,7 +53,7 @@ faq:
 
 Since 2 August 2026, the EU AI Act — Regulation (EU) 2024/1689, officially the "Artificial Intelligence Act" — has been generally applicable. This is the third and largest step in a staggered rollout: after the prohibited practices and the AI literacy duty (February 2025) and the rules for general-purpose AI models (August 2025), most of the remaining provisions now apply — including transparency duties and the full sanctions regime.
 
-Shortly before the deadline, the EU postponed key deadlines for high-risk systems through the so-called "Digital Omnibus" Regulation (EU) 2026/1744. Public perception mostly took away one — misleading — message: that regulation as a whole arrived later. In fact, the postponement changes nothing about the general date of application. For most mid-market companies, start-ups and solo entrepreneurs, the relevant question is therefore not whether they are affected at all, but which of the three parallel legal instruments concretely apply to them.
+Regulatory duties belong in your risk inventory — like [cyber attacks on SMBs](/solutions/cyber-attack/). Shortly before the deadline, the EU postponed key deadlines for high-risk systems through the so-called "Digital Omnibus" Regulation (EU) 2026/1744. Public perception mostly took away one — misleading — message: that regulation as a whole arrived later. In fact, the postponement changes nothing about the general date of application. For most mid-market companies, start-ups and solo entrepreneurs, the relevant question is therefore not whether they are affected at all, but which of the three parallel legal instruments concretely apply to them.
 
 ## What actually took effect on 2 August 2026 — and what did not
 

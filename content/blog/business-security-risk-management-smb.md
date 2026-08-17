@@ -20,6 +20,8 @@ related_slugs: []
   * Contingency planning for hidden champions: one failed specialist machine can put you out of action for 14 days. Alternative suppliers are not a luxury but a necessity for survival
 
 ## 1. Recognise the real risk: protect what matters, not what is obvious
+[Cyber attacks on SMBs](/solutions/cyber-attack/) are among the most common operational risks today — alongside physical security.
+
 
 Imagine a stainless steel trader storing 120 tonnes of material behind a simple 2-metre fence. Reckless? No. Because whilst the visible inventory is barely threatened, the real risk lies in an unremarkable room: specialist tools with a three-week lead time.
 

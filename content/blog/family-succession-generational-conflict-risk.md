@@ -48,6 +48,8 @@ faq:
   * **Worst cases** range from economic paralysis and legal dispute to lasting family estrangement; the earlier structure comes, the lower the damage typically in both systems.
 
 ## Why the conflict often sits "in the gut" although handover is formally done
+Succession risks can be mapped structurally — see our [business succession solution page](/solutions/succession/).
+
 
 Family businesses shape the German Mittelstand; at the same time many succession processes fail or are accompanied by hard conflict. What keeps appearing in media and advisory practice can be put in one sentence: it is not only about shares, contracts and tax, but identity, power and closeness. Whoever underestimates this looks for the cause of tension in the wrong place – and reacts with process optimisation or another workshop where roles, concerns and responsibilities actually need clarifying. For managing directors and successors, shareholder families and advisers in the Mittelstand, a look at the context pays off: which systems collide, which signals go to the team, which escalation paths are typical? This article places that in order – factually and without taking sides for "father" or "son", but with a clear risk perspective from Beraterium practice.
 

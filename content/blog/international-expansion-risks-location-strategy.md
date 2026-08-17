@@ -20,6 +20,8 @@ related_slugs: []
   * A solid approach begins with upfront questions on IP, structure, law and personal goals.
 
 ## Why international expansion is relevant for many entrepreneurs right now
+International expansion needs a risk picture — [services and checks](/services/) by company size.
+
 
 Setting up abroad is no longer a fringe topic for many founders and SMEs, but part of a broader strategy for growth, flexibility and future security. Episode 15 of Risiko Radar makes it clear: people go abroad not only for tax reasons, but because they seek location advantages, quality of life, new markets or entrepreneurial freedom. At the same time, practice shows that this decision is often thought through too simply. Whoever reduces internationalisation to a single advantage usually overlooks operational reality: local processes, partner quality, cultural differences, regulatory requirements and the question of whether the business model really works robustly at the new location.
 

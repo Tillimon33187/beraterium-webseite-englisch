@@ -43,6 +43,8 @@ faq:
   * Five everyday tips from the episode: real food, sleep hygiene, laughter, short deeper exchange, time in nature.
 
 ## Why health is missing from founders' and SMEs' risk registers
+Key-person risk hits founding teams especially hard — the [4-week startup risk check](/services/startups/) addresses dependencies early.
+
 
 Risk management lives on impact and probability – and that is exactly where the physical and mental resilience of founders, managing directors and key staff belongs. In episode 16 of Risiko Radar, Till and Peter with guest Alexander Schmidt make clear that health is not a private "nice-to-have" beside the company, but links directly to delivery capability, deadlines and decision quality. Many startups and small Mittelstand businesses run the early phase on high intrinsic energy; exactly that phase deceives because it delays the view of slow fatigue, irritability and loss of concentration. Whoever takes the topic seriously only when someone is absent longer steers too late and often too expensively.
 

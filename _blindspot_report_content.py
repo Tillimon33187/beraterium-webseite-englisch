@@ -157,11 +157,31 @@ REPORT_BY_ID: dict[str, dict] = {
             "the loss — especially when there is no handover protocol and no "
             "succession planning."
         ),
+        "why_gruender": (
+            "When a co-founder leaves, undocumented contacts, negotiations and "
+            "decisions often go with them — while the team is expected to keep "
+            "running. Without a handover protocol, friction with investors and "
+            "clients starts immediately."
+        ),
+        "why_solo": (
+            "If everything depends on you alone, there is no internal buffer: any "
+            "absence stops revenue and client communication — especially when "
+            "passwords and workflows live only in personal accounts."
+        ),
         "step": (
             "Identify the three most important key roles and document core tasks, "
             "contacts, systems and decision limits for each. Introduce pairing or "
             "monthly knowledge-exchange sessions and centralise all access "
             "credentials."
+        ),
+        "step_gruender": (
+            "Document responsibilities, clients, contracts and system access per "
+            "co-founder. Agree a written handover period and store all credentials "
+            "in a shared password vault."
+        ),
+        "step_solo": (
+            "Write your key workflows and access details in a checklist. Name a "
+            "trusted person with emergency access and test it once."
         ),
         "tips": [
             "Agree a written handover period for every hire in a key role.",
@@ -186,10 +206,20 @@ REPORT_BY_ID: dict[str, dict] = {
             "amplifies the problem: the more people, the more expensive missing "
             "alignment becomes."
         ),
+        "why_gruender": (
+            "Founder teams without shared priorities lose momentum: everyone "
+            "optimises their area while product, sales and finance drift apart. "
+            "Investors and early clients notice missing alignment quickly."
+        ),
         "step": (
             "Write down three company goals for the next 12 months and derive "
             "clear responsibility per role. Introduce a monthly 30-minute "
             "alignment (goals, priorities, blockers)."
+        ),
+        "step_gruender": (
+            "Write down three shared founder-team goals for 12 months and clarify "
+            "responsibility per person. Run a weekly 30-minute alignment "
+            "(goals, blockers, decisions)."
         ),
         "tips": [
             "Link every major task to a goal — cut or delegate tasks with no goal link.",
@@ -218,10 +248,20 @@ REPORT_BY_ID: dict[str, dict] = {
             "projects stall. In small teams this escalates quickly because every "
             "delay hits revenue directly."
         ),
+        "why_solo": (
+            "Escalating clients, absent freelancers or derailed projects cost revenue "
+            "and nerves immediately as a solo — with no team to absorb the shock. "
+            "Unresolved conflicts often linger longer than the original trigger."
+        ),
         "step": (
             "Establish a fixed feedback format (e.g. monthly, moderated). Clarify "
             "decision paths in writing: who decides what by when? Moderate early "
             "when tension is visible — without blame."
+        ),
+        "step_gruender": (
+            "Agree a fixed founder-team format for difficult topics (30 minutes weekly). "
+            "Clarify decision paths in writing and bring in external moderation early "
+            "when blocked."
         ),
         "tips": [
             "Separate factual and relational levels explicitly in conflict conversations.",
@@ -229,14 +269,14 @@ REPORT_BY_ID: dict[str, dict] = {
             "Document decisions briefly — that reduces later reinterpretation.",
         ],
         "tips_solo": [
-            "Address tension with clients or partners early — not only when it escalates.",
-            "For difficult decisions, use an external sparring partner (mentor, adviser).",
-            "Document decisions briefly — that reduces later overthinking.",
+            "Address tension with clients or freelancers early — not only when it escalates.",
+            "Keep a backup freelancer or partner in reserve for each main project.",
+            "Document agreements in writing — that reduces misunderstandings.",
         ],
         "step_solo": (
-            "Plan a fixed feedback conversation with a trusted person (mentor, "
-            "accountant, industry peer). Clarify decision paths in writing: what "
-            "do you decide alone, and where do you seek input?"
+            "Define clear escalation paths for critical clients and freelancers "
+            "(who responds when, which contract rules apply). Address tension early — "
+            "and keep a backup freelancer in mind for each main project."
         ),
         "yellow_note": (
             "Slow decisions are often the first warning sign before resignations follow."
@@ -244,32 +284,33 @@ REPORT_BY_ID: dict[str, dict] = {
     },
     "t1": {
         "why": (
-            "A cyber attack hits twice: first systems and data fail, then the trust "
-            "of clients and partners suffers. Reporting duties (e.g. GDPR within "
-            "72 hours), compensation claims and reputational damage can become an "
-            "existential question without backups, reporting channels and a "
-            "communication plan — especially when payments or client data are "
-            "affected."
+            "Loss of trust often works more slowly than a technical outage but hits "
+            "just as hard: orders slip, referrals dry up, negotiations get tougher. "
+            "Without clear communication and remediation, one incident becomes a "
+            "lasting image problem."
+        ),
+        "why_solo": (
+            "As a solo operator your reputation is tied to every project. Negative "
+            "reviews, word-of-mouth criticism or poorly communicated mistakes can "
+            "cost follow-on work faster than the mistake itself."
         ),
         "step": (
-            "Set up automatic, tested backups (trial restore once per quarter). "
-            "Enforce two-factor authentication for email, cloud and banking. "
-            "Create a one-page emergency plan: who reports what, to whom, in what "
-            "order."
+            "Define who speaks externally in a reputation crisis, which facts go to "
+            "clients first and how you communicate transparency without panic. Keep "
+            "statement and FAQ templates ready."
         ),
         "tips": [
-            "Train all staff annually on phishing — one click is enough.",
-            "Review cyber insurance and whether your IT provider has incident response defined.",
-            "Keep offline contact details for lawyer, IT and insurer to hand.",
+            "Respond to criticism quickly, factually and without blaming others publicly.",
+            "Document positive client references before you need them.",
+            "Run through the flow once: who informs whom in a reputation incident?",
         ],
         "tips_solo": [
-            "Train yourself annually on phishing and secure passwords — one click is enough.",
-            "Review cyber insurance and whether your IT provider has incident response defined.",
-            "Keep offline contact details for lawyer, IT and insurer to hand.",
+            "Respond to negative reviews quickly, factually and with a solution focus.",
+            "Collect testimonials before you need them for sales.",
+            "Keep a short FAQ ready for typical client concerns.",
         ],
         "yellow_note": (
-            "Without a tested backup, every attack quickly becomes data loss with "
-            "long downtime — even for seemingly small incidents."
+            "Reputation damage often shows with a delay — the revenue drop comes weeks later."
         ),
     },
     "t2": {
@@ -473,8 +514,7 @@ REPORT_BY_ID: dict[str, dict] = {
         "why": (
             "Business models rest on a few untested core assumptions — about "
             "willingness to pay, regulation, partners or channels. If one tips, "
-            "the model tips. Platform and marketplace models are especially "
-            "vulnerable because many dependencies interact at once."
+            "the model tips — especially when many dependencies interact at once."
         ),
         "step": (
             "Name your three most critical core assumptions in writing. Define an "
@@ -620,6 +660,186 @@ REPORT_BY_ID: dict[str, dict] = {
         "yellow_note": (
             "External shocks become critical without a contingency plan — especially "
             "when several areas are affected at once."
+        ),
+    },
+    "k6": {
+        "why": (
+            "Unfilled key roles delay projects, overload the existing team and drive "
+            "wage costs. If you only react once a role has been open for months, you "
+            "often lose internal know-how and sometimes client trust."
+        ),
+        "step": (
+            "Prioritise the most critical open roles, define realistic requirements "
+            "and a lean hiring process. Consider upskilling, freelancers or "
+            "partnerships as a bridge."
+        ),
+        "tips": [
+            "Write job profiles so they are realistically fillable.",
+            "Use referral networks and industry associations deliberately.",
+            "Plan handover time when someone new starts — not just the hire.",
+        ],
+        "yellow_note": (
+            "Open key roles often feel manageable for months — until quality and revenue suffer."
+        ),
+    },
+    "l1": {
+        "why": (
+            "Gradual market changes stay invisible in solo day-to-day work until "
+            "inquiries drop or prices no longer stick. Those who only work in the "
+            "business often notice the shift too late."
+        ),
+        "step": (
+            "Once a year, ask honestly: who is winning your target clients? Note "
+            "early indicators like inquiries and conversion rates monthly."
+        ),
+        "tips": [
+            "Talk quarterly to two clients who almost didn't book.",
+            "Watch two competitors — what are they changing in offer and price?",
+            "Track one early metric (inquiries/week) in a simple table.",
+        ],
+        "yellow_note": (
+            "Without a market rhythm, offer and pricing go stale quietly until revenue shows it."
+        ),
+    },
+    "l2": {
+        "why": (
+            "As a solo operator, clients, quality and decisions hang on one person — "
+            "or one subcontractor. Illness, holiday or absence then stops revenue "
+            "and delivery immediately."
+        ),
+        "step": (
+            "Name critical dependencies in writing, document knowledge and identify "
+            "backup partners for important freelancers."
+        ),
+        "tips": [
+            "Keep a second contact for every critical subcontractor.",
+            "Document your three most important workflows monthly as a checklist.",
+            "Check contracts for cover during absence.",
+        ],
+        "yellow_note": (
+            "Without a plan B, every absence becomes a revenue stop."
+        ),
+    },
+    "l3": {
+        "why": (
+            "Grown routines without overview hide duplicated work and errors. Every "
+            "new tool or major client gets more expensive when no one knows the thread."
+        ),
+        "step": (
+            "Write down your three most important workflows end to end, cut legacy "
+            "steps and create a short checklist per workflow."
+        ),
+        "tips": [
+            "Review one workflow per month — more is hard for a solo operator.",
+            "Visualise workflows on one page to expose complexity.",
+            "Ask a client: where do you most often see delays on our side?",
+        ],
+        "yellow_note": (
+            "Without overview, every change becomes a gamble — errors accumulate quietly."
+        ),
+    },
+    "l4": {
+        "why": (
+            "If costs rise faster than prices, margin erodes unnoticed. Without a "
+            "reserve, a margin problem quickly becomes a cash-flow problem — "
+            "especially with fluctuating workload."
+        ),
+        "step": (
+            "Track costs and margin monthly per service, review prices annually and "
+            "build a liquidity reserve as a fixed item."
+        ),
+        "tips": [
+            "Calculate contribution margin per project monthly, not only at year-end.",
+            "Plan 2–3 months fixed costs as reserve on a separate account.",
+            "Review subscriptions and software quarterly for cancellation.",
+        ],
+        "yellow_note": (
+            "Creeping margin becomes critical once invoices stay open longer than planned."
+        ),
+    },
+    "l5": {
+        "why": (
+            "Regulation, supply chains or market shocks hit unprepared self-employed "
+            "professionals with full force. Prepared ones lose days, unprepared ones "
+            "lose months."
+        ),
+        "step": (
+            "Name the three most relevant external scenarios for your industry and "
+            "create a one-page contingency plan per scenario."
+        ),
+        "tips": [
+            "Keep offline contacts for accountant, IT and insurance ready.",
+            "Run one mental stress test annually (60 minutes is enough).",
+            "Check industry-specific regulation for upcoming deadlines.",
+        ],
+        "yellow_note": (
+            "External shocks become critical without a contingency plan and liquidity buffer."
+        ),
+    },
+    "tt1": {
+        "why": (
+            "Phishing, ransomware and AI-based attacks hit individuals and teams alike. "
+            "Without training, reporting channels and rules for AI workflows, one "
+            "click or manipulated prompt can mean data loss, account lockout or "
+            "liability."
+        ),
+        "step": (
+            "Annual phishing awareness, two-factor authentication for email and cloud, "
+            "clear AI rules (no real client data in public tools) and a one-page "
+            "emergency plan."
+        ),
+        "tips": [
+            "Train everyone who uses email and cloud — including external freelancers.",
+            "Test backups by restoring, not only by checking 'backup OK'.",
+            "Define for AI agents: which data must never go into prompts.",
+        ],
+        "tips_solo": [
+            "Train yourself annually on phishing — one click is enough.",
+            "Test backups by restoring, not only by checking 'backup OK'.",
+            "Never use real client data in AI tools — dummy data is enough for testing.",
+        ],
+        "yellow_note": (
+            "Without a counter-strategy, every phishing incident quickly becomes data "
+            "or account loss with reporting duties."
+        ),
+    },
+    "tt2": {
+        "why": (
+            "Without personal and business reserves, every unexpected bill, downtime "
+            "or investment need becomes an existential risk — especially when revenue "
+            "fluctuates or payments are delayed."
+        ),
+        "step": (
+            "Maintain a monthly liquidity overview, define a target reserve "
+            "(e.g. 3 months fixed costs) and document the private/business split."
+        ),
+        "tips": [
+            "Plan 2–3 months fixed costs as reserve on a separate account.",
+            "Run the numbers once on a '30 days without revenue' scenario.",
+            "Clarify with your accountant which personal reserves apply in an emergency.",
+        ],
+        "yellow_note": (
+            "Without a reserve, every delay quickly becomes an existential liquidity problem."
+        ),
+    },
+    "tt3": {
+        "why": (
+            "Data protection breaches and unclear AI use can trigger fines, contract "
+            "penalties and reputational damage. What 'works' day to day often won't "
+            "survive client or authority scrutiny."
+        ),
+        "step": (
+            "Check data protection basics (processing records, DPAs), document AI use "
+            "and get external advice on your biggest legal risks."
+        ),
+        "tips": [
+            "Check whether your website tracking consent is up to date.",
+            "Document which AI tools may see which data.",
+            "Get DPAs and terms checked before your first major clients.",
+        ],
+        "yellow_note": (
+            "Legal topics become critical once clients or authorities ask concrete "
+            "questions — not when you start then."
         ),
     },
 }

@@ -27,7 +27,7 @@ The German Mittelstand is under pressure – but not only from within. Whilst en
 
 The problem: these external risk factors are often beyond direct control, but can neither be ignored nor postponed. Energy prices rise regardless of your decisions. Regulations change overnight. Talent moves on because framework conditions for immigration are too complex.
 
-The question is not whether these risks will hit your business – the question is when and how hard. Here are the eight most critical external influences for SMEs in Germany and how you can handle them.
+The question is not whether these risks will hit your business — a [structured risk assessment for SMBs](/services/smb/) helps prioritise external shocks in euros. – the question is when and how hard. Here are the eight most critical external influences for SMEs in Germany and how you can handle them.
 
 ## 1. The inflation–wage spiral: when cost of living blows up your wage costs
 

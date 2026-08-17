@@ -34,7 +34,7 @@ Many businesses invest in technology, processes and automation – and overlook 
 Because whether startup or Mittelstand – success and risk almost always arise where people make decisions.
 
 Staff are idea generators, problem solvers, crisis managers – but also the cause of many errors, conflicts and uncertainties.  
-Whoever understands that sees risk management not as a control instrument, but as cultural work: it is about sharing responsibility, strengthening communication and using trust as a strategic resource.
+Whoever understands that sees [risk management](/method/) not as a control instrument, but as cultural work: it is about sharing responsibility, strengthening communication and using trust as a strategic resource.
 
 ## People at the centre – risk or resource?
 

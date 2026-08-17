@@ -24,6 +24,8 @@ related_slugs: []
   * Structured risk analyses protect against panic decisions and turn you from someone driven by events into a shaper of your company.
 
 ## Risk is part of your entrepreneurial routine – whether you want it or not
+The first step is a clear picture — our [services overview](/services/) shows which check fits your situation.
+
 
 Risk in your company is not an exceptional state but everyday reality: regulation, energy prices, CO₂ requirements, skills shortages, cyber attacks and human error sit at your table every day. The decisive difference between growing and stagnating companies is not who has fewer risks, but who sees them earlier and steers them more consciously.
 

@@ -20,6 +20,8 @@ related_slugs: []
   * **The community has existed for one month** and will soon open to further members – via a personal getting-to-know-you conversation.
 
 ## Why a community for risk management?
+The [Risk Radar community](/risk-radar/) connects founders with vetted experts — alongside [risk management consulting](/services/).
+
 
 Anyone who engages with risk management knows the first step: identifying and assessing risks methodically. At Beraterium we have made precisely that our mission – finding the biggest risks in small, mid-sized and large companies, perhaps the top five. Fine, that is done. But then comes the real challenge: what do we do with them now? Measures are needed. And the conviction behind the Community Risk Radar is simple: a single consultant or expert may perhaps cover 80%, but there are always edge areas where they need support or discussion with others. Whether IT problems, occupational safety, people management or GDPR – a single coach will rarely get everything right alone. That is why the logical next step was to create a platform where all expertise is bundled and customers and interested parties find a real home.
 

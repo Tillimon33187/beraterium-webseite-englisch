@@ -26,6 +26,8 @@ Anyone who wants to grow successfully as an entrepreneur cannot avoid an uncomfo
 The figures speak clearly. In Germany, 80 out of 100 startups fail within the first three years. Only 48% of all newly founded companies survive this critical phase. At the same time, 80% of German mid-market businesses expect accelerated economic contraction in 2025. Uncertainty is everywhere – and that is precisely why intelligent handling of risk becomes a decisive competitive factor.
 
 ## The risk paradox: when security slows innovation
+Conscious decisions need numbers — our [method](/method/) values residual risk in euros.
+
 
 Many entrepreneurs face a dilemma. On one hand they are advised to minimise risk, secure processes and identify threats early. On the other, growth requires the opposite: opening new markets, developing innovative products, entering unknown territory. Those who only sail in safe waters will not reach new shores.
 

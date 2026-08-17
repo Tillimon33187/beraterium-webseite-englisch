@@ -21,6 +21,8 @@ related_slugs: []
   * **People are at the centre.** Skilled staff from affected regions, commuters with rising fuel costs, unsettled teams – whoever ignores that loses people.
 
 ## 30 kilometres that can bring the world economy to its knees
+External shocks belong in the risk picture — the [SMB clarity roadmap](/services/smb/) values supply-chain and energy risks in euros.
+
 
 The Strait of Hormuz is a bottleneck between Iran and Oman – barely 30 kilometres wide, only about 8 kilometres navigable. Through this narrow corridor flow 20 to 30 per cent of global oil and gas transport. Kuwait, Saudi Arabia, Iraq, Qatar, the United Arab Emirates – the world's largest energy exporters depend on this passage. When Iran enforced the blockade, that was not a symbolic gesture. It was an economic attack on global energy supply, and it works. For European businesses that may sound abstract: only about 13 per cent of European LNG and oil imports come directly from Gulf states. But the oil market is global. When a third of global supply is disrupted, prices rise everywhere – regardless of where you source yourself. That is not theory. That is what is happening now.
 

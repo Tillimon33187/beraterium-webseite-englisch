@@ -28,7 +28,7 @@ related_slugs: []
 **Why do employees make risky decisions – even when they know the possible consequences?**  
 In many small and mid-sized companies the biggest risks arise not through technology or missing processes but through people: through routine, overload, unspoken expectations and social dynamics in the team.
 
-When experienced employees skip rules out of habit, when time pressure forces quick solutions or teams conceal risks because nobody wants to "cause trouble", risks grow quietly in the background. Management pressure – for example through too few resources, shortened onboarding or permanent urgency – reinforces this behaviour further.
+When experienced employees skip rules out of habit, when time pressure forces quick solutions or teams conceal risks because nobody wants to "cause trouble", risks grow quietly in the background. Management pressure – for example through too few resources, shortened onboarding or permanent urgency – reinforces this behaviour further. A [risk management method](/method/) that involves people addresses these blind spots.
 
 The true origin of many failures rarely lies in a single mistake but in missing communication: not saying what you see; not asking what you do not understand; not reporting what feels wrong.
 

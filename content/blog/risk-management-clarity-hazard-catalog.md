@@ -88,7 +88,7 @@ Clarity rarely brings immediate revenue. It reduces loss, sharpens priorities an
 
 ISO standards and checklists have their place — regular listeners know the limits. "We already do it internally" sometimes means: someone optimises processes while the boss believes risk management is running.
 
-Peter Münstermann warns against ticking boxes: paper is patient. One question, one cross, done — theoretically correct, practically ineffective. Checklists know neither a family-business generational handover nor coffee-break truth in a gym. That is why Beraterium relies on **risk dialogue**: people share what they have already experienced — and diffuse fears become shared assessments.
+Peter Münstermann warns against ticking boxes: paper is patient. One question, one cross, done — theoretically correct, practically ineffective. Checklists know neither a family-business generational handover nor coffee-break truth in a gym. That is why Beraterium relies on **risk dialogue** and the [3-level hazard catalogue](/method/): people share what they have already experienced — and diffuse fears become shared assessments.
 
 ## How a hazard catalogue works as the foundation
 

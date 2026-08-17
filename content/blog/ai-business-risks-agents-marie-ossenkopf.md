@@ -60,7 +60,7 @@ Three developments explain why this is not just for tech leads in 2026:
 * **Innovation speed:** Software prototypes appear in hours, not quarters. If you do not experiment, you can fall behind on platform and product cycles — regardless of company size.
 * **Weak traceability:** When an agent acts, it is often unclear who launched it, which sub-agents spawned, and whether the task was manipulated from outside.
 
-For risk management, AI belongs in the same inventory as [cyber risk in SMEs](/blog/cyber-attack-what-to-do-smb/) — scenario, damage in currency, probability and clear ownership. Not future music — running operations.
+For risk management, AI belongs in the same inventory as [cyber risk in SMEs](/blog/cyber-attack-what-to-do-smb/) — scenario, damage in currency, probability and clear ownership. See also [Cyber attack — what to do?](/solutions/cyber-attack/). Not future music — running operations.
 
 ## What agents deliver — and what they only simulate
 

@@ -26,7 +26,7 @@ related_slugs: []
 Risk management is more than damage avoidance – it is the art of recognising uncertainty, assessing it and steering it deliberately.  
 In this article we explain the basics: what is a hazard? How does a risk arise from it? And why is understanding probability of occurrence and magnitude of damage decisive for business success?
 
-With clear definitions and practical examples we show how risk management helps create clarity, set priorities and build long-term security and stability.
+With clear definitions and practical examples we show how risk management helps create clarity, set priorities and build long-term security and stability — including [risk assessment in euros](/method/) instead of traffic lights.
 
 ## Hazards, risks and opportunities – how companies gain clarity
 
