@@ -75,6 +75,7 @@ BLOG_SLUG_MAP: dict[str, str] = {
     "warum-mitarbeiter-riskante-entscheidungen-treffen": "why-employees-make-risky-decisions",
     "what-is-risk-management": "what-is-risk-management",
     "zeit-als-risikofaktor-unternehmer-risikomanagement": "time-as-risk-factor-entrepreneurs-risk-management",
+    "notfallplan-unternehmen-payment-ausfall": "business-emergency-plan-payment-outage-smb",
     "cashflow-analyse-risikomanagement-kmu": "cashflow-analysis-risk-management-smb",
     "cyberangriff-was-tun-kmu": "cyber-attack-what-to-do-smb",
     "risiken-selbststaendige-freelancer": "risks-self-employed-freelancers",

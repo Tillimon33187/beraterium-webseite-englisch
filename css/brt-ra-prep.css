@@ -27,6 +27,11 @@
   margin-top: 0;
 }
 
+.rap-card h2:focus,
+.rap-card h3:focus {
+  outline: none;
+}
+
 .rap-step__intro {
   margin-bottom: var(--space-6);
 }

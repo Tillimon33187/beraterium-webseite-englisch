@@ -791,9 +791,9 @@ def case_studies_section(pre: str, *, en: bool = False) -> str:
                 "title": "Solo self-employed, growing studio",
                 "meta": [("industry", "Creative crafts"), ("phase", "Running business, scaling offer"), ("team", "1 person, project support")],
                 "text": "Many open fronts, little time – but no shared priority. What to tackle first without spinning in circles was unclear. She carries every risk alone: customers, IT, premises, contracts, social media.",
-                "approach_headline": "Stage&nbsp;1 + Stage&nbsp;2",
-                "approach_body": "Stage&nbsp;1 revealed four equally weighted top risks. In Stage&nbsp;2 we turned each into action logic – cyber, reputation, physical total loss and organisation – with effort vs. impact trade-offs.",
-                "stats": [("4", "Top risks: IT/cyber, reputation, total loss, processes"), ("A–D", "Stage&nbsp;2 blocks with next steps"), ("3", "Phases: now, 1–3 months, follow-ups"), ("↓", "Capacity freed for top risks")],
+                "approach_headline": "Stage&nbsp;1 + Stage&nbsp;2 + follow-on modules",
+                "approach_body": "Stage&nbsp;1: four equally weighted top risks. Stage&nbsp;2: action logic for cyber, reputation, total loss and organisation. Follow-on modules: revenue mix transparency (levers) and a focused 3-month acquisition channel test.",
+                "stats": [("4", "Top risks: IT/cyber, reputation, total loss, processes"), ("A–D", "Stage&nbsp;2 blocks with next steps"), ("3", "Phases: now, 1–3 months, follow-ups"), ("↗", "Revenue mix + 1 channel test")],
                 "quote": "&ldquo;Stage&nbsp;1 showed which risks really carry the building – Stage&nbsp;2 how to tackle them without burning out.&rdquo;",
             },
             {
@@ -2282,7 +2282,7 @@ def gen_blindspot_check() -> None:
     ))
 
 
-RA_PREP_SUBMIT_URL = ""
+RA_PREP_SUBMIT_URL = "https://script.google.com/macros/s/AKfycbzJDCClA9HKNK99xIjsvt9S9hCYDPtFd9nF4OlV3YPxqqzK9uOXyRz9AdLlXsEfy9gq/exec"
 
 
 def gen_ra_prep() -> None:

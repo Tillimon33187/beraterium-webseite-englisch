@@ -14,6 +14,7 @@
   }
 
   var S = CFG.strings;
+  var WEITERE_VALUE = "weitere";
 
   var state = {
     stepIdx: 0,
@@ -82,26 +83,61 @@
     state.answers[fieldId] = value;
   }
 
+  function ensureWeitereChecked(groupId, autoValue) {
+    autoValue = autoValue || WEITERE_VALUE;
+    var vals = Array.isArray(getVal(groupId)) ? getVal(groupId).slice() : [];
+    if (vals.indexOf(autoValue) < 0) {
+      vals.push(autoValue);
+      setVal(groupId, vals);
+    }
+  }
+
   function postJson(url, payload) {
     return fetch(url, {
       method: "POST",
+      redirect: "follow",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     }).then(function (res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json().catch(function () { return {}; });
-    }).then(function (data) {
-      if (!data || data.ok !== true) {
-        var bad = new Error((data && data.error) || "invalid_response");
-        bad.code = (data && data.error) || "invalid_response";
-        throw bad;
-      }
-      return data;
+      return res.text().then(function (text) {
+        var data = {};
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (err) {
+          data = {};
+        }
+        if (!res.ok) {
+          var httpErr = new Error((data && data.error) || ("HTTP " + res.status));
+          httpErr.code = (data && data.error) || "http_error";
+          throw httpErr;
+        }
+        if (!data || data.ok !== true) {
+          var bad = new Error((data && data.error) || "invalid_response");
+          bad.code = (data && data.error) || "invalid_response";
+          throw bad;
+        }
+        return data;
+      });
     });
+  }
+
+  function submitErrorMessage(code) {
+    if (code === "mail_failed") return S.error_mail || S.error_submit;
+    if (code === "not_configured" || code === "sheet_failed") return S.error_unavailable;
+    if (code === "missing_fields") return S.error_validation || S.error_submit;
+    return S.error_submit;
   }
 
   function isEmail(v) {
     return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(v || "").trim());
+  }
+
+  function checkboxGroupValid(groupId, detailFieldId) {
+    var vals = getVal(groupId);
+    var hasSelection = Array.isArray(vals) && vals.length > 0;
+    if (hasSelection) return true;
+    if (detailFieldId && String(getVal(detailFieldId) || "").trim()) return true;
+    return false;
   }
 
   function validateStep(step) {
@@ -109,6 +145,8 @@
     (step.fields || []).forEach(function (field) {
       var id = field.id;
       var type = field.type;
+      if (field.linked_group) return;
+
       if (type === "consent_privacy") {
         if (!getVal(id)) errors[id] = S.validation_privacy;
         return;
@@ -133,7 +171,9 @@
         return;
       }
       if (type === "checkbox_group") {
-        if (!Array.isArray(val) || !val.length) errors[id] = S.validation_required;
+        if (!checkboxGroupValid(id, field.detail_field)) {
+          errors[id] = S.validation_checkbox || S.validation_required;
+        }
         return;
       }
       if (!String(val || "").trim()) errors[id] = S.validation_required;
@@ -152,7 +192,7 @@
         '<label class="brt-form__check"><input type="checkbox" name="' + esc(id) + '">' +
         "<span>" + esc(S.consent_privacy) +
         ' <a href="' + esc(CFG.privacyUrl) + '" target="_blank" rel="noopener">' +
-        esc(S.privacy_link) + " ↗</a></span></label>" +
+        esc(S.privacy_link) + " ↗</a> *</span></label>" +
         '<p class="brt-form__error" data-err="' + esc(id) + '" role="alert" hidden></p></div>';
       form.appendChild(wrap);
       var cb = wrap.querySelector('input[name="' + id + '"]');
@@ -167,7 +207,7 @@
         '<label class="brt-form__check"><input type="checkbox" name="' + esc(id) + '">' +
         "<span>" + esc(S.consent_terms) +
         ' <a href="' + esc(CFG.termsUrl) + '" target="_blank" rel="noopener">' +
-        esc(S.terms_link) + " ↗</a></span></label>" +
+        esc(S.terms_link) + " ↗</a> *</span></label>" +
         '<p class="brt-form__error" data-err="' + esc(id) + '" role="alert" hidden></p></div>';
       form.appendChild(wrap);
       var cb2 = wrap.querySelector('input[name="' + id + '"]');
@@ -189,8 +229,18 @@
     }
 
     if (type === "checkbox_group") {
+      var detailId = field.detail_field;
+      var autoValue = field.detail_auto_value || WEITERE_VALUE;
+      if (detailId && String(getVal(detailId) || "").trim()) {
+        ensureWeitereChecked(id, autoValue);
+      }
+
       var legend = el("fieldset", "rap-checkgroup");
-      legend.innerHTML = "<legend class=\"rap-field__label\">" + esc(field.label) + "</legend>";
+      var labelText = esc(field.label) + (field.required ? " *" : "");
+      legend.innerHTML = "<legend class=\"rap-field__label\">" + labelText + "</legend>";
+      if (field.hint) {
+        legend.appendChild(el("p", "rap-field__hint", esc(field.hint)));
+      }
       var group = el("div", "rap-checkgroup__items");
       var selected = Array.isArray(getVal(id)) ? getVal(id) : [];
       (field.options || []).forEach(function (opt) {
@@ -208,10 +258,45 @@
       form.appendChild(wrap);
       group.querySelectorAll("input[type=checkbox]").forEach(function (cb) {
         cb.addEventListener("change", function () {
+          if (id === "social_media") {
+            if (cb.value === "keine" && cb.checked) {
+              group.querySelectorAll("input:checked").forEach(function (other) {
+                if (other !== cb) other.checked = false;
+              });
+            } else if (cb.checked && cb.value !== "keine") {
+              var noneCb = group.querySelector('input[value="keine"]');
+              if (noneCb) noneCb.checked = false;
+            }
+          }
           var vals = [];
           group.querySelectorAll("input:checked").forEach(function (c) { vals.push(c.value); });
           setVal(id, vals);
         });
+      });
+      return;
+    }
+
+    if (field.linked_group) {
+      var linkedGroup = field.linked_group;
+      var linkedAuto = field.linked_auto_value || WEITERE_VALUE;
+      var linkedLabel = esc(field.label);
+      var linkedInputTag = type === "textarea"
+        ? '<textarea name="' + esc(id) + '" rows="' + (field.rows || 3) + '"></textarea>'
+        : '<input type="text" name="' + esc(id) + '">';
+      wrap.innerHTML = "<label>" + linkedLabel + linkedInputTag + "</label>";
+      if (field.hint) {
+        wrap.appendChild(el("p", "rap-field__hint", esc(field.hint)));
+      }
+      form.appendChild(wrap);
+      var linkedInput = wrap.querySelector("[name=\"" + id + "\"]");
+      if (getVal(id) != null) linkedInput.value = getVal(id);
+      linkedInput.addEventListener("input", function () {
+        setVal(id, linkedInput.value);
+        if (String(linkedInput.value || "").trim()) {
+          ensureWeitereChecked(linkedGroup, linkedAuto);
+          var weitereCb = form.querySelector('input[id="' + linkedGroup + "-" + linkedAuto + '"]');
+          if (weitereCb) weitereCb.checked = true;
+        }
       });
       return;
     }
@@ -235,7 +320,10 @@
         "<label>" + labelHtml +
         '<input type="' + esc(type === "url" ? "url" : type) + '" name="' + esc(id) + '"' +
         (field.autocomplete ? ' autocomplete="' + esc(field.autocomplete) + '"' : "") +
-        (field.required ? " required" : "") + "></label>";
+        "></label>";
+      if (field.hint) {
+        wrap.insertBefore(el("p", "rap-field__hint", esc(field.hint)), wrap.firstChild.nextSibling);
+      }
     }
     wrap.innerHTML += '<p class="brt-form__error" data-err="' + esc(id) + '" role="alert" hidden></p>';
     form.appendChild(wrap);
@@ -311,9 +399,9 @@
       state.done = true;
       state.submitting = false;
       setView(viewSuccess());
-    }).catch(function () {
+    }).catch(function (err) {
       state.submitting = false;
-      setView(viewStep(currentStep(), S.error_submit));
+      setView(viewStep(currentStep(), submitErrorMessage(err && err.code)));
     });
   }
 
