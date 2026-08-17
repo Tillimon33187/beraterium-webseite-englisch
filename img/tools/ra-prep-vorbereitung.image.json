@@ -1,0 +1,33 @@
+{
+  "title": "ra-prep-why-section",
+  "slug": "ra-prep-vorbereitung",
+  "language": "de",
+  "intent": "editorial",
+  "subject": "Berater und Unternehmer am Workshop-Tisch: Laptop mit abstraktem Fragebogen-Checklist-UI, nummerierte Abschnittsblöcke 01–05 auf Papier, gemeinsame Vorbereitung auf Risikoanalyse.",
+  "context": "Beraterium RA-Vorbereitung (/tools/ra-vorbereitung/), Abschnitt „Warum dieser Fragebogen?“ — Split-Layout wie Blindspot. Gleiches Bild DE+EN.",
+  "platform_website": {
+    "orientation": "landscape",
+    "primary_export_px": { "width": 1920, "height": 1440 },
+    "aspect_ratio": "4:3",
+    "upload_source_png": "Webseite/site/img/tools/ra-prep-vorbereitung.png",
+    "optimized_variants": "ra-prep-vorbereitung.webp + 480/960/1440w via _optimize_images.py",
+    "best_practice_notes": "Kollaborative Vorbereitung, nicht Angst; heller Hintergrund; funktioniert in Split-Spalte.",
+    "safe_zone": "Hauptmotiv mittig; unten rechts KI-Vermerk freihalten."
+  },
+  "ai_disclosure": {
+    "required": true,
+    "label_de": "KI-generiertes Bild",
+    "label_en": "AI-generated image",
+    "placement": "unten rechts, ca. 2,5 % Rand"
+  },
+  "seo": {
+    "alt_text_de": "Berater und Unternehmer bereiten gemeinsam eine Risikoanalyse vor — strukturierte Vorbereitung am Workshop-Tisch",
+    "alt_text_en": "Advisor and business owner preparing a risk analysis together at a workshop table",
+    "filename": "ra-prep-vorbereitung.webp"
+  },
+  "post_processing_fallback": {
+    "when": "Falls Generator den KI-Vermerk unleserlich weglässt",
+    "ki_label_text": "KI-generiertes Bild",
+    "script": "python3 .cursor/skills/artikel-schreiben/scripts/apply_ki_image_label.py img/tools/ra-prep-vorbereitung.png"
+  }
+}

@@ -72,6 +72,7 @@ IMG_ANGEBOT_SOLO_HERO = "img/angebote/solo/hero.webp"
 IMG_RELEVANZ_SCHWELLE = "img/garantie/relevanz-schwelle.webp"
 IMG_NUTZEN_KRITERIEN = "img/garantie/nutzen-kriterien.webp"
 IMG_BLINDSPOT_WARUM = "img/tools/blindspot-warum.webp"
+IMG_RA_PREP_VORBEREITUNG = "img/tools/ra-prep-vorbereitung.webp"
 
 ALT_TILL = "Till Manfred Blania, Managing Director Beraterium"
 ALT_PETER = "Peter Münstermann, Beraterium"
@@ -2304,13 +2305,55 @@ def gen_ra_prep() -> None:
             actions='<a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-ra-prep">Start questionnaire</a>',
         )
         + f"""
+    <section class="brt-section" aria-labelledby="rap-warum-title">
+      <div class="brt-container brt-split">
+        <div class="brt-split__text brt-fade-up">
+          <h2 id="rap-warum-title" class="brt-h2">Why this questionnaire?</h2>
+          <p class="brt-body">A strong risk analysis does not start in the meeting — it starts with the right context. Your answers help us set priorities, prepare relevant examples, and tailor the workshop to your industry, size, and current situation.</p>
+          <p class="brt-body">The more specific your input, the less time we spend on generic questions — and the more we focus on what actually matters for your business.</p>
+          <ul class="rap-intro__meta" aria-label="Questionnaire notes">
+            <li><span class="rap-intro__meta-label">Duration</span> 15–20&nbsp;minutes</li>
+            <li><span class="rap-intro__meta-label">Required</span> contact, privacy, terms</li>
+            <li><span class="rap-intro__meta-label">Fields</span> only what applies to you</li>
+          </ul>
+        </div>
+        {split_media_html(IMG_RA_PREP_VORBEREITUNG, "Advisor and business owner preparing a risk analysis together at a workshop table", 2, contain=True)}
+      </div>
+    </section>
     <section id="questionnaire" class="brt-section brt-section--alt" aria-labelledby="rap-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">PREPARATION</p>
-          <h2 id="rap-title" class="brt-h2">Risk analysis questionnaire</h2>
-          <p class="brt-body brt-section__lede">Please complete all fields that apply to you. Contact details plus privacy and terms acceptance are required.</p>
+          <p class="brt-tag">QUESTIONNAIRE</p>
+          <h2 id="rap-title" class="brt-h2">Complete online</h2>
+          <p class="brt-body brt-section__lede">The form walks you through five topic areas step by step. You can go back at any time and review everything before submitting.</p>
         </header>
+        <ul class="rap-topics brt-stagger" aria-label="Questionnaire topic areas">
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">01</p>
+            <h3 class="rap-topic__title brt-h3">Business &amp; organisation</h3>
+            <p class="rap-topic__desc">Offering, legal form, headcount, locations</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">02</p>
+            <h3 class="rap-topic__title brt-h3">Operations &amp; presence</h3>
+            <p class="rap-topic__desc">Premises, geographic reach, website, social media</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">03</p>
+            <h3 class="rap-topic__title brt-h3">Goals &amp; focus</h3>
+            <p class="rap-topic__desc">Expectations, current concerns, critical areas</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">04</p>
+            <h3 class="rap-topic__title brt-h3">Experience &amp; safeguards</h3>
+            <p class="rap-topic__desc">Disruptions, protective measures, scenarios</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">05</p>
+            <h3 class="rap-topic__title brt-h3">Workshop</h3>
+            <p class="rap-topic__desc">Participants, key contact, special circumstances</p>
+          </li>
+        </ul>
         <div id="brt-ra-prep" class="rap-widget brt-fade-up" aria-live="polite"></div>
       </div>
     </section>"""

@@ -6,6 +6,97 @@
   margin-inline: auto;
 }
 
+.rap-intro__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  list-style: none;
+  margin: var(--space-8) 0 0;
+  padding: 0;
+}
+
+.rap-intro__meta li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 8.5rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.rap-intro__meta-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.rap-topics {
+  display: grid;
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0 0 var(--space-10);
+  padding: 0;
+}
+
+@media (min-width: 40rem) {
+  .rap-topics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .rap-topics {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .rap-topics .rap-topic:nth-child(-n + 3) {
+    grid-column: span 2;
+  }
+
+  .rap-topics .rap-topic:nth-child(n + 4) {
+    grid-column: span 2;
+  }
+
+  .rap-topics .rap-topic:last-child:nth-child(5) {
+    grid-column: 3 / span 2;
+  }
+}
+
+.rap-topic {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  margin: 0;
+}
+
+.rap-topic__num {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+
+.rap-topic__title {
+  margin: 0;
+  font-size: 1.0625rem;
+}
+
+.rap-topic__desc {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--color-muted);
+}
+
 #brt-ra-prep {
   scroll-margin-top: calc(var(--header-height) + 1.25rem);
 }
@@ -152,5 +243,16 @@
   .rap-actions--between .brt-btn {
     width: 100%;
     justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rap-progress__bar {
+    transition: none;
+  }
+
+  .rap-spinner {
+    animation: none;
+    border-top-color: var(--color-accent);
   }
 }
