@@ -55,7 +55,7 @@ Time is the one resource you cannot simply multiply — as a founder or as a com
 
 ## What does “time is money” mean in practice?
 
-The phrase is worn out but concrete in the podcast: every hour spent on the wrong work costs not only opportunity but often real money — because you may handle tasks more expensively than specialists, because quality slips, or because you bottleneck revenue and growth. Employees trade time for salary; owners trade time for leverage while they are still active in the business. If you never examine that trade, you lose a resource no credit line replaces. The [Beraterium method](/methode/) later translates such gaps into euros; here the first step is seeing time as company capital.
+The phrase is worn out but concrete in the podcast: every hour spent on the wrong work costs not only opportunity but often real money — because you may handle tasks more expensively than specialists, because quality slips, or because you bottleneck revenue and growth. Employees trade time for salary; owners trade time for leverage while they are still active in the business. If you never examine that trade, you lose a resource no credit line replaces. The [Beraterium method](/method/) later translates such gaps into euros; here the first step is seeing time as company capital.
 
 ## Why long hours are not automatically productive
 
@@ -88,7 +88,7 @@ Ad-hoc solutions calm the moment — documented, handed over, or embedded in the
 
 ## How experts and partners return time and speed
 
-Beyond quality, Peter names speed: trusted partners finish faster, reduce the risk that something escalates in between, and save nerves. Beraterium works with a network across HR, IT, insurance, and more — because nobody can or should be expert everywhere. Till warns of the opposite: calling partners blindly and hoping they guess the problem often costs more time than doing it yourself briefly. Trust and clear briefs belong together — especially for [startups scaling up](/angebote/startups/) without losing quality.
+Beyond quality, Peter names speed: trusted partners finish faster, reduce the risk that something escalates in between, and save nerves. Beraterium works with a network across HR, IT, insurance, and more — because nobody can or should be expert everywhere. Till warns of the opposite: calling partners blindly and hoping they guess the problem often costs more time than doing it yourself briefly. Trust and clear briefs belong together — especially for [startups scaling up](/services/startups/) without losing quality.
 
 ## How missing priorities become a growth brake
 
@@ -100,7 +100,7 @@ Here the arc closes on the risk model: damage often fixed — probability movabl
 
 ## How emergency planning cuts outage time in euros
 
-Risk management pays off in crisis when every hour counts — a solid **business emergency plan** shortens outage time measurably. Peter walks through server outage, machine stop, supply gap — if you already know who calls whom, which parts ship express, and which diagnostic steps run, you can halve downtime or better. €100,000 damage might become €30,000 — still painful, but a different range. The pharmacy example from earlier episodes still holds: €14,000 instead of €2,000 when unprepared. Till adds practice: a car dealership with outdoor containers — break-in on high-value tyres because storage was ad hoc without a thought-through scenario. Peter turns it positive: a dealership after fire that kept operating within a week using containers — damage limited because prepared. For [SMBs with complex operations](/angebote/kmu/), that is not a luxury scenario but lived time economics.
+Risk management pays off in crisis when every hour counts — a solid **business emergency plan** shortens outage time measurably. Peter walks through server outage, machine stop, supply gap — if you already know who calls whom, which parts ship express, and which diagnostic steps run, you can halve downtime or better. €100,000 damage might become €30,000 — still painful, but a different range. The pharmacy example from earlier episodes still holds: €14,000 instead of €2,000 when unprepared. Till adds practice: a car dealership with outdoor containers — break-in on high-value tyres because storage was ad hoc without a thought-through scenario. Peter turns it positive: a dealership after fire that kept operating within a week using containers — damage limited because prepared. For [SMBs with complex operations](/services/smb/), that is not a luxury scenario but lived time economics.
 
 ## Conclusion: Use time deliberately — before it derails you
 

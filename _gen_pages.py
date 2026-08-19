@@ -1464,7 +1464,7 @@ def gen_nutzen_garantie() -> None:
         hero(pre, "IHR RISIKO LIEGT BEI UNS", "Kein Nutzen aus unserer Arbeit? Sie zahlen nichts.",
              "Bevor wir starten, legen wir gemeinsam fest, woran Sie den Erfolg unserer Arbeit erkennen. Erfüllen wir das am Ende nicht, erhalten Sie den vollen Betrag zurück, ohne Diskussion.",
              compact=True,
-             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a>')
+             actions=f'<a class="brt-btn" href="{pre}contact/">Kostenloses Erstgespräch buchen</a>')
         + guarantee_stat_row(
             [
                 ("3 Kriterien", "Zwei harte, ein weiches – vorab gemeinsam festgelegt"),
@@ -1559,7 +1559,7 @@ def gen_nutzen_garantie() -> None:
         <ul class="brt-step-cards brt-stagger">
           <li class="brt-step-card"><span class="brt-step-card__num">Schritt 1</span><h3 class="brt-h3">Gemeinsame Abschluss-Reflexion</h3><p class="brt-body">Zum vereinbarten Endergebnis prüfen wir mit Ihnen alle drei Kriterien anhand der schriftlich festgehaltenen Formulierung.</p></li>
           <li class="brt-step-card"><span class="brt-step-card__num">Schritt 2</span><h3 class="brt-h3">Klare Bewertung</h3><p class="brt-body">Ist auch nur eines nicht erfüllt, greift die Garantie. Keine Grauzonen, keine nachträgliche Auslegung.</p></li>
-          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 3</span><h3 class="brt-h3">Volle Erstattung</h3><p class="brt-body">Sie erhalten den vollen Betrag innerhalb von 14 Tagen zurück. Die rechtlichen Details stehen in unseren <a href="{pre}agb/">AGB, Abschnitt 7</a>.</p></li>
+          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 3</span><h3 class="brt-h3">Volle Erstattung</h3><p class="brt-body">Sie erhalten den vollen Betrag innerhalb von 14 Tagen zurück. Die rechtlichen Details stehen in unseren <a href="{pre}terms/">AGB, Abschnitt 7</a>.</p></li>
         </ul>
       </div>
     </section>"""
@@ -1601,7 +1601,7 @@ def gen_relevanz_garantie() -> None:
         hero(pre, "IHR RISIKO LIEGT BEI UNS", "Kein relevantes Risiko gefunden? Sie zahlen nichts.",
              "Wir suchen nicht, um etwas abzurechnen. Finden wir kein Risiko über der gemeinsam vereinbarten Schwelle, erstatten wir den vollen Betrag, ohne Wenn und Aber.",
              compact=True,
-             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a>')
+             actions=f'<a class="brt-btn" href="{pre}contact/">Kostenloses Erstgespräch buchen</a>')
         + guarantee_stat_row(
             [
                 ("Individuell", "Schadensschwelle im Kick-off gemeinsam festgelegt"),
@@ -1665,7 +1665,7 @@ def gen_relevanz_garantie() -> None:
         <p class="brt-body">Die Schadensschwelle und die Garantie selbst werden im Kick-off vereinbart und im Angebot bzw. Vertrag schriftlich festgehalten. Sie haben damit von Anfang an die Sicherheit, dass Sie nichts zahlen müssen, wenn wir kein relevantes Risiko finden.</p>
         <div class="brt-highlight-box" style="margin-top: var(--space-8);">
           <h3 class="brt-h3">Das Risiko liegt bei uns</h3>
-          <p class="brt-body">Wir suchen nicht, um abzurechnen. Finden wir nichts Relevantes, tragen wir das finanzielle Risiko, nicht Sie. Die vollständigen Bedingungen stehen in unseren <a href="{pre}agb/">AGB, Abschnitt 7</a>.</p>
+          <p class="brt-body">Wir suchen nicht, um abzurechnen. Finden wir nichts Relevantes, tragen wir das finanzielle Risiko, nicht Sie. Die vollständigen Bedingungen stehen in unseren <a href="{pre}terms/">AGB, Abschnitt 7</a>.</p>
         </div>
       </div>
     </section>"""
