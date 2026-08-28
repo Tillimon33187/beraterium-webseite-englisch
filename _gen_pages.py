@@ -61,7 +61,7 @@ from _cms import (
 )
 
 SITE = Path(__file__).parent
-BRT_ASSET_VERSION = "20260810-ga4-events-v1"
+BRT_ASSET_VERSION = "20260828-nav-training-cap-v1"
 
 IMG_HOME_ANALYSE = "img/home/analyse-situation.webp"
 IMG_METHODE_GEFAHRENKATALOG = "img/methode/gefahrenkatalog-3-ebenen.webp"

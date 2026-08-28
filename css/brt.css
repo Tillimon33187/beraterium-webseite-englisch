@@ -256,6 +256,7 @@
   padding: 0.625rem 0;
   font-size: 0.9375rem;
   font-weight: 500;
+  font-variant-ligatures: none;
 }
 
 .site-header__submenu a:hover,
