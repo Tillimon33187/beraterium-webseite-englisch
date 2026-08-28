@@ -210,172 +210,172 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
         "id": "schulungen",
         "title": "Training",
         "tag": "MULTI-DAY TRAINING",
-        "lede": "Vertiefende Trainings über einen oder mehrere Tage — Einzelschulungen im Intensivformat (1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi), Kombi-Ausbildung zum Risikoexperten ab 9.875 €. Basispreis für die erste Person, Aufpreis je weiterem Teilnehmer, gedeckelte Team-Pauschale ab Gruppengröße. Details je Schulung ausklappen oder die Schulungsseite öffnen.",
+        "lede": "In-depth training over one or more days — individual trainings in intensive format (1:1 or small group, significantly deeper than in the combined programme), combined Risk Expert programme from 9,875 €. Base price for the first person, add-on per additional participant, capped team flat rate from group size. Expand details per training or open the training page.",
         "offers": [
             {
                 "nr": "SCH-07",
-                "name": "Ausbildung zum Risikoexperten (Kombi-Schulung)",
-                "desc": "Die komplette Ausbildung: Risk-Awareness-Kultur, risikobewusste Führung und praktisches Risikomanagement in einem Durchgang — befähigt, unsere Methode im eigenen Unternehmen umzusetzen.",
+                "name": "Risk Expert training (combined programme)",
+                "desc": "The complete programme: risk-awareness culture, risk-aware leadership and practical risk management in one flow — equips you to implement our method in your own organisation.",
                 "price_base": 9875,
                 "price_add": 4440,
                 "price_team": 22875,
                 "team_from": 4,
                 "team_max": 4,
-                "price_detail": "9.875 € (1 Person) · 14.315 € (2 Personen) · +4.440 € je weiterer · max. 4 Personen 22.875 € pauschal · inkl. Gefahrenkatalog & Zertifikat",
-                "duration": "3 Tage intensiv (ca. 24 h) + Transfer & Zertifikat",
+                "price_detail": "9,875 € (1 person) · 14,315 € (2 people) · +4,440 € per additional · max. 4 people 22,875 € flat rate · incl. hazard catalogue & certificate",
+                "duration": "3 intensive days (approx. 24 h) + transfer & certificate",
                 "slug": "risk-expert",
                 "details_html": (
-                    "<p>Die Kombi-Schulung vereint unsere drei Risikomanagement-Training zu einer vollständigen "
-                    "Ausbildung: Risk-Awareness-Kultur, \u201eDer risikobewusste Manager\u201c und \u201eRisikomanagement "
-                    "praktisch umsetzen\u201c. Für Manager und Mitarbeitende, die Risikomanagement im Unternehmen "
-                    "verantworten und unsere Methode selbst umsetzen sollen.</p>"
-                    "<p><strong>Investition in interne Risikokompetenz:</strong> Die Ausbildung liegt bewusst auf Augenh\u00f6he mit unserer begleiteten Risiko-Analyse 360\u00b0 (3.475 \u20ac) bzw. dem Gesamtpaket XL (9.675 \u20ac) \u2014 mit dem Unterschied, dass Sie die Methode dauerhaft im Haus aufbauen, statt Risikomanagement dauerhaft einzukaufen.</p>"
+                    "<p>The combined programme brings together our three risk management trainings into one complete "
+                    "course: risk-awareness culture, The Risk-Aware Manager and Putting Risk Management into Practice. "
+                    "For managers and employees who own risk management in the organisation and should implement "
+                    "our method themselves.</p>"
+                    "<p><strong>Investment in internal risk competence:</strong> The training is deliberately comparable to our guided Risk Analysis 360° (3,475 €) and the XL full package (9,675 €) — with the difference that you build the method in-house long term instead of buying risk management in permanently.</p>"
                     "<ul>"
-                    "<li>Modul 1: Fehler- und Risk-Awareness-Kultur nach Luftfahrt-Vorbild aufbauen</li>"
-                    "<li>Modul 2: als Führungskraft Risiken kalkuliert eingehen und das Unternehmen von außen sehen</li>"
-                    "<li>Modul 3: Risikoanalyse selbst durchführen — Matrix, Gefahrenkatalog (inklusive), Euro-Bewertung, Maßnahmen</li>"
-                    "<li>Abschluss: Zertifikat als Risikoexperte:in und Transferplan für das eigene Unternehmen</li>"
+                    "<li>Module 1: build error and risk-awareness culture inspired by aviation</li>"
+                    "<li>Module 2: as a leader, take calculated risks and see the business from the outside</li>"
+                    "<li>Module 3: run risk analysis yourself — matrix, hazard catalogue (included), euro valuation, measures</li>"
+                    "<li>Closing: Risk Expert certificate and transfer plan for your organisation</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-01",
-                "name": "Risikomanagement: Der Weg zur Risk-Awareness-Kultur",
-                "desc": "Nach Luftfahrt-Vorbild eine Aus-Fehlern-lernen-Kultur aufbauen: weg vom Fingerzeigen, hin zum gemeinsamen Verbessern — für Führung und Team.",
+                "name": "Risk management: the path to a risk-awareness culture",
+                "desc": "Build a learn-from-mistakes culture inspired by aviation: away from blame, towards improving together — for leadership and team.",
                 "price_base": 3975,
                 "price_add": 995,
                 "price_team": 11475,
                 "team_from": 10,
-                "price_detail": "Intensivformat: 3.975 € (1 Person) · +995 € je weiterer · ab 10 Personen 11.475 € pauschal · 1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi-Ausbildung",
-                "duration": "1 Tag (2 Sessions à 3 h) + Transfer-Paket",
+                "price_detail": "Intensive format: 3,975 € (1 person) · +995 € per additional · from 10 people 11,475 € flat rate · 1:1 or small group, significantly deeper than in the combined programme",
+                "duration": "1 day (2 sessions × 3 h) + transfer package",
                 "slug": "risk-awareness-culture",
                 "details_html": (
-                    "<p><strong>Intensivformat (1:1 oder Kleinstgruppe):</strong> Wesentlich detaillierter und persönlicher als das entsprechende Modul in der Kombi-Ausbildung zum Risikoexperten — ideal, wenn Sie nur dieses Thema vertiefen wollen.</p>"
-                    "<p>Wie bereite ich ein Team so vor, dass Risiken kein No-Go mehr sind, sondern zum Lernprozess gehören? "
-                    "Am Beispiel Luftfahrt wird eine Kultur aufgebaut, in der offen zugegebene Fehler gefeiert statt bestraft werden.</p>"
+                    "<p><strong>Intensive format (1:1 or small group):</strong> Significantly deeper and more personal than the corresponding module in the combined Risk Expert programme — ideal if you only want to deepen this topic.</p>"
+                    "<p>How do you prepare a team so that risks are no longer off limits but part of learning? "
+                    "Using aviation as the example, we build a culture where openly admitted mistakes are recognised instead of punished.</p>"
                     "<ul>"
-                    "<li>Just Culture nach Luftfahrt-Vorbild: Meldewege, Debriefings, Fehler-Rituale</li>"
-                    "<li>Führungsstruktur, in der aus Fehlern gelernt wird — statt Schuldige zu suchen</li>"
-                    "<li>Team-Aspekt: alle bringen sich ein, statt Fehler unter den Tisch zu kehren</li>"
-                    "<li>Praxis-Simulation: Debriefing eines echten (anonymisierten) Fehlerfalls</li>"
+                    "<li>Just Culture inspired by aviation: reporting channels, debriefings, error rituals</li>"
+                    "<li>Leadership structure where mistakes are learned from — instead of looking for someone to blame</li>"
+                    "<li>Team aspect: everyone contributes instead of sweeping mistakes under the carpet</li>"
+                    "<li>Practical simulation: debriefing a real (anonymised) incident</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-02",
-                "name": "Der risikobewusste Manager",
-                "desc": "Speziell für Führungskräfte: Angst vor Fehlern und Risiken abbauen, Risiken kalkuliert eingehen — und die eigene Firma wieder neutral von außen sehen.",
+                "name": "The risk-aware manager",
+                "desc": "Specifically for leaders: reduce fear of mistakes and risks, take calculated risks — and see your own company neutrally from the outside again.",
                 "price_base": 3475,
                 "price_add": 875,
                 "price_team": 9875,
                 "team_from": 8,
-                "price_detail": "Intensivformat: 3.475 € (1 Führungskraft) · +875 € je weiterer · ab 8 Personen 9.875 € pauschal · geschützter 1:1-Rahmen, deutlich tiefer als in der Kombi-Ausbildung",
-                "duration": "1 Kompakt-Tag (6 h)",
+                "price_detail": "Intensive format: 3,475 € (1 leader) · +875 € per additional · from 8 people 9,875 € flat rate · protected 1:1 setting, significantly deeper than in the combined programme",
+                "duration": "1 compact day (6 h)",
                 "slug": "risk-aware-manager",
                 "details_html": (
-                    "<p><strong>Intensivformat für Führungskräfte (1:1 oder Kleinstgruppe):</strong> Geschützter Rahmen ohne eigene Mitarbeitende — deutlich persönlicher und tiefer als Modul 2 in der Kombi-Ausbildung.</p>"
-                    "<p>Nur für Manager:innen: Fehler als Chance zum Wachstum sehen, Risiken nicht fürchten, sondern als Chance "
-                    "begreifen und kalkuliert eingehen — und das eigene Unternehmen mit der neutralen Außenbrille betrachten.</p>"
+                    "<p><strong>Intensive format for leaders (1:1 or small group):</strong> Protected setting without your own employees — significantly more personal and deeper than module 2 in the combined programme.</p>"
+                    "<p>For managers only: see mistakes as opportunities to grow, do not fear risks but treat them as "
+                    "chances and take them with calculation — and look at your own business with a neutral outside lens.</p>"
                     "<ul>"
-                    "<li>Fehlerangst verstehen und ablegen — Vorbildwirkung für das Team</li>"
-                    "<li>Entscheidungs-Frameworks für kalkulierte Risiken (Worst Case, Reversibilität)</li>"
-                    "<li>Betriebsblindheit lösen: Pre-Mortem, Konkurrenz-Perspektive, Außensicht-Walkthrough</li>"
-                    "<li>Praxisübung am eigenen Kernprozess: Top-3-Risiken und -Chancen</li>"
+                    "<li>Understand and let go of fear of mistakes — leading by example for the team</li>"
+                    "<li>Decision frameworks for calculated risks (worst case, reversibility)</li>"
+                    "<li>Overcome operational blindness: pre-mortem, competitor perspective, outside walkthrough</li>"
+                    "<li>Practical exercise on your core process: top 3 risks and opportunities</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-03",
-                "name": "Risikomanagement praktisch umsetzen",
-                "desc": "Das Beraterium-System selbst anwenden lernen: Risikoanalyse mit dem Team, Matrix, Gefahrenkatalog (inklusive), Euro-Bewertung und umsetzbare Maßnahmen.",
+                "name": "Putting risk management into practice",
+                "desc": "Learn to apply the Beraterium system yourself: risk analysis with the team, matrix, hazard catalogue (included), euro valuation and actionable measures.",
                 "price_base": 4975,
                 "price_add": 1175,
                 "price_team": 14375,
                 "team_from": 10,
-                "price_detail": "Intensivformat: 4.975 € (1 Person) · +1.175 € je weiterer · ab 10 Personen 14.375 € pauschal · inkl. Gefahrenkatalog · 1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi-Ausbildung",
-                "duration": "1,5 Tage (3 Sessions à 4 h)",
+                "price_detail": "Intensive format: 4,975 € (1 person) · +1,175 € per additional · from 10 people 14,375 € flat rate · incl. hazard catalogue · 1:1 or small group, significantly deeper than in the combined programme",
+                "duration": "1.5 days (3 sessions × 4 h)",
                 "slug": "practical-risk-management",
                 "details_html": (
-                    "<p><strong>Intensivformat (1:1 oder Kleinstgruppe):</strong> Volle Tiefe bei Matrix, Euro-Bewertung und Praxis an Ihrem echten Bereich — deutlich umfangreicher als Modul 3 in der Kombi-Ausbildung.</p>"
-                    "<p>Schritt für Schritt unser System der Risikobewertung lernen — für Mitarbeitende, Führungskräfte, "
-                    "Risikomanager aus Unternehmen und Unternehmer, die Risikomanagement intern lösen wollen. So wird es "
-                    "im Großkonzern gemacht, heruntergebrochen auf KMU-taugliche Schritte.</p>"
+                    "<p><strong>Intensive format (1:1 or small group):</strong> Full depth on matrix, euro valuation and practice on your real area — significantly more comprehensive than module 3 in the combined programme.</p>"
+                    "<p>Step by step learn our risk assessment system — for employees, leaders, risk managers "
+                    "from businesses and owners who want to solve risk management internally. How it is done in "
+                    "large corporations, broken down into practical SME steps.</p>"
                     "<ul>"
-                    "<li>Risikoanalyse mit dem Team durchführen: Erhebung und Moderation</li>"
-                    "<li>Risiken mit der Matrix bestimmen und typische Bewertungsfehler vermeiden</li>"
-                    "<li>Mit dem 3-Ebenen-Gefahrenkatalog arbeiten — Teilnehmende erhalten den vollständigen Katalog</li>"
-                    "<li>Risiken in Euro bewerten und daraus verständliche, umsetzbare Maßnahmen ableiten</li>"
+                    "<li>Run a risk analysis with the team: assessment and facilitation</li>"
+                    "<li>Score risks with the matrix and avoid typical scoring mistakes</li>"
+                    "<li>Work with the 3-level hazard catalogue — participants receive the full catalogue</li>"
+                    "<li>Value risks in euros and derive understandable, actionable measures</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-04",
-                "name": "Schulung zu Innovationsmanagement",
-                "desc": "Durch und durch innovativ werden und bleiben: Team, Atmosphäre, Management und Innovationskultur — Business, Innovation und R&D unter einem Hut.",
+                "name": "Innovation management training",
+                "desc": "Become and stay genuinely innovative: team, atmosphere, management and innovation culture — business, innovation and R&D under one roof.",
                 "price_base": 2995,
                 "price_add": 745,
                 "price_team": 9695,
                 "team_from": 10,
-                "price_detail": "2.995 € (1 Person) · +745 € je weiterer · ab 10 Personen 9.695 € pauschal · Kleingruppe, Praxis am eigenen Thema",
-                "duration": "1 Tag (2 Sessions à 3,5 h) + Transfer-Paket",
+                "price_detail": "2,995 € (1 person) · +745 € per additional · from 10 people 9,695 € flat rate · small group, practice on your own topic",
+                "duration": "1 day (2 sessions × 3.5 h) + transfer package",
                 "slug": "innovation-management",
                 "details_html": (
-                    "<p><strong>Kleingruppen-Schulung:</strong> Innovationskultur und Pipeline am eigenen Unternehmen — unter üblichen Inhouse-Preisen, mit Transfer-Paket.</p>"
-                    "<p>Nicht einmal ein Produkt auf den Markt bringen und in Vergessenheit geraten — sondern über Jahre "
-                    "innovativ bleiben und sich auch gegen große Konkurrenten durchsetzen.</p>"
+                    "<p><strong>Small-group training:</strong> Innovation culture and pipeline on your own business — below typical on-site prices, with transfer package.</p>"
+                    "<p>Not launch one product and fade away — but stay innovative over years and compete even "
+                    "against much larger rivals.</p>"
                     "<ul>"
-                    "<li>Innovationskultur: Team, Atmosphäre und Management der Innovation</li>"
-                    "<li>Leichtgewichtige Innovations-Pipeline: Idee → Validierung → Pilot → Skalierung</li>"
-                    "<li>Business, Innovation und R&amp;D unter einem Hut: Ressourcen-Split und Kennzahlen</li>"
-                    "<li>Praxisteil: Mini-Pipeline für ein eigenes, reales Innovationsthema</li>"
+                    "<li>Innovation culture: team, atmosphere and management of innovation</li>"
+                    "<li>Lightweight innovation pipeline: idea → validation → pilot → scale</li>"
+                    "<li>Business, innovation and R&amp;D under one roof: resource split and metrics</li>"
+                    "<li>Practical part: mini-pipeline for a real innovation topic of your own</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-05",
-                "name": "Feedbackkultur & eine 1+ Arbeitsumgebung",
-                "desc": "Mit dem Team eine Kultur aufbauen, in der alle an einem Strang ziehen: Feedbackkultur, Mitarbeitende verstehen, motivieren — plus Mission & Vision transparent machen.",
+                "name": "Feedback culture & a 1+ working environment",
+                "desc": "Build a culture with the team where everyone pulls together: feedback culture, understanding employees, motivating — plus making mission & vision transparent.",
                 "price_base": 2875,
                 "price_add": 725,
                 "price_team": 9395,
                 "team_from": 10,
-                "price_detail": "2.875 € (1 Person) · +725 € je weiterer · ab 10 Personen 9.395 € pauschal · inkl. Follow-up nach 4 Wochen",
-                "duration": "1 Tag (2 Sessions à 3 h) + Follow-up",
+                "price_detail": "2,875 € (1 person) · +725 € per additional · from 10 people 9,395 € flat rate · incl. follow-up after 4 weeks",
+                "duration": "1 day (2 sessions × 3 h) + follow-up",
                 "slug": "feedback-culture",
                 "details_html": (
-                    "<p><strong>Kleingruppen-Schulung:</strong> Feedbackkultur und Führungsstil im Team-Rahmen — inklusive Follow-up nach 4 Wochen.</p>"
-                    "<p>Eine Arbeitsumgebung, in der Mitarbeitende und Führung in die gleiche Richtung arbeiten. "
-                    "Drei Kernbereiche: Feedbackkultur, Mitarbeitende verstehen (was wollen sie wirklich?), "
-                    "motivieren und den richtigen Führungsstil finden.</p>"
+                    "<p><strong>Small-group training:</strong> Feedback culture and leadership style in a team setting — including follow-up after 4 weeks.</p>"
+                    "<p>A working environment where employees and leadership work in the same direction. "
+                    "Three core areas: feedback culture, understanding employees (what do they really want?), "
+                    "motivating and finding the right leadership style.</p>"
                     "<ul>"
-                    "<li>Feedback-Formate und -Rituale, die Vertrauen aufbauen statt zerstören</li>"
-                    "<li>Mission &amp; Vision gemeinsam transparent gestalten und kommunizieren</li>"
-                    "<li>Ergebnis: weniger Fluktuation, Fachkräfte kommen von allein, Team bleibt auch in Krisenzeiten</li>"
-                    "<li>Follow-up-Call nach 4 Wochen: Kultur-Fahrplan nachjustieren</li>"
+                    "<li>Feedback formats and rituals that build trust instead of destroying it</li>"
+                    "<li>Making mission &amp; vision transparent together and communicating them</li>"
+                    "<li>Result: less turnover, talent comes to you, team stays even in difficult times</li>"
+                    "<li>Follow-up call after 4 weeks: adjust the culture roadmap</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-06",
-                "name": "Schulung zum Kulturellen Management",
-                "desc": "Internationale Teams und Projekte (Joint Ventures, Tochtergesellschaften) erfolgreich managen — basierend auf Meyer, Hofstede und Schwartz, mit First-Hand-Erfahrung.",
+                "name": "Cross-cultural management training",
+                "desc": "Manage international teams and projects (joint ventures, subsidiaries) successfully — based on Meyer, Hofstede and Schwartz, with first-hand experience.",
                 "price_base": 3475,
                 "price_add": 875,
                 "price_team": 9875,
                 "team_from": 8,
-                "price_detail": "3.475 € (1 Person) · +875 € je weiterer · ab 8 Personen 9.875 € pauschal · Kleingruppe, internationale Praxis",
-                "duration": "1,5–2 Tage (4 Sessions à 3 h)",
+                "price_detail": "3,475 € (1 person) · +875 € per additional · from 8 people 9,875 € flat rate · small group, international practice",
+                "duration": "1.5–2 days (4 sessions × 3 h)",
                 "slug": "cultural-management",
                 "details_html": (
-                    "<p><strong>Kleingruppen-Schulung:</strong> Interkulturelles Management mit First-Hand-Erfahrung — Praxis für Ihr internationales Vorhaben.</p>"
-                    "<p>Umfangreiche Schulung für internationale Teams, Joint Ventures, Tochtergründungen — und für alle, "
-                    "die Mitarbeitende aus anderen Kulturen einstellen und führen. First-Hand-Erfahrung von DE/EU über "
-                    "Russland, USA und Südamerika bis Afrika, Indien und Pakistan.</p>"
+                    "<p><strong>Small-group training:</strong> Cross-cultural management with first-hand experience — practice for your international initiative.</p>"
+                    "<p>In-depth training for international teams, joint ventures, subsidiary setups — and for everyone "
+                    "who hires and leads employees from other cultures. First-hand experience from Germany/EU via "
+                    "Russia, the USA and South America to Africa, India and Pakistan.</p>"
                     "<ul>"
-                    "<li>Kulturdimensionen nach Meyer, Hofstede und Schwartz — praktisch angewendet</li>"
-                    "<li>Regionen-Praxis: Kommunikation, Hierarchie, Verhandlung je Kulturraum</li>"
-                    "<li>Interkulturell einstellen, onboarden und führen</li>"
-                    "<li>Praxisteil: Kultur-Risiko-Analyse für das eigene internationale Vorhaben</li>"
+                    "<li>Cultural dimensions using Meyer, Hofstede and Schwartz — applied in practice</li>"
+                    "<li>Regional practice: communication, hierarchy and negotiation per cultural region</li>"
+                    "<li>Hire, onboard and lead across cultures</li>"
+                    "<li>Practical part: cultural risk analysis for your own international initiative</li>"
                     "</ul>"
                 ),
             },

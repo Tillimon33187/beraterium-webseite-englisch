@@ -1,9 +1,8 @@
 """Page content for training subpages /training/<slug>/.
 
-Reine Daten (keine Imports aus _gen_pages, wird von dort importiert).
-Preise/Staffeln kommen NICHT von hier, sondern aus _pricing.py (Join über
-"nr"); hier steht nur der redaktionelle Seiteninhalt.
-Quelle der Inhalte: Angebote/training/*.md
+Data only (no imports from _gen_pages; imported from there).
+Pricing/tiers come from _pricing.py (join via "nr"); editorial page content only.
+Source: Angebote/training/*.md
 """
 from __future__ import annotations
 
@@ -11,423 +10,419 @@ SCHULUNG_CONFIGS: list[dict] = [
     {
         "nr": "SCH-07",
         "slug": "risk-expert",
-        "tag": "AUSBILDUNG · KOMBI AUS DREI SCHULUNGEN",
-        "h1": "Ausbildung zum Risikoexperten",
+        "tag": "TRAINING · COMBINED FROM THREE PROGRAMMES",
+        "h1": "Risk Expert training",
         "lead": (
-            "Die komplette Ausbildung für alle, die Risikomanagement im Unternehmen "
-            "verantworten: Diese Kombi-Schulung vereint unsere drei Risikomanagement-Training "
-            "zu einem tiefgreifenden Programm — die Risk-Awareness-Kultur nach Luftfahrt-Vorbild, "
-            "„Der risikobewusste Manager“ und „Risikomanagement praktisch umsetzen“. Sie "
-            "befähigt Manager und Mitarbeitende, unsere Methode eigenständig im eigenen "
-            "Unternehmen aufzubauen und dauerhaft zu betreiben. Drei Tage intensiv, inhouse "
-            "oder online, mit Zertifikat."
+            "The complete programme for anyone responsible for risk management in their "
+            "organisation: this combined training brings together our three risk management "
+            "programmes into one in-depth course — risk-awareness culture inspired by aviation, "
+            "The Risk-Aware Manager, and Putting Risk Management into Practice. It equips "
+            "managers and employees to build and run our method independently in their own "
+            "business. Three intensive days, on-site or online, with certificate."
         ),
-        "title": "Ausbildung zum Risikoexperten | Beraterium",
-        "description": "Kombi-Schulung aus drei Trainings: Risikokultur, risikobewusste Führung und praktische Risikoanalyse — 3 Tage, Zertifikat, ab 9.875 € excl. VAT (2 Personen 14.315 €).",
-        "audience": "künftige Risikoverantwortliche, Manager und Mitarbeitende",
-        "fuer_wen_intro": "Diese Ausbildung passt, wenn einer dieser Punkte zutrifft:",
+        "title": "Risk Expert training | Beraterium",
+        "description": "Combined training from three programmes: risk culture, risk-aware leadership and practical risk analysis — 3 days, certificate, from 9,875 € excl. VAT (2 people 14,315 €).",
+        "audience": "future risk owners, managers and employees",
+        "fuer_wen_intro": "This training fits if any of the following applies:",
         "fuer_wen": [
-            "Sie sollen Risikomanagement im Unternehmen aufbauen und verantworten — und wollen es von Grund auf beherrschen",
-            "Ihnen reicht ein Einzelthema nicht: Sie wollen Kultur, Führung UND Methode in einem Durchgang",
-            "Sie sind Manager:in oder Mitarbeiter:in mit der Aufgabe, die Beraterium-Methode intern umzusetzen",
-            "Sie wollen Risikomanagement dauerhaft intern lösen, statt es dauerhaft einzukaufen",
+            "You are building and owning risk management in the business — and want to master it from the ground up",
+            "One topic is not enough: you want culture, leadership AND method in a single programme",
+            "You are a manager or employee tasked with implementing the Beraterium method internally",
+            "You want to solve risk management in-house long term, instead of buying it in permanently",
         ],
         "sessions": [
-            ("Modul 1 — Risk-Awareness-Kultur aufbauen", [
-                "Just Culture nach Luftfahrt-Vorbild: Fehler offen zugeben statt vertuschen",
-                "Führungsstruktur: Meldewege, Blameless Debriefings, Fehler-Rituale",
-                "Team einbinden: aus Fehlern lernen statt Schuldige suchen",
-                "Praxis-Simulation: Debriefing eines echten (anonymisierten) Fehlerfalls",
+            ("Module 1 — Building a risk-awareness culture", [
+                "Just Culture inspired by aviation: admit mistakes openly instead of covering them up",
+                "Leadership structure: reporting channels, blameless debriefings, error rituals",
+                "Involving the team: learn from mistakes instead of looking for someone to blame",
+                "Practical simulation: debriefing a real (anonymised) incident",
             ]),
-            ("Modul 2 — Risikobewusste Führung", [
-                "Fehlerangst ablegen und Risiken als kalkulierte Chance begreifen",
-                "Entscheidungs-Frameworks: Erwartungswert, Worst-Case-Tragfähigkeit, Reversibilität",
-                "Das eigene Unternehmen von außen sehen: Pre-Mortem und Konkurrenz-Perspektive",
-                "Vorbildwirkung: eine offene Risikokultur vorleben",
+            ("Module 2 — Risk-aware leadership", [
+                "Letting go of fear of mistakes and seeing risks as calculated opportunities",
+                "Decision frameworks: expected value, worst-case capacity, reversibility",
+                "Seeing your own business from the outside: pre-mortem and competitor perspective",
+                "Leading by example: modelling an open risk culture",
             ]),
-            ("Modul 3 — Risikomanagement praktisch umsetzen", [
-                "Das Beraterium-System: von der Gefahr über das Risiko zur Maßnahme",
-                "Risikoanalyse mit dem Team durchführen und mit der Matrix bewerten",
-                "3-Ebenen-Gefahrenkatalog anwenden — Sie erhalten den vollständigen Katalog",
-                "Risiken in Euro bewerten und umsetzbare Maßnahmen ableiten und verankern",
+            ("Module 3 — Putting risk management into practice", [
+                "The Beraterium system: from hazard through risk to measure",
+                "Running a risk analysis with the team and scoring with the matrix",
+                "Using the 3-level hazard catalogue — you receive the full catalogue",
+                "Valuing risks in euros and deriving actionable measures that stick",
             ]),
-            ("Abschluss — Zertifizierung & Transfer", [
-                "Alle Module an einem eigenen, realen Unternehmensbereich zusammenführen",
-                "Ihr Transferplan: wie Sie die Methode in den nächsten Wochen im Unternehmen ausrollen",
-                "Check-in-Call nach der Ausbildung: offene Fragen, Nachjustieren",
-                "Zertifikat „Risikoexperte:in — Beraterium-Methode“",
+            ("Closing — Certification & transfer", [
+                "Bringing all modules together on a real area of your business",
+                "Your transfer plan: how to roll out the method in the business over the coming weeks",
+                "Check-in call after training: open questions, adjustments",
+                "Certificate: Risk Expert — Beraterium Method",
             ]),
         ],
         "ergebnis": [
-            "Sie beherrschen die komplette Beraterium-Methode: Kultur, Führung und praktische Risikoanalyse",
-            "Sie können eine Risk-Awareness-Kultur aufbauen, Risiken kalkuliert führen und die Analyse selbst durchführen",
-            "Der vollständige 3-Ebenen-Gefahrenkatalog bleibt im Unternehmen und ist sofort einsetzbar",
-            "Zertifikat als Risikoexperte:in plus Transferplan für die Umsetzung im eigenen Unternehmen",
+            "You master the full Beraterium method: culture, leadership and practical risk analysis",
+            "You can build a risk-awareness culture, take calculated risks as a leader and run the analysis yourself",
+            "The full 3-level hazard catalogue stays in the business and is ready to use immediately",
+            "Risk Expert certificate plus transfer plan for implementation in your own organisation",
         ],
         "workload_iso": "PT24H",
         "faq": [
-            ("Was ist die Ausbildung zum Risikoexperten genau?", "Eine Kombi-Schulung, die unsere drei Risikomanagement-Training zu einem durchgängigen Programm bündelt: Risk-Awareness-Kultur, „Der risikobewusste Manager“ und „Risikomanagement praktisch umsetzen“. Das Ziel: Sie beherrschen Kultur, Führung und Methode und können unsere Vorgehensweise eigenständig im Unternehmen umsetzen."),
-            ("Was kostet die Ausbildung?", "9.875 € für eine Person, 14.315 € für zwei Personen, plus 4.440 € je weiterem Teilnehmer. Für bis zu 4 Personen gilt die Pauschale von 22.875 € (max. 4 Teilnehmer) — inklusive Gefahrenkatalog und Zertifikat. Die Investition liegt bewusst auf Augenhöhe mit unserer begleiteten Risiko-Analyse 360° (3.475 €) bzw. dem Gesamtpaket XL (9.675 €) — Sie bauen die Methode dauerhaft intern auf, statt Risikomanagement dauerhaft einzukaufen. Alle Preise excl. VAT excl. VAT"),
-            ("Für wen ist die Ausbildung gedacht?", "Für Manager und Mitarbeitende, die Risikomanagement im Unternehmen aufbauen und verantworten sollen — also künftige Risikoverantwortliche, die das komplette Rüstzeug in einem Durchgang wollen, statt einzelne Themen nacheinander."),
-            ("Lohnt sich die Kombi gegenüber den Einzelschulungen?", "Ja — inhaltlich und wirtschaftlich. Die drei Einzelschulungen im Intensivformat (1:1 oder Kleinstgruppe) kosten einzeln zusammen 12.425 €. In der Kombi-Ausbildung laufen die Module kompakter im Durchgang — dafür zahlen Sie 9.875 € und erhalten das Gesamtprogramm inklusive Zertifikat und Transferplan."),
-            ("Wie lange dauert die Ausbildung und gibt es ein Zertifikat?", "Drei Tage intensiv (ca. 24 Stunden) plus Transferphase — inhouse oder online, auf Wunsch auf mehrere Termine verteilt. Zum Abschluss erhalten Sie das Zertifikat „Risikoexperte:in — Beraterium-Methode“ und einen Transferplan für die Umsetzung."),
+            ("What exactly is Risk Expert training?", "A combined programme that bundles our three risk management trainings into one continuous course: risk-awareness culture, The Risk-Aware Manager and Putting Risk Management into Practice. The goal: you master culture, leadership and method and can implement our approach independently in the business."),
+            ("What does the training cost?", "9,875 € for one person, 14,315 € for two people, plus 4,440 € for each additional participant. For up to 4 people the flat rate of 22,875 € applies (max. 4 participants) — including hazard catalogue and certificate. The investment is deliberately comparable to our guided Risk Analysis 360° (3,475 €) and the XL full package (9,675 €) — you build the method in-house long term instead of buying risk management in permanently. All prices excl. VAT"),
+            ("Who is this training for?", "Managers and employees who are building and owning risk management in the business — future risk owners who want the full toolkit in one go instead of individual topics one after another."),
+            ("Is the combined programme worth it compared with individual trainings?", "Yes — in content and economically. The three individual intensive-format trainings (1:1 or small group) cost 12,425 € together. In the combined programme the modules run more compactly in one flow — for 9,875 € you get the full programme including certificate and transfer plan."),
+            ("How long does the training take and is there a certificate?", "Three intensive days (approx. 24 hours) plus transfer phase — on-site or online, split across dates if needed. At the end you receive the Risk Expert — Beraterium Method certificate and a transfer plan for implementation."),
         ],
-        "cta_h2": "Werden Sie zum Risikoexperten in Ihrem Unternehmen",
-        "cta_body": "Im freeen Erstgespräch klären wir Vorkenntnisse, Teamgröße, Format und Termine — unverbindlich, in 30 Minuten.",
+        "cta_h2": "Become the risk expert in your organisation",
+        "cta_body": "In a free intro call we clarify prior knowledge, team size, format and dates — no obligation, 30 minutes.",
     },
     {
         "nr": "SCH-01",
         "slug": "risk-awareness-culture",
-        "tag": "SCHULUNG · FÜHRUNG + TEAM",
-        "h1": "Risikomanagement: Der Weg zur Risk-Awareness-Kultur",
+        "tag": "TRAINING · LEADERSHIP + TEAM",
+        "h1": "Risk management: the path to a risk-awareness culture",
         "lead": (
-            "Diese Schulung zeigt, wie Sie ein Team so vorbereiten und führen, dass Risiken "
-            "und Fehler kein Tabu mehr sind, sondern zum Lernprozess gehören. Am Vorbild der "
-            "Luftfahrt bauen wir eine Aus-Fehlern-lernen-Kultur auf: Fehler werden offen "
-            "zugegeben und gefeiert statt bestraft — weg von der Fingerzeig-Kultur, hin zum "
-            "gemeinsamen Verbessern. Ein Tag im Intensivformat (1:1 oder Kleinstgruppe), inhouse oder online — wesentlich detaillierter als das Kultur-Modul in der Kombi-Ausbildung."
+            "This training shows how to prepare and lead a team so that risks and mistakes "
+            "are no longer taboo but part of learning. Using aviation as the model, we build "
+            "a learn-from-mistakes culture: mistakes are admitted openly and recognised "
+            "instead of punished — away from blame culture, towards improving together. "
+            "One day in intensive format (1:1 or small group), on-site or online — "
+            "significantly deeper than the culture module in the combined Risk Expert programme."
         ),
-        "title": "Schulung Risk-Awareness-Kultur | Beraterium",
-        "description": "Intensivformat (1:1 oder Kleinstgruppe): Fehlerkultur und Risk Awareness vertiefen — 1 Tag, ab 3.975 € netto, Team ab 11.475 € pauschal.",
-        "audience": "Führungskräfte und Teams",
-        "fuer_wen_intro": "Diese Schulung passt, wenn mindestens einer dieser Punkte zutrifft:",
+        "title": "Risk-awareness culture training | Beraterium",
+        "description": "Intensive format (1:1 or small group): deepen error culture and risk awareness — 1 day, from 3,975 € excl. VAT, team flat rate from 11,475 €.",
+        "audience": "leaders and teams",
+        "fuer_wen_intro": "This training fits if at least one of the following applies:",
         "fuer_wen": [
-            "Fehler werden bei Ihnen vertuscht statt gemeldet — und fallen erst auf, wenn es teuer wird",
-            "Bei Problemen wird zuerst nach dem Schuldigen gesucht, nicht nach der Ursache",
-            "Sie wollen, dass Ihr Team Risiken früh anspricht, statt zu schweigen und zu hoffen",
-            "Sie führen Risikomanagement ein und brauchen die kulturelle Grundlage dafür",
+            "Mistakes are covered up instead of reported — and only surface when they become expensive",
+            "When problems arise, people look for someone to blame before they look for the cause",
+            "You want your team to raise risks early instead of staying silent and hoping",
+            "You are introducing risk management and need the cultural foundation for it",
         ],
         "sessions": [
-            ("Session 1 — Führung & Struktur (3 h)", [
-                "Risk Awareness: Risikobewusstsein vs. Risikoangst vs. Risikoblindheit",
-                "Die Anatomie der Schweigekultur — warum Fehler unter den Tisch fallen und was das kostet",
-                "Just Culture nach Luftfahrt-Vorbild: menschlicher Fehler, Risikoverhalten, grobe Fahrlässigkeit",
-                "Führungsstruktur implementieren: Meldewege, Blameless Debriefings, Fehler-Rituale",
-                "Fehler feiern statt bestrafen: Formate, die das Zugeben belohnen",
+            ("Session 1 — Leadership & structure (3 h)", [
+                "Risk awareness: risk consciousness vs. risk fear vs. risk blindness",
+                "The anatomy of silence culture — why mistakes go unreported and what that costs",
+                "Just Culture inspired by aviation: human error, risk-taking behaviour, gross negligence",
+                "Implementing leadership structure: reporting channels, blameless debriefings, error rituals",
+                "Celebrate mistakes instead of punishing them: formats that reward speaking up",
             ]),
-            ("Session 2 — Team & Mitarbeit (3 h)", [
-                "Alle zum Mitarbeiten bringen: an Prozessen arbeiten statt schweigen und hoffen",
-                "Psychologische Sicherheit praktisch: Übungen und Gesprächsformate",
-                "Vom Fehler zum Prozess: die Lernschleife melden → analysieren → ändern → prüfen",
-                "Frühwarnsystem Team: Mitarbeitende als Sensoren für Risiken",
-                "Praxis-Simulation: Debriefing eines echten (anonymisierten) Fehlerfalls nach Luftfahrt-Schema",
+            ("Session 2 — Team & participation (3 h)", [
+                "Getting everyone involved: work on processes instead of staying silent and hoping",
+                "Psychological safety in practice: exercises and conversation formats",
+                "From mistake to process: the learning loop report → analyse → change → review",
+                "Team early-warning system: employees as sensors for risks",
+                "Practical simulation: debriefing a real (anonymised) incident using the aviation schema",
             ]),
-            ("Transfer — Verankerung im Alltag (inklusive)", [
-                "30-Tage-Umsetzungsplan: welche Rituale und Meldewege wann eingeführt werden",
-                "Arbeitsvorlagen zum Behalten: Meldeweg-Schema, Debriefing-Leitfaden, Fehler-Ritual-Formate",
-                "Check-in-Call nach 4 Wochen: was funktioniert, wo hakt es, was wird nachjustiert",
+            ("Transfer — Embedding in daily work (included)", [
+                "30-day implementation plan: which rituals and reporting channels to introduce when",
+                "Templates to keep: reporting schema, debriefing guide, error-ritual formats",
+                "Check-in call after 4 weeks: what works, where it sticks, what to adjust",
             ]),
         ],
         "ergebnis": [
-            "Konkrete Struktur (Meldewege, Rituale, Debriefing-Format), einführbar ab Tag 1",
-            "Das Team hat erlebt: offenes Ansprechen wird belohnt, nicht bestraft",
-            "Weniger vertuschte Fehler — Risiken werden früher sichtbar, Schäden kleiner",
-            "Kulturelles Fundament für jede weitere Risikomanagement-Maßnahme",
+            "Concrete structure (reporting channels, rituals, debriefing format), ready to use from day 1",
+            "The team has experienced: speaking up is rewarded, not punished",
+            "Fewer covered-up mistakes — risks become visible earlier, damage stays smaller",
+            "Cultural foundation for every further risk management measure",
         ],
         "workload_iso": "PT6H",
         "faq": [
-            ("Für wen ist die Schulung Risk-Awareness-Kultur gedacht?", "Für Führungskräfte und Team gemeinsam — die Kultur entsteht nur, wenn beide Seiten dieselben Prinzipien lernen. Buchbar für einzelne Mitarbeitende, Kleingruppen oder das ganze Team."),
-            ("Was kostet die Schulung?", "Intensivformat: 3.975 € für die erste Person, plus 995 € je weiterem. Ab 10 Personen gilt die gedeckelte Pauschale von 11.475 €. Wesentlich detaillierter und persönlicher als das Kultur-Modul in der Kombi-Ausbildung zum Risikoexperten (9.875 €). Alle Preise excl. VAT excl. VAT"),
-            ("Warum die Luftfahrt als Vorbild?", "Die Luftfahrt ist die sicherheitskritischste Branche der Welt und hat zugleich die offenste Fehlerkultur: Just Culture, sanktionsfreie Meldesysteme und strukturierte Debriefings. Diese Prinzipien sind direkt auf Unternehmen übertragbar — ein gemeldeter Beinahe-Fehler ist wertvoller als ein vertuschter Schaden."),
-            ("Wie lange dauert die Schulung und in welchem Format?", "Ein Tag mit zwei Sessions à 3 Stunden — inhouse bei Ihnen vor Ort oder online. Session 1 fokussiert Führung und Struktur, Session 2 das Team und die Mitarbeit. Inklusive Transfer-Paket: 30-Tage-Umsetzungsplan, Arbeitsvorlagen und ein Check-in-Call nach 4 Wochen."),
-            ("Was unterscheidet die Schulung vom Workshop „Kulturelle Grundlage“?", "Der 180-Minuten-Workshop sensibilisiert für psychologische Sicherheit. Die Schulung geht deutlich tiefer: Sie implementiert eine komplette Führungsstruktur nach Luftfahrt-Vorbild — mit Meldewegen, Debriefing-Formaten und einer Praxis-Simulation an einem echten Fehlerfall."),
+            ("Who is the risk-awareness culture training for?", "Leaders and team together — culture only works when both sides learn the same principles. Bookable for individual employees, small groups or the whole team."),
+            ("What does the training cost?", "Intensive format: 3,975 € for the first person, plus 995 € for each additional person. From 10 people the capped flat rate of 11,475 € applies. Significantly deeper and more personal than the culture module in the combined Risk Expert programme (9,875 €). All prices excl. VAT"),
+            ("Why aviation as the model?", "Aviation is the most safety-critical industry in the world and has the most open error culture: Just Culture, sanction-free reporting systems and structured debriefings. These principles transfer directly to business — a reported near-miss is more valuable than a hidden loss."),
+            ("How long is the training and in what format?", "One day with two sessions of 3 hours each — on-site at your premises or online. Session 1 focuses on leadership and structure, session 2 on the team and participation. Includes transfer package: 30-day plan, templates and a check-in call after 4 weeks."),
+            ("How does this training differ from the Cultural Foundation workshop?", "The 180-minute workshop raises awareness of psychological safety. The training goes much deeper: you implement a complete leadership structure inspired by aviation — with reporting channels, debriefing formats and a practical simulation on a real incident."),
         ],
-        "cta_h2": "Bauen Sie eine Kultur auf, in der Risiken sichtbar werden",
-        "cta_body": "Im freeen Erstgespräch klären wir Teamgröße, Format und Termin — unverbindlich, in 30 Minuten.",
+        "cta_h2": "Build a culture where risks become visible",
+        "cta_body": "In a free intro call we clarify team size, format and date — no obligation, 30 minutes.",
     },
     {
         "nr": "SCH-02",
         "slug": "risk-aware-manager",
-        "tag": "SCHULUNG · NUR FÜHRUNGSKRÄFTE",
-        "h1": "Der risikobewusste Manager",
+        "tag": "TRAINING · LEADERS ONLY",
+        "h1": "The risk-aware manager",
         "lead": (
-            "Diese Schulung ist speziell für Manager:innen: die Angst vor Fehlern verlieren "
-            "und sie als Chance zum Wachstum sehen, die Angst vor Risiken abbauen und sie "
-            "kalkuliert eingehen — und das eigene Unternehmen wieder mit einer neutralen "
-            "Brille von außen betrachten, um ein frisches Gefühl für die eigenen Prozesse "
-            "und Risiken zu bekommen. Ein Kompakt-Tag, inhouse oder online."
+            "This training is specifically for managers: lose the fear of mistakes and see "
+            "them as opportunities to grow, reduce fear of risk and take calculated risks — "
+            "and look at your own business again with a neutral outside lens to regain a "
+            "fresh feel for your processes and risks. One compact day, on-site or online."
         ),
-        "title": "Schulung: Der risikobewusste Manager | Beraterium",
-        "description": "Intensivformat für Führungskräfte (1:1): Fehlerangst ablegen, Risiken kalkuliert eingehen — Kompakt-Tag ab 3.475 € netto, Führungsteam ab 9.875 € pauschal.",
-        "audience": "Geschäftsführer, Führungskräfte und Gründer",
-        "fuer_wen_intro": "Diese Schulung passt, wenn Sie sich in einem dieser Punkte wiederfinden:",
+        "title": "Training: The risk-aware manager | Beraterium",
+        "description": "Intensive format for leaders (1:1): let go of fear of mistakes, take calculated risks — compact day from 3,475 € excl. VAT, leadership team flat rate 9,875 €.",
+        "audience": "managing directors, leaders and founders",
+        "fuer_wen_intro": "This training fits if you recognise yourself in any of the following:",
         "fuer_wen": [
-            "Sie zögern Entscheidungen hinaus, weil das Risiko schwer greifbar ist",
-            "Fehler — eigene wie fremde — fühlen sich wie Versagen an statt wie Lernstoff",
-            "Sie stecken so tief im Tagesgeschäft, dass Sie die eigenen Prozesse nicht mehr neutral sehen",
-            "Sie wollen Risiken nicht vermeiden, sondern bewusst und kalkuliert eingehen",
+            "You delay decisions because the risk feels hard to grasp",
+            "Mistakes — yours or others' — feel like failure instead of learning material",
+            "You are so deep in day-to-day operations that you can no longer see your processes neutrally",
+            "You do not want to avoid risks — you want to take them consciously and with calculation",
         ],
         "sessions": [
-            ("Block 1 — Die eigene Haltung zu Fehlern (2 h)", [
-                "Fehlerangst verstehen: woher sie kommt und was sie im Führungsalltag anrichtet",
-                "Fehler als Wachstumschance: Reframing vom „Das darf nicht passieren“ zum „Was lernen wir daraus?“",
-                "Vorbildwirkung: das Team ist nur so offen wie seine Führung",
+            ("Block 1 — Your own attitude to mistakes (2 h)", [
+                "Understanding fear of mistakes: where it comes from and what it does in leadership day to day",
+                "Mistakes as growth opportunities: reframing from \"this must not happen\" to \"what do we learn?\"",
+                "Leading by example: the team is only as open as its leadership",
             ]),
-            ("Block 2 — Risiken kalkuliert eingehen (2 h)", [
-                "Risikoangst vs. Risikokompetenz: Vermeiden, Verdrängen oder bewusst entscheiden",
-                "Entscheidungs-Frameworks: Erwartungswert, Worst-Case-Tragfähigkeit, Reversibilität",
-                "Die Chancen-Seite: Risiken, die man eingehen sollte — und wie man sie begründet",
+            ("Block 2 — Taking calculated risks (2 h)", [
+                "Risk fear vs. risk competence: avoid, suppress or decide consciously",
+                "Decision frameworks: expected value, worst-case capacity, reversibility",
+                "The upside: risks worth taking — and how to justify them",
             ]),
-            ("Block 3 — Das eigene Unternehmen von außen sehen (2 h)", [
-                "Betriebsblindheit als Risiko: warum der neutrale Blick nach Jahren verloren geht",
-                "Die Außenbrille: Pre-Mortem, Konkurrenz-Perspektive, Neueinsteiger-Walkthrough",
-                "Praxisübung: eigenen Kernprozess von außen analysieren — Top-3-Risiken und -Chancen",
+            ("Block 3 — Seeing your business from the outside (2 h)", [
+                "Operational blindness as a risk: why the neutral view disappears after years",
+                "The outside lens: pre-mortem, competitor perspective, newcomer walkthrough",
+                "Practical exercise: analyse your core process from the outside — top 3 risks and opportunities",
             ]),
         ],
         "ergebnis": [
-            "Persönliches Risiko-Mindset: unter Unsicherheit entscheiden, ohne zu lähmen",
-            "Konkrete Frameworks für kalkulierte Risiko-Entscheidungen im Alltag",
-            "Frischer Außenblick auf die eigenen Prozesse — inklusive Top-Risiken und -Chancen",
-            "Fundament, um im Team eine offene Risikokultur vorzuleben",
+            "Personal risk mindset: decide under uncertainty without freezing",
+            "Concrete frameworks for calculated risk decisions in daily work",
+            "Fresh outside view of your processes — including top risks and opportunities",
+            "Foundation to model an open risk culture in the team",
         ],
         "workload_iso": "PT6H",
         "faq": [
-            ("Für wen ist die Schulung „Der risikobewusste Manager“ gedacht?", "Ausschließlich für Führungskräfte: Geschäftsführer:innen, Bereichs- und Teamleitungen, Gründer:innen. Der geschützte Rahmen ohne eigene Mitarbeitende ist Absicht — hier darf offen über eigene Ängste und Fehler gesprochen werden."),
-            ("Was kostet die Schulung?", "Intensivformat: 3.475 € für die erste Führungskraft, plus 875 € je weiterer. Ab 8 Personen gilt die gedeckelte Pauschale von 9.875 €. Geschützter 1:1-Rahmen — deutlich tiefer als Modul 2 in der Kombi-Ausbildung. Alle Preise excl. VAT excl. VAT"),
-            ("Was bedeutet „das Unternehmen von außen betrachten“?", "Nach einigen Jahren im eigenen Unternehmen sieht niemand die eigenen Prozesse mehr neutral — Betriebsblindheit ist selbst ein Risiko. Mit Techniken wie Pre-Mortem und Konkurrenz-Perspektive gewinnen Sie den Außenblick zurück und erkennen Risiken und Chancen, die im Alltag unsichtbar geworden sind."),
-            ("Wie lange dauert die Schulung?", "Ein Kompakt-Tag mit drei Blöcken à 2 Stunden — inhouse oder online. Auf Wunsch teilen wir die Blöcke auf zwei halbe Tage auf."),
-            ("Geht es darum, mehr oder weniger Risiken einzugehen?", "Weder noch — es geht um kalkulierte Risiken: bewusst entscheiden statt vermeiden oder verdrängen. Sie lernen Frameworks, mit denen Sie einschätzen, welche Risiken Ihr Unternehmen tragen kann und welche Chancen das Eingehen wert sind."),
+            ("Who is The Risk-Aware Manager training for?", "Exclusively for leaders: managing directors, department and team leads, founders. The protected setting without your own employees is intentional — here you can speak openly about your own fears and mistakes."),
+            ("What does the training cost?", "Intensive format: 3,475 € for the first leader, plus 875 € for each additional person. From 8 people the capped flat rate of 9,875 € applies. Protected 1:1 setting — significantly deeper than module 2 in the combined programme. All prices excl. VAT"),
+            ("What does \"seeing the business from the outside\" mean?", "After a few years in your own company, nobody sees their processes neutrally any more — operational blindness is a risk in itself. With techniques like pre-mortem and competitor perspective you regain the outside view and spot risks and opportunities that daily work has made invisible."),
+            ("How long is the training?", "One compact day with three blocks of 2 hours each — on-site or online. On request we split the blocks across two half-days."),
+            ("Is this about taking more or fewer risks?", "Neither — it is about calculated risks: deciding consciously instead of avoiding or suppressing. You learn frameworks to assess which risks your business can carry and which opportunities are worth taking."),
         ],
-        "cta_h2": "Führen Sie mit Risikokompetenz statt Risikoangst",
-        "cta_body": "Im freeen Erstgespräch klären wir, ob die Schulung zu Ihrer Situation passt — unverbindlich, in 30 Minuten.",
+        "cta_h2": "Lead with risk competence instead of risk fear",
+        "cta_body": "In a free intro call we clarify whether the training fits your situation — no obligation, 30 minutes.",
     },
     {
         "nr": "SCH-03",
         "slug": "practical-risk-management",
-        "tag": "SCHULUNG · TEAM + FÜHRUNG + RISIKOMANAGER",
-        "h1": "Risikomanagement praktisch umsetzen",
+        "tag": "TRAINING · TEAM + LEADERSHIP + RISK MANAGERS",
+        "h1": "Putting risk management into practice",
         "lead": (
-            "In dieser Schulung lernen Sie unser System der Risikobewertung — und wie Sie es "
-            "selbst anwenden: Schritt für Schritt eine Risikoanalyse mit dem Team durchführen, "
-            "Risiken mit der Matrix bestimmen, mit dem Gefahrenkatalog arbeiten (Sie erhalten "
-            "unseren vollständigen Katalog), Risiken in Euro bewerten und daraus umsetzbare, "
-            "verständliche Maßnahmen ableiten. So wird es im Großkonzern gemacht — "
-            "heruntergebrochen auf praxistaugliche Schritte."
+            "In this training you learn our risk assessment system — and how to apply it "
+            "yourself: step by step run a risk analysis with the team, score risks with "
+            "the matrix, work with the hazard catalogue (you receive our full catalogue), "
+            "value risks in euros and derive actionable, understandable measures. How it "
+            "is done in large corporations — broken down into practical steps."
         ),
-        "title": "Schulung Risikomanagement praktisch | Beraterium",
-        "description": "Intensivformat: Risikoanalyse selbst durchführen lernen — Matrix, Gefahrenkatalog (inklusive), Euro-Bewertung — 1,5 Tage, ab 4.975 € netto, Team 14.375 € pauschal.",
-        "audience": "Mitarbeitende, Führungskräfte, Risikomanager und Unternehmer",
-        "fuer_wen_intro": "Diese Schulung passt, wenn einer dieser Punkte zutrifft:",
+        "title": "Practical risk management training | Beraterium",
+        "description": "Intensive format: learn to run risk analysis yourself — matrix, hazard catalogue (included), euro valuation — 1.5 days, from 4,975 € excl. VAT, team flat rate 14,375 €.",
+        "audience": "employees, leaders, risk managers and business owners",
+        "fuer_wen_intro": "This training fits if any of the following applies:",
         "fuer_wen": [
-            "Sie sind Risikomanager:in und wollen verstehen, wie das Ganze richtig geht — wie im Großkonzern, aber praxistauglich",
-            "Sie wollen Risikomanagement dauerhaft intern lösen, statt es einzukaufen",
-            "Ihr Team soll die jährliche Risikoanalyse künftig selbst durchführen",
-            "Sie wollen Risiken nicht in Ampelfarben, sondern in Euro bewerten und daraus echte Maßnahmen ableiten",
+            "You are a risk manager and want to understand how to do it properly — like in a large corporation, but practical",
+            "You want to solve risk management in-house long term instead of buying it in",
+            "Your team should run the annual risk analysis themselves in future",
+            "You want to value risks in euros, not traffic lights, and derive real measures from them",
         ],
         "sessions": [
-            ("Session 1 — Das System verstehen (4 h)", [
-                "Das Beraterium-Vorgehen im Überblick: von der Gefahr zum Risiko zur Maßnahme",
-                "Der 3-Ebenen-Gefahrenkatalog: Aufbau, Logik, Anwendung — Sie erhalten den vollständigen Katalog",
-                "Gefahren sammeln mit dem Team: Moderationstechnik für die Erhebung",
+            ("Session 1 — Understanding the system (4 h)", [
+                "The Beraterium approach in overview: from hazard to risk to measure",
+                "The 3-level hazard catalogue: structure, logic, application — you receive the full catalogue",
+                "Collecting hazards with the team: facilitation techniques for the assessment",
             ]),
-            ("Session 2 — Bewerten mit Matrix und Euro (4 h)", [
-                "Die Risikomatrix richtig verwenden — und typische Bewertungsfehler vermeiden",
-                "Von der Ampel zum Euro: Erwartungswert, Bandbreiten, Worst Case, Priorisierung",
-                "Praxisteil: komplette Bewertung an einem eigenen, realen Bereich",
+            ("Session 2 — Scoring with matrix and euros (4 h)", [
+                "Using the risk matrix correctly — and avoiding typical scoring mistakes",
+                "From traffic lights to euros: expected value, ranges, worst case, prioritisation",
+                "Practical part: full scoring on a real area of your business",
             ]),
-            ("Session 3 — Maßnahmen ableiten und verankern (4 h)", [
-                "Von der Zahl zur Maßnahme: vermeiden, vermindern, übertragen, tragen",
-                "Maßnahmen budgetieren: Kosten der Maßnahme vs. Euro-Risiko",
-                "Verankerung im Alltag: Rhythmus, Ownership, Review — Routine statt Einmalprojekt",
-                "Abschluss: jede:r geht mit einer begonnenen, echten Risikoanalyse nach Hause",
+            ("Session 3 — Deriving and embedding measures (4 h)", [
+                "From number to measure: avoid, reduce, transfer, accept",
+                "Budgeting measures: cost of the measure vs. euro risk",
+                "Embedding in daily work: rhythm, ownership, review — routine instead of one-off project",
+                "Closing: everyone leaves with a started, real risk analysis",
             ]),
         ],
         "ergebnis": [
-            "Sie führen eine Risikoanalyse nach Beraterium-System selbstständig durch: erheben → Matrix → Euro → Maßnahmen",
-            "Der vollständige 3-Ebenen-Gefahrenkatalog bleibt im Unternehmen und ist sofort einsetzbar",
-            "Konzern-Methodik in KMU-tauglichem Aufwand — gleiche Sprache, weniger Bürokratie",
-            "Eine begonnene echte Analyse als direkter Startpunkt nach der Schulung",
+            "You can run a risk analysis using the Beraterium system independently: assess → matrix → euros → measures",
+            "The full 3-level hazard catalogue stays in the business and is ready to use immediately",
+            "Corporate methodology at SME scale — same language, less bureaucracy",
+            "A started real analysis as a direct starting point after training",
         ],
         "workload_iso": "PT12H",
         "faq": [
-            ("Für wen ist die Schulung „Risikomanagement praktisch umsetzen“ gedacht?", "Für Mitarbeitende und Führungskräfte, die die Risikoanalyse künftig selbst durchführen sollen — und ausdrücklich auch für Risikomanager aus Unternehmen sowie Unternehmer:innen, die Risikomanagement intern lösen wollen, statt es einzukaufen."),
-            ("Was kostet die Schulung?", "Intensivformat: 4.975 € für die erste Person, plus 1.175 € je weiterem. Ab 10 Personen gilt die gedeckelte Pauschale von 14.375 € — inklusive vollständigem Gefahrenkatalog. Deutlich umfangreicher als Modul 3 in der Kombi-Ausbildung. Alle Preise excl. VAT excl. VAT"),
-            ("Was ist im Gefahrenkatalog enthalten?", "Alle Teilnehmenden erhalten unseren vollständigen 3-Ebenen-Gefahrenkatalog — dasselbe Arbeitsmittel, das wir in Kundenprojekten einsetzen. Er stellt sicher, dass bei der Erhebung keine Gefahrenklasse übersehen wird, und bleibt nach der Schulung im Unternehmen."),
-            ("Wie unterscheidet sich die Schulung von einer Risikoanalyse durch Beraterium?", "Bei der Risiko-Analyse 360° führen wir die Analyse für Sie durch. In dieser Schulung lernen Sie, es selbst zu tun — Methode, Matrix, Euro-Bewertung und Maßnahmenableitung. Viele Kunden kombinieren beides: erst die begleitete Analyse, dann die Schulung fürs Team."),
-            ("Wie lange dauert die Schulung?", "1,5 Tage mit drei Sessions à 4 Stunden — inhouse oder online. Im Praxisteil arbeiten die Teilnehmenden durchgehend an einem eigenen, realen Unternehmensbereich."),
+            ("Who is Putting Risk Management into Practice for?", "Employees and leaders who will run the risk analysis themselves in future — and explicitly also risk managers from businesses and owners who want to solve risk management internally instead of buying it in."),
+            ("What does the training cost?", "Intensive format: 4,975 € for the first person, plus 1,175 € for each additional person. From 10 people the capped flat rate of 14,375 € applies — including the full hazard catalogue. Significantly more comprehensive than module 3 in the combined programme. All prices excl. VAT"),
+            ("What is included in the hazard catalogue?", "All participants receive our full 3-level hazard catalogue — the same working tool we use in client projects. It ensures no hazard class is missed during assessment and stays in the business after training."),
+            ("How does this training differ from a risk analysis done by Beraterium?", "In Risk Analysis 360° we run the analysis for you. In this training you learn to do it yourself — method, matrix, euro valuation and measure derivation. Many clients combine both: guided analysis first, then training for the team."),
+            ("How long is the training?", "1.5 days with three sessions of 4 hours each — on-site or online. In the practical part participants work continuously on a real area of their business."),
         ],
-        "cta_h2": "Lernen Sie, Risiken selbst in Euro zu bewerten",
-        "cta_body": "Im freeen Erstgespräch klären wir Vorkenntnisse, Teamgröße und Termin — unverbindlich, in 30 Minuten.",
+        "cta_h2": "Learn to value risks in euros yourself",
+        "cta_body": "In a free intro call we clarify prior knowledge, team size and date — no obligation, 30 minutes.",
     },
     {
         "nr": "SCH-04",
         "slug": "innovation-management",
-        "tag": "SCHULUNG · FÜHRUNG + TEAM",
-        "h1": "Schulung zu Innovationsmanagement",
+        "tag": "TRAINING · LEADERSHIP + TEAM",
+        "h1": "Innovation management training",
         "lead": (
-            "Innovationsmanagement ist ein Kern-Teilbereich der Unternehmensentwicklung. In "
-            "dieser Schulung geht es darum, ein durch und durch innovatives Unternehmen zu "
-            "werden und zu bleiben — nicht einmal ein Produkt auf den Markt bringen und in "
-            "Vergessenheit geraten, sondern über Jahre innovativ bleiben und sich auch gegen "
-            "große Konkurrenten durchsetzen. Team, Atmosphäre, Management und Innovationskultur: "
-            "wie Business, Innovation und R&D unter einen Hut kommen."
+            "Innovation management is a core part of business development. In this training "
+            "the focus is on becoming and staying genuinely innovative — not launching one "
+            "product and fading away, but staying innovative over years and competing even "
+            "against much larger rivals. Team, atmosphere, management and innovation culture: "
+            "how business, innovation and R&D work under one roof."
         ),
-        "title": "Schulung Innovationsmanagement | Beraterium",
-        "description": "Innovationskultur, Pipeline und Kennzahlen — 1 Tag, inhouse oder online, ab 2.995 € netto, Team ab 9.695 € pauschal.",
-        "audience": "Führungskräfte und Teams aus Business, Produkt und R&D",
-        "fuer_wen_intro": "Diese Schulung passt, wenn einer dieser Punkte zutrifft:",
+        "title": "Innovation management training | Beraterium",
+        "description": "Innovation culture, pipeline and metrics — 1 day, on-site or online, from 2,995 € excl. VAT, team flat rate from 9,695 €.",
+        "audience": "leaders and teams from business, product and R&D",
+        "fuer_wen_intro": "This training fits if any of the following applies:",
         "fuer_wen": [
-            "Ihr letztes erfolgreiches Produkt ist eine Weile her — die Pipeline dahinter ist dünn",
-            "Ideen gibt es viele, aber kein wiederholbarer Weg von der Idee zur Marktleistung",
-            "Tagesgeschäft und Innovation konkurrieren um dieselben Leute und Budgets",
-            "Sie wollen sich gegen größere Wettbewerber behaupten, ohne deren Budgets zu haben",
+            "Your last successful product was a while ago — the pipeline behind it is thin",
+            "There are plenty of ideas but no repeatable path from idea to market performance",
+            "Day-to-day operations and innovation compete for the same people and budgets",
+            "You want to compete against larger rivals without their budgets",
         ],
         "sessions": [
-            ("Session 1 — Innovationsfähigkeit aufbauen (3,5 h)", [
-                "Was innovative Unternehmen anders machen: Innovation als Fähigkeit statt Projekt",
-                "Kultur und Atmosphäre: psychologische Sicherheit, Experimentierbudget, Umgang mit gescheiterten Ideen",
-                "Team und Rollen: Ideen aus dem ganzen Team systematisch einsammeln",
-                "Management: Portfolio-Denken, Stage-Gate light für KMU, Kill-Kriterien",
+            ("Session 1 — Building innovation capability (3.5 h)", [
+                "What innovative companies do differently: innovation as capability, not project",
+                "Culture and atmosphere: psychological safety, experiment budget, handling failed ideas",
+                "Team and roles: collecting ideas systematically from the whole team",
+                "Management: portfolio thinking, light stage-gate for SMEs, kill criteria",
             ]),
-            ("Session 2 — Business, Innovation und R&D unter einem Hut (3,5 h)", [
-                "Der Spagat: heute Geld verdienen, morgen relevant bleiben — Ressourcen-Split in der Praxis",
-                "Gegen Große bestehen: Nische, Geschwindigkeit und Kundennähe als KMU-Waffen",
-                "Innovations-Pipeline bauen: Idee → Validierung → Pilot → Skalierung",
-                "Messen und steuern: wenige sinnvolle Kennzahlen statt Innovationstheater",
-                "Praxisteil: Mini-Pipeline für ein eigenes, reales Innovationsthema",
+            ("Session 2 — Business, innovation and R&D under one roof (3.5 h)", [
+                "The balancing act: earn today, stay relevant tomorrow — resource split in practice",
+                "Competing with giants: niche, speed and customer proximity as SME strengths",
+                "Building an innovation pipeline: idea → validation → pilot → scale",
+                "Measure and steer: a few meaningful metrics instead of innovation theatre",
+                "Practical part: mini-pipeline for a real innovation topic of your own",
             ]),
-            ("Transfer — Pipeline im Alltag (inklusive)", [
-                "Arbeitsvorlagen zum Behalten: Pipeline-Board, Kill-Kriterien-Checkliste, Experiment-Canvas",
-                "Validierungsplan für das begonnene Innovationsvorhaben — die nächsten 30 Tage",
-                "Check-in-Call nach 4 Wochen: Pipeline im Review, Stolpersteine nachjustieren",
+            ("Transfer — Pipeline in daily work (included)", [
+                "Templates to keep: pipeline board, kill-criteria checklist, experiment canvas",
+                "Validation plan for the started innovation initiative — the next 30 days",
+                "Check-in call after 4 weeks: pipeline review, adjust stumbling blocks",
             ]),
         ],
         "ergebnis": [
-            "Gemeinsames Verständnis, was Innovationsfähigkeit im eigenen Unternehmen konkret heißt",
-            "Ein leichtgewichtiger, wiederholbarer Innovationsprozess mit klaren Entscheidungspunkten",
-            "Klarheit über Rollen, Ressourcen-Split und Kennzahlen — Business und Innovation arbeiten zusammen",
-            "Ein begonnenes, reales Innovationsvorhaben mit Validierungsplan",
+            "Shared understanding of what innovation capability means concretely in your business",
+            "A lightweight, repeatable innovation process with clear decision points",
+            "Clarity on roles, resource split and metrics — business and innovation working together",
+            "A started real innovation initiative with validation plan",
         ],
         "workload_iso": "PT7H",
         "faq": [
-            ("Für wen ist die Innovationsmanagement-Schulung gedacht?", "Für Führungskräfte und Teams aus Business, Produkt und R&D — gemeinsam oder getrennt. Sie ist bewusst KMU- und startup-tauglich gehalten: kein Konzern-Framework, sondern Prozesse, die mit kleinen Teams funktionieren."),
-            ("Was kostet die Schulung?", "2.995 € für die erste Person, plus 745 € je weiterem. Ab 10 Personen gilt die gedeckelte Pauschale von 9.695 €. Alle Preise excl. VAT excl. VAT"),
-            ("Was bringt mir die Schulung, wenn wir schon innovativ sind?", "Einmal innovativ sein ist leicht — innovativ bleiben ist das Problem. Die Schulung baut die Strukturen, mit denen Innovationskraft wiederholbar wird: Pipeline, Portfolio-Denken, Kill-Kriterien und ein Ressourcen-Split, der das Tagesgeschäft nicht kannibalisiert."),
-            ("Wie lange dauert die Schulung?", "Ein Tag mit zwei Sessions à 3,5 Stunden — inhouse oder online. Im Praxisteil arbeiten die Teilnehmenden an einem eigenen, realen Innovationsthema. Inklusive Transfer-Paket: Arbeitsvorlagen, Validierungsplan und ein Check-in-Call nach 4 Wochen."),
-            ("Wie hängen Innovation und Risikomanagement zusammen?", "Innovation heißt, kalkulierte Risiken einzugehen. Wer Innovationsrisiken bewusst bewertet — statt sie zu vermeiden oder blind einzugehen — investiert an den richtigen Stellen. Beide Disziplinen teilen dieselbe Grundlage: eine Kultur, in der Scheitern Lernstoff ist."),
+            ("Who is the innovation management training for?", "Leaders and teams from business, product and R&D — together or separately. It is deliberately SME- and startup-friendly: no corporate framework, but processes that work with small teams."),
+            ("What does the training cost?", "2,995 € for the first person, plus 745 € for each additional person. From 10 people the capped flat rate of 9,695 € applies. All prices excl. VAT"),
+            ("What if we are already innovative?", "Being innovative once is easy — staying innovative is the problem. The training builds the structures that make innovation repeatable: pipeline, portfolio thinking, kill criteria and a resource split that does not cannibalise day-to-day operations."),
+            ("How long is the training?", "One day with two sessions of 3.5 hours each — on-site or online. In the practical part participants work on a real innovation topic. Includes transfer package: templates, validation plan and a check-in call after 4 weeks."),
+            ("How do innovation and risk management connect?", "Innovation means taking calculated risks. Those who assess innovation risks consciously — instead of avoiding or blindly taking them — invest in the right places. Both disciplines share the same foundation: a culture where failure is learning material."),
         ],
-        "cta_h2": "Machen Sie Innovation zur wiederholbaren Fähigkeit",
-        "cta_body": "Im freeen Erstgespräch klären wir Ausgangslage, Teamgröße und Termin — unverbindlich, in 30 Minuten.",
+        "cta_h2": "Make innovation a repeatable capability",
+        "cta_body": "In a free intro call we clarify your starting point, team size and date — no obligation, 30 minutes.",
     },
     {
         "nr": "SCH-05",
         "slug": "feedback-culture",
-        "tag": "SCHULUNG · FÜR ALLE",
-        "h1": "Feedbackkultur & eine 1+ Arbeitsumgebung",
+        "tag": "TRAINING · FOR EVERYONE",
+        "h1": "Feedback culture & a 1+ working environment",
         "lead": (
-            "In dieser Schulung bauen Führung und Team gemeinsam eine Kultur auf, in der "
-            "Arbeit kein Zwang ist und alle an einem Strang ziehen. Drei Kernbereiche: "
-            "Feedbackkultur, Mitarbeitende verstehen und erfahren, was sie wirklich wollen, "
-            "und Mitarbeitende motivieren mit dem richtigen Führungsstil. Dazu gehört auch, "
-            "Mission und Vision transparent zu gestalten und zu kommunizieren. Das Ergebnis: "
-            "weniger Fluktuation, zufriedene Mitarbeitende — auch in Krisenzeiten."
+            "In this training, leadership and team build a culture together where work "
+            "is not a burden and everyone pulls in the same direction. Three core areas: "
+            "feedback culture, understanding employees and finding out what they really "
+            "want, and motivating people with the right leadership style. That includes "
+            "making mission and vision transparent and communicating them. The result: "
+            "less turnover, satisfied employees — even in difficult times."
         ),
-        "title": "Schulung Feedbackkultur & Führung | Beraterium",
-        "description": "Feedback, Motivation, Führungsstil, Mission & Vision — 1 Tag + Follow-up, ab 2.875 € netto, Team ab 9.395 € pauschal.",
-        "audience": "Führungskräfte und Mitarbeitende",
-        "fuer_wen_intro": "Diese Schulung passt, wenn einer dieser Punkte zutrifft:",
+        "title": "Feedback culture & leadership training | Beraterium",
+        "description": "Feedback, motivation, leadership style, mission & vision — 1 day + follow-up, from 2,875 € excl. VAT, team flat rate from 9,395 €.",
+        "audience": "leaders and employees",
+        "fuer_wen_intro": "This training fits if any of the following applies:",
         "fuer_wen": [
-            "Fluktuation und stille Kündigungen nehmen zu — und Sie erfahren die Gründe zu spät",
-            "Feedback findet nur im Jahresgespräch statt (oder gar nicht)",
-            "Sie wissen nicht sicher, was Ihre Mitarbeitenden wirklich wollen",
-            "Mission und Vision stehen auf der Website, aber nicht im Alltag",
+            "Turnover and quiet quitting are rising — and you learn the reasons too late",
+            "Feedback only happens in the annual review (or not at all)",
+            "You are not sure what your employees really want",
+            "Mission and vision are on the website but not in daily work",
         ],
         "sessions": [
-            ("Session 1 — Feedback & Verstehen (3 h)", [
-                "Feedbackkultur aufbauen: Formate und Rituale in beide Richtungen",
-                "Die Feedback-Falle: warum Feedback ohne Konsequenz Vertrauen zerstört",
-                "Mitarbeitende verstehen: 1:1-Formate, Stay-Interviews, anonyme Kanäle",
-                "Praxisteil: Feedback-Übungen in Echt-Situationen des Teams",
+            ("Session 1 — Feedback & understanding (3 h)", [
+                "Building feedback culture: formats and rituals in both directions",
+                "The feedback trap: why feedback without consequence destroys trust",
+                "Understanding employees: 1:1 formats, stay interviews, anonymous channels",
+                "Practical part: feedback exercises in the team's real situations",
             ]),
-            ("Session 2 — Motivation, Führungsstil, Mission & Vision (3 h)", [
-                "Motivation verstehen: Autonomie, Kompetenzerleben, Sinn — was wirklich antreibt",
-                "Den richtigen Führungsstil finden: situativ führen statt Einheitsstil",
-                "Mission & Vision transparent machen: gemeinsam formulieren, in den Alltag übersetzen",
-                "Praxisteil: Kultur-Fahrplan für das eigene Team entwerfen",
+            ("Session 2 — Motivation, leadership style, mission & vision (3 h)", [
+                "Understanding motivation: autonomy, competence, purpose — what really drives people",
+                "Finding the right leadership style: situational leadership instead of one-size-fits-all",
+                "Making mission & vision transparent: formulate together, translate into daily work",
+                "Practical part: design a culture roadmap for your own team",
             ]),
-            ("Follow-up — Review nach 4 Wochen (60 Min.)", [
-                "Kultur-Fahrplan im Check: was funktioniert, wo hakt es, was wird nachjustiert",
+            ("Follow-up — Review after 4 weeks (60 min.)", [
+                "Culture roadmap check: what works, where it sticks, what to adjust",
             ]),
         ],
         "ergebnis": [
-            "Weniger Fluktuation, zufriedenere Mitarbeitende, leichteres Führen",
-            "Fachkräfte, die von allein kommen — und Mitarbeitende, die auch in Krisenzeiten bleiben",
-            "Ein konkreter, gemeinsam entwickelter Kultur-Fahrplan statt Werte-Poster",
-            "Mission und Vision, die jede:r im Team versteht und anwenden kann",
+            "Less turnover, more satisfied employees, easier leadership",
+            "Talent that comes to you — and employees who stay even in difficult times",
+            "A concrete, jointly developed culture roadmap instead of values posters",
+            "Mission and vision that everyone on the team understands and can apply",
         ],
         "workload_iso": "PT7H",
         "faq": [
-            ("Für wen ist die Schulung Feedbackkultur gedacht?", "Für alle — Führungskräfte und Mitarbeitende, idealerweise gemeinsam. Kultur entsteht nicht per Anweisung von oben: Der Kultur-Fahrplan wird in der Schulung von Führung und Team zusammen entwickelt."),
-            ("Was kostet die Schulung?", "2.875 € für die erste Person, plus 725 € je weiterem. Ab 10 Personen gilt die gedeckelte Pauschale von 9.395 € — inklusive Follow-up-Call nach 4 Wochen. Alle Preise excl. VAT excl. VAT"),
-            ("Was bedeutet „1+ Arbeitsumgebung“?", "Eine Arbeitsumgebung, in der Leistung und Einbringung kein Muss und Arbeit kein Zwang ist — weil Mitarbeitende und Führung in die gleiche Richtung arbeiten. Messbar wird das an weniger Fluktuation, leichterem Recruiting und einem Team, das auch in Krisenzeiten bleibt."),
-            ("Wie hängt die Schulung mit den HR-Analysen zusammen?", "Ideal kombiniert: Die HR-Analyse per Fragebogen oder die Führungskräfte-Interviews liefern das ehrliche Ist-Bild, diese Schulung baut darauf die Kultur. Beides ist aber auch unabhängig voneinander buchbar."),
-            ("Wie lange dauert die Schulung?", "Ein Tag mit zwei Sessions à 3 Stunden plus ein 60-minütiger Follow-up-Call rund 4 Wochen später — dort wird der Kultur-Fahrplan überprüft und nachjustiert."),
+            ("Who is the feedback culture training for?", "Everyone — leaders and employees, ideally together. Culture is not created by top-down instruction: the culture roadmap is developed jointly by leadership and team in the training."),
+            ("What does the training cost?", "2,875 € for the first person, plus 725 € for each additional person. From 10 people the capped flat rate of 9,395 € applies — including follow-up call after 4 weeks. All prices excl. VAT"),
+            ("What does a \"1+ working environment\" mean?", "A working environment where performance and contribution are not forced and work is not a burden — because employees and leadership work in the same direction. You see it in less turnover, easier recruiting and a team that stays even in difficult times."),
+            ("How does this training connect to HR analyses?", "Ideal combined: HR analysis via questionnaire or leadership interviews deliver an honest picture of today; this training builds culture on top. Both can also be booked independently."),
+            ("How long is the training?", "One day with two sessions of 3 hours each plus a 60-minute follow-up call around 4 weeks later — where the culture roadmap is reviewed and adjusted."),
         ],
-        "cta_h2": "Bauen Sie eine Arbeitsumgebung, in der alle an einem Strang ziehen",
-        "cta_body": "Im freeen Erstgespräch klären wir Ausgangslage, Teamgröße und Termin — unverbindlich, in 30 Minuten.",
+        "cta_h2": "Build a working environment where everyone pulls together",
+        "cta_body": "In a free intro call we clarify your starting point, team size and date — no obligation, 30 minutes.",
     },
     {
         "nr": "SCH-06",
         "slug": "cultural-management",
-        "tag": "SCHULUNG · INTERNATIONALE TEAMS & PROJEKTE",
-        "h1": "Schulung zum Kulturellen Management",
+        "tag": "TRAINING · INTERNATIONAL TEAMS & PROJECTS",
+        "h1": "Cross-cultural management training",
         "lead": (
-            "Eine umfangreiche Schulung, wie Sie internationale Teams und internationale "
-            "Projekte — Joint Ventures, Gründung von Tochtergesellschaften und Ähnliches — "
-            "erfolgreich managen, mit echtem Verständnis der anderen Kultur. Besonders wichtig "
-            "auch, wenn Sie Mitarbeitende aus anderen Kulturen einstellen. Basierend auf Meyer, "
-            "Hofstede und Schwartz, mit First-Hand-Erfahrung aus interkulturellen Teams und "
-            "Businesses: von DE und EU über Russland, USA und Südamerika bis Afrika, Indien "
-            "und Pakistan."
+            "An in-depth training on how to manage international teams and international "
+            "projects — joint ventures, setting up subsidiaries and similar — successfully, "
+            "with genuine understanding of the other culture. Especially important when "
+            "you hire employees from other cultures. Based on Meyer, Hofstede and Schwartz, "
+            "with first-hand experience from cross-cultural teams and businesses: from Germany "
+            "and the EU via Russia, the USA and South America to Africa, India and Pakistan."
         ),
-        "title": "Schulung Interkulturelles Management | Beraterium",
-        "description": "Intensivformat: Interkulturelles Management nach Meyer, Hofstede & Schwartz — internationale Teams, Joint Ventures — 1,5–2 Tage, ab 3.475 € netto, Team 9.875 € pauschal.",
-        "audience": "Führungskräfte, Projektleitungen und internationale Teams",
-        "fuer_wen_intro": "Diese Schulung passt, wenn einer dieser Punkte zutrifft:",
+        "title": "Cross-cultural management training | Beraterium",
+        "description": "Intensive format: cross-cultural management using Meyer, Hofstede & Schwartz — international teams, joint ventures — 1.5–2 days, from 3,475 € excl. VAT, team flat rate 9,875 €.",
+        "audience": "leaders, project leads and international teams",
+        "fuer_wen_intro": "This training fits if any of the following applies:",
         "fuer_wen": [
-            "Sie führen oder planen ein internationales Team, Joint Venture oder eine Tochtergesellschaft",
-            "Sie stellen Mitarbeitende aus anderen Kulturen ein und wollen Onboarding und Führung kultursensibel gestalten",
-            "Verhandlungen oder Projekte mit internationalen Partnern laufen zäh — und Sie vermuten kulturelle Gründe",
-            "Sie expandieren in einen neuen Kulturraum und wollen die teuersten Missverständnisse vermeiden",
+            "You lead or plan an international team, joint venture or subsidiary",
+            "You hire employees from other cultures and want onboarding and leadership to be culturally sensitive",
+            "Negotiations or projects with international partners move slowly — and you suspect cultural reasons",
+            "You are expanding into a new cultural region and want to avoid the most expensive misunderstandings",
         ],
         "sessions": [
-            ("Session 1 — Die Landkarte: Kulturdimensionen (3 h)", [
-                "Hofstede: Machtdistanz, Individualismus, Unsicherheitsvermeidung, Langzeitorientierung",
-                "Erin Meyer (Culture Map): Kommunikation, Kritik, Führen, Entscheiden, Vertrauen, Zeit",
-                "Schwartz: der Werte-Kreis und Motivation in verschiedenen Kulturen",
-                "Grenzen der Modelle: Landkarte statt Schublade",
+            ("Session 1 — The map: cultural dimensions (3 h)", [
+                "Hofstede: power distance, individualism, uncertainty avoidance, long-term orientation",
+                "Erin Meyer (Culture Map): communicating, evaluating, leading, deciding, trusting, scheduling",
+                "Schwartz: the values circle and motivation across cultures",
+                "Limits of the models: map, not pigeonhole",
             ]),
-            ("Session 2 — Regionen-Praxis: First-Hand-Erfahrung (3 h)", [
-                "DE/EU intern, Russland & Osteuropa, USA, Südamerika, Afrika, Indien & Pakistan",
-                "Je Region: Kommunikationsstil, Hierarchie- und Zeitverständnis, Verhandlungslogik",
-                "Typische Missverständnisse aus realen Projekten — und wie man sie auflöst",
+            ("Session 2 — Regional practice: first-hand experience (3 h)", [
+                "Germany/EU internally, Russia & Eastern Europe, USA, South America, Africa, India & Pakistan",
+                "Per region: communication style, hierarchy and time, negotiation logic",
+                "Typical misunderstandings from real projects — and how to resolve them",
             ]),
-            ("Session 3 — Internationale Teams führen (3 h)", [
-                "Interkulturell einstellen und integrieren: Interviews lesen, Onboarding kultursensibel gestalten",
-                "Gemischte Teams managen: Meetings, Feedback und Entscheidungen für alle Kulturen wirksam",
-                "Remote & Zeitzonen: Kommunikationsregeln, die kulturübergreifend funktionieren",
+            ("Session 3 — Leading international teams (3 h)", [
+                "Hiring and integrating across cultures: reading interviews, culturally sensitive onboarding",
+                "Managing mixed teams: meetings, feedback and decisions that work for all cultures",
+                "Remote & time zones: communication rules that work across cultures",
             ]),
-            ("Session 4 — Internationale Projekte & Strukturen (3 h)", [
-                "Joint Ventures & Tochtergesellschaften: kulturelle Due Diligence, tragfähige Governance",
-                "Verhandeln über Kulturen hinweg: Tempo, Beziehungsaufbau, Gesichtwahrung",
-                "Praxisteil: Kultur-Risiko-Analyse für das eigene internationale Vorhaben",
+            ("Session 4 — International projects & structures (3 h)", [
+                "Joint ventures & subsidiaries: cultural due diligence, workable governance",
+                "Negotiating across cultures: pace, relationship-building, saving face",
+                "Practical part: cultural risk analysis for your own international initiative",
             ]),
         ],
         "ergebnis": [
-            "Sicherheit mit internationalen Partnern, Teams und Neueinstellungen — fundiert statt anekdotisch",
-            "Konkrete Playbooks je Region für Kommunikation, Führung und Verhandlung",
-            "Kulturelle Risiken früh erkennen — bevor sie Joint Venture oder Schlüsselkraft kosten",
-            "Eine begonnene Kultur-Risiko-Analyse für das eigene internationale Vorhaben",
+            "Confidence with international partners, teams and new hires — evidence-based, not anecdotal",
+            "Concrete playbooks per region for communication, leadership and negotiation",
+            "Spot cultural risks early — before they cost you a joint venture or key hire",
+            "A started cultural risk analysis for your own international initiative",
         ],
         "workload_iso": "PT12H",
         "faq": [
-            ("Für wen ist die Schulung zum Kulturellen Management gedacht?", "Für Führungskräfte, Projektleitungen und Teams mit internationalem Bezug — vom internationalen Team über Joint Ventures und Tochtergründungen bis zur Einstellung von Mitarbeitenden aus anderen Kulturen."),
-            ("Was kostet die Schulung?", "3.475 € für die erste Person, plus 875 € je weiterem. Ab 8 Personen gilt die gedeckelte Pauschale von 9.875 €. Alle Preise excl. VAT excl. VAT"),
-            ("Auf welchen Modellen basiert die Schulung?", "Auf den drei etablierten Kulturmodellen: Erin Meyers Culture Map, Hofstedes Kulturdimensionen und der Werte-Theorie von Schwartz — kombiniert mit First-Hand-Erfahrung aus realen interkulturellen Teams und Projekten von DE/EU über Russland, USA und Südamerika bis Afrika, Indien und Pakistan."),
-            ("Welche Regionen deckt die Schulung ab?", "Deutschland/EU (auch die unterschätzten internen Unterschiede), Russland und Osteuropa, USA, Südamerika, Afrika sowie Indien und Pakistan. Auf Wunsch legen wir den Schwerpunkt auf die Regionen, mit denen Sie konkret arbeiten."),
-            ("Wie lange dauert die Schulung?", "1,5 bis 2 Tage mit vier Sessions à 3 Stunden — inhouse oder online. Im Praxisteil erstellen die Teilnehmenden eine Kultur-Risiko-Analyse für ihr eigenes internationales Vorhaben."),
+            ("Who is cross-cultural management training for?", "Leaders, project leads and teams with an international dimension — from international teams via joint ventures and subsidiary setups to hiring employees from other cultures."),
+            ("What does the training cost?", "3,475 € for the first person, plus 875 € for each additional person. From 8 people the capped flat rate of 9,875 € applies. All prices excl. VAT"),
+            ("Which models is the training based on?", "Three established culture models: Erin Meyer's Culture Map, Hofstede's cultural dimensions and Schwartz's values theory — combined with first-hand experience from real cross-cultural teams and projects from Germany/EU via Russia, the USA and South America to Africa, India and Pakistan."),
+            ("Which regions does the training cover?", "Germany/EU (including underestimated internal differences), Russia and Eastern Europe, the USA, South America, Africa, and India and Pakistan. On request we focus on the regions you work with directly."),
+            ("How long is the training?", "1.5 to 2 days with four sessions of 3 hours each — on-site or online. In the practical part participants create a cultural risk analysis for their own international initiative."),
         ],
-        "cta_h2": "Managen Sie internationale Teams mit Kulturverständnis",
-        "cta_body": "Im freeen Erstgespräch klären wir Regionen-Schwerpunkt, Teamgröße und Termin — unverbindlich, in 30 Minuten.",
+        "cta_h2": "Manage international teams with cultural understanding",
+        "cta_body": "In a free intro call we clarify regional focus, team size and date — no obligation, 30 minutes.",
     },
 ]

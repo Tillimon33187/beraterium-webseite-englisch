@@ -3236,40 +3236,40 @@ _SCH_PRICING: dict[str, dict] = {
 
 
 def schulung_price_section(offer: dict, *, pre: str) -> str:
-    """Preisblock einer Schulung: Basis + Aufpreis + gedeckelte Team-Pauschale."""
+    """Price block for a training: base + add-on + capped team flat rate."""
     team_max = offer.get("team_max")
     if team_max:
         intro = (
-            f"Buchbar f\u00fcr einzelne Mitarbeitende oder Kleingruppen "
-            f"\u2014 pauschal bis max. {team_max} Teilnehmer."
+            f"Bookable for individual employees or small groups "
+            f"\u2014 flat rate for up to {team_max} participants."
         )
         team_card = (
-            f"<strong>{format_eur(offer['price_team'])} pauschal</strong><br>"
-            f"Max. {team_max} Teilnehmer."
+            f"<strong>{format_eur(offer['price_team'])} flat rate</strong><br>"
+            f"Max. {team_max} participants."
         )
     else:
         intro = (
-            f"Buchbar f\u00fcr einzelne Mitarbeitende, Kleingruppen oder das ganze Team "
-            f"\u2014 ab {offer['team_from']} Personen greift die gedeckelte Team-Pauschale."
+            f"Bookable for individual employees, small groups or the whole team "
+            f"\u2014 from {offer['team_from']} people the capped team flat rate applies."
         )
         team_card = (
-            f"<strong>{format_eur(offer['price_team'])} pauschal</strong> ab {offer['team_from']} Personen<br>"
-            f"Gedeckelt \u2014 mehr Teilnehmer kosten nicht mehr."
+            f"<strong>{format_eur(offer['price_team'])} flat rate</strong> from {offer['team_from']} people<br>"
+            f"Capped \u2014 additional participants cost no more."
         )
     return f"""
     <section class="brt-section brt-section--alt" id="preis" aria-labelledby="preis-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">PREIS (NETTO ZZGL. UST.)</p>
-          <h2 id="preis-title" class="brt-h2">Was kostet die Schulung?</h2>
+          <p class="brt-tag">PRICE (EXCL. VAT)</p>
+          <h2 id="preis-title" class="brt-h2">What does the training cost?</h2>
           <p class="brt-body">{intro}</p>
         </header>
         <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Einzeln</h3><p class="brt-body"><strong>{format_eur(offer["price_base"])}</strong><br>Basispreis f\u00fcr die erste Person.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Kleingruppe</h3><p class="brt-body"><strong>+{format_eur(offer["price_add"])}</strong> je weiterem Teilnehmer<br>Sie zahlen nur, wer wirklich teilnimmt.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Ganzes Team</h3><p class="brt-body">{team_card}</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Individual</h3><p class="brt-body"><strong>{format_eur(offer["price_base"])}</strong><br>Base price for the first person.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Small group</h3><p class="brt-body"><strong>+{format_eur(offer["price_add"])}</strong> per additional participant<br>You only pay for people who actually attend.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Whole team</h3><p class="brt-body">{team_card}</p></li>
         </ul>
-        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Alle Preise und Angebote im \u00dcberblick: <a href="{pre}pricing/">Preise &amp; Leistungen</a>.</p>
+        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">All prices and offers at a glance: <a href="{pre}pricing/">Pricing &amp; services</a>.</p>
       </div>
     </section>"""
 
@@ -3299,14 +3299,14 @@ def gen_schulung(cfg: dict) -> None:
         # Slider: zeigt 3 Karten, Pfeile blaettern (initCardsSlider in brt-site.js)
         sessions_block = (
             '<div class="brt-cards-slider brt-fade-up" data-cards-slider>'
-            '<div class="brt-cards-slider__viewport" tabindex="0" role="group" aria-label="Sessions der Schulung">'
+            '<div class="brt-cards-slider__viewport" tabindex="0" role="group" aria-label="Training sessions">'
             f'<ul class="brt-cards-slider__track">{session_cards}</ul>'
             "</div>"
             '<div class="brt-cards-slider__nav">'
-            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--prev" aria-label="Vorherige Session">'
+            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--prev" aria-label="Previous session">'
             '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
             "</button>"
-            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--next" aria-label="N\u00e4chste Session">'
+            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--next" aria-label="Next session">'
             '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'
             "</button></div></div>"
         )
@@ -3317,15 +3317,15 @@ def gen_schulung(cfg: dict) -> None:
         hero(
             pre, cfg["tag"], cfg["h1"], cfg["lead"],
             actions=(
-                f'<a class="brt-btn" href="{pre}contact/">Kostenloses Erstgespr\u00e4ch buchen</a>'
-                f'<a class="brt-btn brt-btn--outline" href="#preis">Zum Preis \u2192</a>'
+                f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a>'
+                f'<a class="brt-btn brt-btn--outline" href="#preis">See pricing \u2192</a>'
             ),
         )
         + f"""
     <section class="brt-section" id="fuer-wen" aria-labelledby="fuer-wen-title">
       <div class="brt-container brt-highlight-box brt-fade-up">
-        <p class="brt-tag">F\u00dcR WEN?</p>
-        <h2 id="fuer-wen-title" class="brt-h2">F\u00fcr wen ist diese Schulung gedacht?</h2>
+        <p class="brt-tag">WHO IS IT FOR?</p>
+        <h2 id="fuer-wen-title" class="brt-h2">Who is this training for?</h2>
         <p class="brt-body">{cfg["fuer_wen_intro"]}</p>
         <ul class="brt-list-check">{fuer_wen_items}</ul>
       </div>
@@ -3333,24 +3333,24 @@ def gen_schulung(cfg: dict) -> None:
     <section class="brt-section brt-section--alt" id="ablauf" aria-labelledby="ablauf-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">INHALTE &amp; ABLAUF</p>
-          <h2 id="ablauf-title" class="brt-h2">Wie l\u00e4uft die Schulung ab?</h2>
-          <p class="brt-body">Dauer: {offer["duration"]} \u2014 inhouse bei Ihnen vor Ort oder online. Zielgruppe: {cfg["audience"]}.</p>
+          <p class="brt-tag">CONTENT &amp; FORMAT</p>
+          <h2 id="ablauf-title" class="brt-h2">How does the training work?</h2>
+          <p class="brt-body">Duration: {offer["duration"]} \u2014 on-site at your premises or online. Audience: {cfg["audience"]}.</p>
         </header>
         {sessions_block}
       </div>
     </section>
     <section class="brt-section" id="ergebnis" aria-labelledby="ergebnis-title">
       <div class="brt-container brt-highlight-box brt-fade-up">
-        <p class="brt-tag">ERGEBNIS</p>
-        <h2 id="ergebnis-title" class="brt-h2">Was nehmen Sie mit?</h2>
+        <p class="brt-tag">OUTCOMES</p>
+        <h2 id="ergebnis-title" class="brt-h2">What do you take away?</h2>
         <ul class="brt-list-check">{ergebnis_items}</ul>
       </div>
     </section>"""
         + schulung_price_section(offer, pre=pre)
         + schulung_geo_note(cfg["nr"], pre=pre)
         + faq_section(cfg["faq"])
-        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], "Kostenloses Erstgespr\u00e4ch buchen")
+        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], "Book a free intro call")
     )
 
     breadcrumb_ld = json.dumps(
@@ -3359,7 +3359,7 @@ def gen_schulung(cfg: dict) -> None:
             "@type": "BreadcrumbList",
             "itemListElement": [
                 {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
-                {"@type": "ListItem", "position": 2, "name": "Schulungen", "item": f"{EN_SITE_URL}/training/"},
+                {"@type": "ListItem", "position": 2, "name": "Training", "item": f"{EN_SITE_URL}/training/"},
                 {"@type": "ListItem", "position": 3, "name": cfg["h1"], "item": f"{EN_SITE_URL}{canonical}"},
             ],
         },
@@ -3401,27 +3401,27 @@ def gen_schulungen_index() -> None:
         f'<h3 class="brt-h3">{cfg["h1"]}</h3>'
         f'<p class="brt-body">{_SCH_PRICING[cfg["nr"]]["desc"]}</p>'
         f'<p class="brt-meta">{_SCH_PRICING[cfg["nr"]]["duration"]} \u00b7 {offer_price_text(_SCH_PRICING[cfg["nr"]])}</p>'
-        f'<span class="brt-meta" aria-hidden="true">Zur Schulung \u2192</span></a></li>'
+        f'<span class="brt-meta" aria-hidden="true">View training \u2192</span></a></li>'
         for cfg in SCHULUNG_CONFIGS
     )
     schulungen_faq = [
-        ("Wie funktioniert das Preismodell der Schulungen?", "Jede Schulung hat einen Basispreis f\u00fcr die erste Person und einen festen Aufpreis je weiterem Teilnehmer. Ab einer definierten Gruppengr\u00f6\u00dfe greift eine gedeckelte Team-Pauschale \u2014 mehr Teilnehmer kosten dann nicht mehr. Alle Preise netto zzgl. USt."),
-        ("Kann ich eine Schulung f\u00fcr einen einzelnen Mitarbeiter buchen?", "Ja. Jede Schulung ist sowohl f\u00fcr einzelne Mitarbeitende (Basispreis) als auch f\u00fcr Kleingruppen oder das ganze Team buchbar \u2014 die Inhalte werden auf die Gruppengr\u00f6\u00dfe zugeschnitten."),
-        ("Finden die Schulungen bei uns im Haus statt?", "Ja, wahlweise inhouse bei Ihnen vor Ort oder online. Bei Team-Buchungen empfehlen wir inhouse \u2014 die Praxisteile arbeiten direkt an Ihren realen Prozessen und F\u00e4llen."),
-        ("Wie liegen die Preise im Marktvergleich?", "Team-Schulungen (SCH-04–06): ab 2.875 €, Team-Pauschalen 9.395–9.875 € — unter üblichen Inhouse-Preisen (2.500–4.000 €). Intensivformat (SCH-01–03): 3.475–4.975 € für 1:1/Kleinstgruppe — mehr als offene Seminare (250–500 €/Tag), weil Coaching-Tiefe und Transfer inklusive sind. Risikoexperte (SCH-07): 9.875 € (1 Pers.) statt 12.425 € als Einzelbuchungen."),
+        ("How does training pricing work?", "Each training has a base price for the first person and a fixed add-on per additional participant. From a defined group size a capped team flat rate applies \u2014 additional participants then cost no more. All prices excl. VAT."),
+        ("Can I book training for a single employee?", "Yes. Every training can be booked for individual employees (base price), small groups or the whole team \u2014 content is tailored to group size."),
+        ("Does training take place on our premises?", "Yes, either on-site at your premises or online. For team bookings we recommend on-site \u2014 practical parts work directly on your real processes and cases."),
+        ("How do prices compare in the market?", "Team trainings (SCH-04\u201306): from 2,875 \u20ac, team flat rates 9,395\u20139,875 \u20ac \u2014 below typical on-site prices (2,500\u20134,000 \u20ac). Intensive format (SCH-01\u201303): 3,475\u20134,975 \u20ac for 1:1/small group \u2014 more than open seminars (250\u2013500 \u20ac/day) because coaching depth and transfer are included. Risk Expert (SCH-07): 9,875 \u20ac (1 person) instead of 12,425 \u20ac as individual bookings."),
     ] + list(SCHULUNGEN_GEO_FAQ)
     main = (
-        hero(pre, "SCHULUNGEN", "Schulungen f\u00fcr Risikokultur, Innovation &amp; F\u00fchrung",
-             "Sieben vertiefende Schulungen \u2014 von der kompletten Ausbildung zum Risikoexperten \u00fcber die Risk-Awareness-Kultur nach Luftfahrt-Vorbild \u00fcber praktisches Risikomanagement bis zu Innovations-, Feedback- und interkulturellem Management. Buchbar f\u00fcr einzelne Mitarbeitende oder das ganze Team, inhouse oder online. Ausbildung zum Risikoexperten ab 9.875 \u20ac (2 Personen 14.315 \u20ac); Einzelschulungen Intensivformat ab 3.475 \u20ac (netto zzgl. USt.).",
+        hero(pre, "TRAINING", "Training for risk culture, innovation &amp; leadership",
+             "Seven in-depth trainings \u2014 from the full Risk Expert programme via aviation-inspired risk-awareness culture and practical risk management to innovation, feedback and cross-cultural management. Bookable for individual employees or the whole team, on-site or online. Risk Expert training from 9,875 \u20ac (2 people 14,315 \u20ac); individual intensive-format trainings from 3,475 \u20ac (excl. VAT).",
              compact=True,
-             actions=f'<a class="brt-btn" href="{pre}contact/">Kostenloses Erstgespr\u00e4ch buchen</a>')
+             actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a>')
         + f"""
     <section class="brt-section" id="katalog" aria-labelledby="katalog-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">SECHS SCHULUNGEN</p>
-          <h2 id="katalog-title" class="brt-h2">Welche Schulungen bietet Beraterium an?</h2>
-          <p class="brt-body">Alle Schulungen kommen aus der Praxis unserer Risikoanalysen \u2014 und geben Ihrem Team Methoden an die Hand, die es danach selbst anwenden kann.</p>
+          <p class="brt-tag">SEVEN TRAININGS</p>
+          <h2 id="katalog-title" class="brt-h2">Which trainings does Beraterium offer?</h2>
+          <p class="brt-body">All trainings come from our risk analysis practice \u2014 and give your team methods they can apply themselves afterwards.</p>
         </header>
         <ul class="brt-cards-3col brt-stagger">{cards}</ul>
       </div>
@@ -3429,20 +3429,20 @@ def gen_schulungen_index() -> None:
     <section class="brt-section brt-section--alt" id="preismodell" aria-labelledby="preismodell-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">DAS PREISMODELL</p>
-          <h2 id="preismodell-title" class="brt-h2">Ein Preismodell, drei Stufen</h2>
+          <p class="brt-tag">THE PRICING MODEL</p>
+          <h2 id="preismodell-title" class="brt-h2">One pricing model, three tiers</h2>
         </header>
         <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Einzeln</h3><p class="brt-body">Intensivformat ab 3.475 \u20ac oder Kombi-Ausbildung Risikoexperte ab 9.875 \u20ac \u2014 ideal, um eine Schulung erst einmal zu testen.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Kleingruppe</h3><p class="brt-body">Fester Aufpreis je weiterem Teilnehmer (725\u2013995 \u20ac je nach Schulung) \u2014 transparent und planbar, Sie zahlen nur, wer teilnimmt.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Ganzes Team</h3><p class="brt-body">Gedeckelte Team-Pauschale ab Gruppengr\u00f6\u00dfe (9.395\u20139.875 \u20ac) \u2014 mehr Teilnehmer kosten nicht mehr. Bewusst unter den \u00fcblichen Inhouse-Seminarpreisen (2.500\u20134.000 \u20ac).</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Individual</h3><p class="brt-body">Intensive format from 3,475 \u20ac or combined Risk Expert programme from 9,875 \u20ac \u2014 ideal to try one training first.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Small group</h3><p class="brt-body">Fixed add-on per additional participant (725\u2013995 \u20ac depending on training) \u2014 transparent and predictable; you only pay for people who attend.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Whole team</h3><p class="brt-body">Capped team flat rate from group size (9,395\u20139,875 \u20ac) \u2014 additional participants cost no more. Deliberately below typical on-site seminar prices (2,500\u20134,000 \u20ac).</p></li>
         </ul>
-        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Alle Staffeln im Detail: <a href="{pre}pricing/#schulungen">Preise &amp; Leistungen</a>.</p>
+        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">All tiers in detail: <a href="{pre}pricing/#schulungen">Pricing &amp; services</a>.</p>
       </div>
     </section>"""
         + schulungen_value_section(pre=pre)
-        + faq_section_html(schulungen_faq, title="H\u00e4ufige Fragen zu den Schulungen")
-        + cta_band(pre, "Welche Schulung passt zu Ihrem Team?", "Im kostenlosen Erstgespr\u00e4ch kl\u00e4ren wir Ziel, Teamgr\u00f6\u00dfe und den besten Einstieg \u2014 unverbindlich, in 30 Minuten.")
+        + faq_section_html(schulungen_faq, title="Frequently asked questions about training")
+        + cta_band(pre, "Which training fits your team?", "In a free intro call we clarify your goal, team size and the best starting point \u2014 no obligation, 30 minutes.")
     )
     breadcrumb_ld = json.dumps(
         {
@@ -3450,14 +3450,14 @@ def gen_schulungen_index() -> None:
             "@type": "BreadcrumbList",
             "itemListElement": [
                 {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
-                {"@type": "ListItem", "position": 2, "name": "Schulungen", "item": f"{EN_SITE_URL}/training/"},
+                {"@type": "ListItem", "position": 2, "name": "Training", "item": f"{EN_SITE_URL}/training/"},
             ],
         },
         ensure_ascii=False,
         indent=2,
     )
-    schulungen_title = "Schulungen Risikomanagement & F\u00fchrung | Beraterium"
-    schulungen_desc = "Sieben Inhouse-Schulungen: Ausbildung zum Risikoexperten ab 9.875 \u20ac, Einzelschulungen Intensivformat ab 3.475 \u20ac, Innovation, Feedback, interkulturelles Management."
+    schulungen_title = "Risk management & leadership training | Beraterium"
+    schulungen_desc = "Seven on-site trainings: Risk Expert programme from 9,875 \u20ac, individual intensive-format trainings from 3,475 \u20ac, innovation, feedback, cross-cultural management."
     write("training/index.html", shell(depth=1, title=schulungen_title, description=schulungen_desc,
           canonical="/training/", active_nav="training", main=main,
           json_ld=page_schema(faq_page_schema(schulungen_faq), speakable_webpage_schema("/training/", selectors=[".brt-highlight-box", ".brt-faq__answer", "#schulungen-vergleich .brt-body"]), breadcrumb_ld)))

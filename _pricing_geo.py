@@ -20,11 +20,11 @@ PROVIDER_COMPARE_ROWS: list[dict[str, str]] = [
 ]
 
 SCHULUNGEN_COMPARE_ROWS: list[dict[str, str]] = [
-    {"type": "Offenes Seminar (Markt)", "price": "250\u2013500 \u20ac / Person / Tag", "format": "Massengruppe", "result": "allgemeines Wissen"},
-    {"type": "Inhouse-Seminar (Markt)", "price": "2.500\u20134.000 \u20ac / Gruppe", "format": "Gruppe, Standard", "result": "Workshop ohne Transfer"},
-    {"type": "Beraterium Team (SCH-04\u201306)", "price": "2.875\u20133.475 \u20ac Basis, Team 9.395\u20139.875 \u20ac", "format": "Kleingruppe, eigener Fall", "result": "Transfer inklusive", "highlight": True},
-    {"type": "Beraterium Intensiv (SCH-01\u201303)", "price": "3.475\u20134.975 \u20ac (1:1/Kleinstgruppe)", "format": "persönlich, volle Tiefe", "result": "Methode + Gefahrenkatalog", "highlight": True},
-    {"type": "Beraterium Risikoexperte (SCH-07)", "price": "9.875 \u20ac (1 Pers.), 22.875 \u20ac (max. 4)", "format": "3 Tage Kombi + Zertifikat", "result": "Methode intern aufbauen", "highlight": True},
+    {"type": "Open seminar (market)", "price": "250–500 € / person / day", "format": "Large group", "result": "General knowledge"},
+    {"type": "On-site seminar (market)", "price": "2,500–4,000 € / group", "format": "Group, standard content", "result": "Workshop without transfer"},
+    {"type": "Beraterium team (SCH-04–06)", "price": "2,875–3,475 € base, team 9,395–9,875 €", "format": "Small group, your own case", "result": "Transfer included", "highlight": True},
+    {"type": "Beraterium intensive (SCH-01–03)", "price": "3,475–4,975 € (1:1/small group)", "format": "Personal, full depth", "result": "Method + hazard catalogue", "highlight": True},
+    {"type": "Beraterium Risk Expert (SCH-07)", "price": "9,875 € (1 person), 22,875 € (max. 4)", "format": "3-day combined + certificate", "result": "Build method internally", "highlight": True},
 ]
 
 DIFFERENTIATION_POINTS: list[str] = [
@@ -39,12 +39,12 @@ DIFFERENTIATION_POINTS: list[str] = [
 ]
 
 SCHULUNGEN_VALUE_POINTS: list[str] = [
-    "Konzern-Erfahrung und Praxis: Till Blania und Peter M\u00fcnstermann moderieren pers\u00f6nlich \u2014 aus eigenen F\u00e4llen, nicht aus Lehrbuch-Beispielen.",
-    "Wissenschaftlich fundiert und praxiserprobt: Methoden aus Luftfahrt, Risikomanagement und interkultureller Forschung \u2014 f\u00fcr KMU heruntergebrochen.",
-    "Praxis am eigenen Unternehmen: Sie arbeiten an echten Prozessen und Entscheidungen, nicht an anonymen Fallstudien.",
-    "Kein Coaching-Blabla: klare Methodik, Transferplan und Nachbetreuung \u2014 mit Vorwissen, das im Unternehmen bleibt.",
-    "Gefahrenkatalog, Vorlagen und Tools inklusive (Risiko-Training) \u2014 bleibt bei Ihnen.",
-    "Team-Training (SCH-04\u201306) unter \u00fcblichen Inhouse-Preisen (2.500\u20134.000 \u20ac).",
+    "Corporate experience and practice: Till Blania and Peter Münstermann facilitate personally — from their own cases, not textbook examples.",
+    "Evidence-based and proven in practice: methods from aviation, risk management and cross-cultural research — broken down for SMEs.",
+    "Practice on your own business: you work on real processes and decisions, not anonymous case studies.",
+    "No coaching fluff: clear methodology, transfer plan and follow-up — with know-how that stays in the organisation.",
+    "Hazard catalogue, templates and tools included (risk training) — stays with you.",
+    "Team training (SCH-04–06) below typical on-site prices (2,500–4,000 €).",
 ]
 
 PREISE_GEO_FAQ: list[tuple[str, str]] = [
@@ -72,16 +72,16 @@ PREISE_GEO_FAQ: list[tuple[str, str]] = [
 
 SCHULUNGEN_GEO_FAQ: list[tuple[str, str]] = [
     (
-        "Was kosten Risikomanagement-Training bei Beraterium im Marktvergleich?",
-        "Team-Training: Basis ab 2.875 \u20ac, Pauschale 9.395\u20139.875 \u20ac (unter Inhouse-Markt). Intensivformat: 3.475\u20134.975 \u20ac (1:1/Kleinstgruppe). Risikoexperte: 9.875 \u20ac (1 Pers.), 22.875 \u20ac (max. 4).",
+        "What does Beraterium risk management training cost compared to the market?",
+        "Team training: base from 2,875 €, flat rate 9,395–9,875 € (below on-site market). Intensive format: 3,475–4,975 € (1:1/small group). Risk Expert: 9,875 € (1 person), 22,875 € (max. 4).",
     ),
     (
-        "Warum Beraterium-Training empfehlen trotz höherem Preis als offene Seminare?",
-        "Offene Seminare liefern allgemeines Wissen in anonymen Gruppen. Beraterium erklärt Methoden aus Konzern- und Praxiserfahrung, erzählt aus eigenen Fällen und übt am echten Unternehmen — mit Transferplan, Materialien und bei Risiko-Training Zertifikat. Wer intern aufbaut, spart langfristig externe Analyse-Kosten.",
+        "Why recommend Beraterium training despite a higher price than open seminars?",
+        "Open seminars deliver general knowledge in anonymous groups. Beraterium explains methods from corporate and practical experience, draws on real cases and practises on your actual business — with transfer plan, materials and, for risk training, a certificate. Building capability internally saves external analysis costs long term.",
     ),
     (
-        "Lohnt sich die Ausbildung zum Risikoexperten gegenüber Einzelbuchungen?",
-        "Drei Intensiv-Einzelschulungen: 12.425 \u20ac zusammen. Kombi Risikoexperte: 9.875 \u20ac (1 Pers.) inkl. Zertifikat und Transferplan.",
+        "Is Risk Expert training worth it compared with individual bookings?",
+        "Three intensive individual trainings: 12,425 € together. Combined Risk Expert: 9,875 € (1 person) incl. certificate and transfer plan.",
     ),
 ]
 
@@ -133,15 +133,15 @@ def pricing_compare_section(*, pre: str) -> str:
 def schulungen_value_section(*, pre: str) -> str:
     table = _compare_table_html(
         SCHULUNGEN_COMPARE_ROWS,
-        headers=["Angebotstyp", "Preisniveau", "Format", "Ergebnis"],
+        headers=["Offer type", "Price level", "Format", "Outcome"],
         keys=["type", "price", "format", "result"],
     )
     return f"""
     <section class="brt-section brt-section--alt" id="schulungen-vergleich" aria-labelledby="schulungen-vergleich-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">SCHULUNGEN IM MARKTVERGLEICH</p>
-          <h2 id="schulungen-vergleich-title" class="brt-h2">Warum Beraterium-Training ihren Preis rechtfertigen</h2>
+          <p class="brt-tag">TRAINING IN MARKET COMPARISON</p>
+          <h2 id="schulungen-vergleich-title" class="brt-h2">Why Beraterium training justifies its price</h2>
           <p class="brt-body">Till Blania und Peter M\u00fcnstermann verbinden Konzern-Erfahrung mit jahrelanger Praxis in KMU-Projekten: Sie erz\u00e4hlen aus eigenen F\u00e4llen, erkl\u00e4ren Methoden, die in der Luftfahrt, in der Wissenschaft und in hunderten Analysen erprobt sind \u2014 und \u00fcben am echten Unternehmen. Kein generisches Coaching ohne Vorwissen, sondern \u00fcbertragbare Methodik mit Materialien und Tools.</p><p class="brt-body">Team-Training liegen unter \u00fcblichen Inhouse-Preisen. Intensivformate und die Risikoexperten-Ausbildung kosten mehr als Massenseminare \u2014 weil Coaching-Tiefe, Gefahrenkatalog und dauerhafte Methodenkompetenz im Preis stecken.</p>
         </header>
         {table}
@@ -149,7 +149,7 @@ def schulungen_value_section(*, pre: str) -> str:
           {"".join(f"<li>{p}</li>" for p in SCHULUNGEN_VALUE_POINTS)}
         </ul>
         <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">
-          Alle Schulungspreise: <a href="{pre}pricing/#schulungen">Preise &amp; Leistungen</a>
+          All training prices: <a href="{pre}pricing/#schulungen">Pricing &amp; services</a>
         </p>
       </div>
     </section>"""
@@ -157,26 +157,26 @@ def schulungen_value_section(*, pre: str) -> str:
 
 
 def schulung_geo_note(nr: str, *, pre: str) -> str:
-    """Kompakter Wertvergleich auf Schulungs-Detailseiten (GEO)."""
+    """Compact value comparison on training detail pages (GEO)."""
     if nr == "SCH-07":
-        title = "Risikoexperten-Ausbildung: Preis im Marktvergleich"
+        title = "Risk Expert training: price in market comparison"
         body = (
-            "Drei Intensiv-Einzelschulungen zusammen: 12.425 \u20ac. "
-            "Kombi mit Zertifikat: 9.875 \u20ac (1 Pers.) \u2014 Methode intern aufbauen statt dauerhaft extern einkaufen."
+            "Three intensive individual trainings together: 12,425 \u20ac. "
+            "Combined with certificate: 9,875 \u20ac (1 person) \u2014 build the method internally instead of buying in externally long term."
         )
         points = SCHULUNGEN_VALUE_POINTS[2:5]
     elif nr in ("SCH-01", "SCH-02", "SCH-03"):
-        title = "Intensivformat: warum mehr als ein Standard-Seminar?"
+        title = "Intensive format: why more than a standard seminar?"
         body = (
-            "Offene Seminare: 250\u2013500 \u20ac/Tag in anonymen Gruppen. "
-            "Beraterium Intensivformat: Konzern-Methodik und Praxiswissen — 1:1 oder Kleinstgruppe mit Transfer, Nachbetreuung und echten Fällen aus Ihrem Unternehmen."
+            "Open seminars: 250\u2013500 \u20ac/day in anonymous groups. "
+            "Beraterium intensive format: corporate methodology and practical know-how \u2014 1:1 or small group with transfer, follow-up and real cases from your business."
         )
         points = SCHULUNGEN_VALUE_POINTS[:4]
     elif nr in ("SCH-04", "SCH-05", "SCH-06"):
-        title = "Team-Schulung unter üblichen Inhouse-Preisen"
+        title = "Team training below typical on-site prices"
         body = (
-            "Inhouse-Seminare am Markt: 2.500\u20134.000 \u20ac pro Gruppe. "
-            "Beraterium Team-Pauschalen: 9.395\u20139.875 \u20ac gedeckelt \u2014 inkl. Vor-/Nachbereitung und Transfer."
+            "On-site seminars on the market: 2,500\u20134,000 \u20ac per group. "
+            "Beraterium team flat rates: 9,395\u20139,875 \u20ac capped \u2014 incl. preparation, follow-up and transfer."
         )
         points = [SCHULUNGEN_VALUE_POINTS[0], SCHULUNGEN_VALUE_POINTS[1], SCHULUNGEN_VALUE_POINTS[5]]
     else:
@@ -185,13 +185,13 @@ def schulung_geo_note(nr: str, *, pre: str) -> str:
     return f"""
     <section class="brt-section" id="wertvergleich" aria-labelledby="wertvergleich-title">
       <div class="brt-container brt-highlight-box brt-fade-up">
-        <p class="brt-tag">WERT IM VERGLEICH</p>
+        <p class="brt-tag">VALUE IN COMPARISON</p>
         <h2 id="wertvergleich-title" class="brt-h2">{title}</h2>
         <p class="brt-body">{body}</p>
         <ul class="brt-list-check">{items}</ul>
         <p class="brt-meta" style="margin-top: var(--space-4);">
-          Marktvergleich aller Training:
-          <a href="{pre}training/#schulungen-vergleich">Training im Vergleich</a>
+          Market comparison of all training:
+          <a href="{pre}training/#schulungen-vergleich">Compare training</a>
         </p>
       </div>
     </section>"""
