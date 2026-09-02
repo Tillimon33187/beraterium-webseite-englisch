@@ -334,6 +334,16 @@ def _keypoint_heading_score(keypoint_html: str, title: str) -> int:
     return score
 
 
+def _strip_inner_anchors(html: str) -> str:
+    """Flatten nested anchors in keypoint rows (invalid HTML + mixed link styles)."""
+    prev = None
+    out = html
+    while prev != out:
+        prev = out
+        out = re.sub(r"<a[^>]*>(.*?)</a>", r"\1", out, flags=re.DOTALL | re.IGNORECASE)
+    return out
+
+
 def _link_keypoints_items(keypoints_html: str, body_html: str) -> str:
     headings = [
         item
@@ -361,6 +371,7 @@ def _link_keypoints_items(keypoints_html: str, body_html: str) -> str:
         if best_score < 1 or not best_id:
             return match.group(0)
 
+        inner = _strip_inner_anchors(inner)
         return (
             f'<li><a class="brt-article__keypoints-link" href="#{best_id}">'
             f"{inner}</a></li>"
@@ -915,6 +926,12 @@ def format_date_en(d: date) -> str:
     return f"{d.day} {months[d.month - 1]} {d.year}"
 
 
+def ki_image_label_html() -> str:
+    """HTML overlay for KI-generated hero/thumb images (survives object-fit: cover crop)."""
+    label = "AI-generated image"
+    return f'<span class="brt-ki-image-label">{escape(label)}</span>'
+
+
 def blog_card_html(post: BlogPost, depth: int, featured: bool = False) -> str:
     pre = pfx(depth)
     href = f"{pre}blog/{post.slug}/"
@@ -931,7 +948,7 @@ def blog_card_html(post: BlogPost, depth: int, featured: bool = False) -> str:
         else f'<div class="brt-card__thumb">{thumb}</div>'
     )
     if "brt-card__thumb-img" in thumb:
-        thumb_wrap = f'<div class="brt-card__thumb">{thumb}</div>'
+        thumb_wrap = f'<div class="brt-card__thumb">{thumb}{ki_image_label_html()}</div>'
     meta = f"{format_date_en(post.date)} · approx. {post.reading_time_min} min."
     cat_slug = CATEGORY_SLUGS.get(post.category, "all")
     excerpt_html = ""

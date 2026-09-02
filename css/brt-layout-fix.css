@@ -262,6 +262,32 @@
   color: var(--color-accent);
 }
 
+/* KI-Vermerk auf Blog-Hero und Karten (CSS-Overlay — überlebt object-fit:cover) */
+.brt-article__hero-media {
+  position: relative;
+}
+
+.brt-ki-image-label {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 2;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(31, 42, 68, 0.88);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: clamp(0.625rem, 1.6vw, 0.75rem);
+  font-weight: 600;
+  line-height: 1.2;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.brt-card__thumb .brt-ki-image-label {
+  font-size: clamp(0.55rem, 2.2vw, 0.6875rem);
+  padding: 0.25rem 0.45rem;
+}
+
 /* KI-Transparenz-Hinweis am Artikelende (auto via _cms._append_ai_disclosure) */
 .brt-article__ai-disclosure {
   margin-top: var(--space-8);

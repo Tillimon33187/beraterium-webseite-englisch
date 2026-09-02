@@ -48,6 +48,7 @@ from _cms import (
     header_logo_html,
     home_team_section_html,
     img_html,
+    ki_image_label_html,
     load_blog_posts,
     load_team_members,
     person_schema,
@@ -2458,7 +2459,7 @@ def gen_blog_singles() -> None:
                 author_img = img
         hero_img = img_html(post.hero_image, post.hero_alt, 2, hero=True, css_class="brt-article__hero-img", aspect="16/9")
         hero_media = (
-            f'<figure class="brt-article__hero-media">{hero_img}</figure>'
+            f'<figure class="brt-article__hero-media">{hero_img}{ki_image_label_html()}</figure>'
             if "brt-image-placeholder" not in hero_img
             else f'<div class="brt-article__hero-media">{hero_img}</div>'
         )
