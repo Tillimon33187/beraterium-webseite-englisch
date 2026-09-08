@@ -223,7 +223,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_max": 4,
                 "price_detail": "9.875 € (1 Person) · 14.315 € (2 Personen) · +4.440 € je weiterer · max. 4 Personen 22.875 € pauschal · inkl. Gefahrenkatalog & Zertifikat",
                 "duration": "3 Tage intensiv (ca. 24 h) + Transfer & Zertifikat",
-                "slug": "risikoexperte",
+                "slug": "risk-expert",
                 "details_html": (
                     "<p>Die Kombi-Schulung vereint unsere drei Risikomanagement-Schulungen zu einer vollständigen "
                     "Ausbildung: Risk-Awareness-Kultur, \u201eDer risikobewusste Manager\u201c und \u201eRisikomanagement "
@@ -248,7 +248,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 10,
                 "price_detail": "Intensivformat: 3.975 € (1 Person) · +995 € je weiterer · ab 10 Personen 11.475 € pauschal · 1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi-Ausbildung",
                 "duration": "1 Tag (2 Sessions à 3 h) + Transfer-Paket",
-                "slug": "risk-awareness-kultur",
+                "slug": "risk-awareness-culture",
                 "details_html": (
                     "<p><strong>Intensivformat (1:1 oder Kleinstgruppe):</strong> Wesentlich detaillierter und persönlicher als das entsprechende Modul in der Kombi-Ausbildung zum Risikoexperten — ideal, wenn Sie nur dieses Thema vertiefen wollen.</p>"
                     "<p>Wie bereite ich ein Team so vor, dass Risiken kein No-Go mehr sind, sondern zum Lernprozess gehören? "
@@ -271,7 +271,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 8,
                 "price_detail": "Intensivformat: 3.475 € (1 Führungskraft) · +875 € je weiterer · ab 8 Personen 9.875 € pauschal · geschützter 1:1-Rahmen, deutlich tiefer als in der Kombi-Ausbildung",
                 "duration": "1 Kompakt-Tag (6 h)",
-                "slug": "risikobewusster-manager",
+                "slug": "risk-aware-manager",
                 "details_html": (
                     "<p><strong>Intensivformat für Führungskräfte (1:1 oder Kleinstgruppe):</strong> Geschützter Rahmen ohne eigene Mitarbeitende — deutlich persönlicher und tiefer als Modul 2 in der Kombi-Ausbildung.</p>"
                     "<p>Nur für Manager:innen: Fehler als Chance zum Wachstum sehen, Risiken nicht fürchten, sondern als Chance "
@@ -294,7 +294,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 10,
                 "price_detail": "Intensivformat: 4.975 € (1 Person) · +1.175 € je weiterer · ab 10 Personen 14.375 € pauschal · inkl. Gefahrenkatalog · 1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi-Ausbildung",
                 "duration": "1,5 Tage (3 Sessions à 4 h)",
-                "slug": "risikomanagement-praktisch",
+                "slug": "practical-risk-management",
                 "details_html": (
                     "<p><strong>Intensivformat (1:1 oder Kleinstgruppe):</strong> Volle Tiefe bei Matrix, Euro-Bewertung und Praxis an Ihrem echten Bereich — deutlich umfangreicher als Modul 3 in der Kombi-Ausbildung.</p>"
                     "<p>Schritt für Schritt unser System der Risikobewertung lernen — für Mitarbeitende, Führungskräfte, "
@@ -318,7 +318,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 10,
                 "price_detail": "2.995 € (1 Person) · +745 € je weiterer · ab 10 Personen 9.695 € pauschal · Kleingruppe, Praxis am eigenen Thema",
                 "duration": "1 Tag (2 Sessions à 3,5 h) + Transfer-Paket",
-                "slug": "innovationsmanagement",
+                "slug": "innovation-management",
                 "details_html": (
                     "<p><strong>Kleingruppen-Schulung:</strong> Innovationskultur und Pipeline am eigenen Unternehmen — unter üblichen Inhouse-Preisen, mit Transfer-Paket.</p>"
                     "<p>Nicht einmal ein Produkt auf den Markt bringen und in Vergessenheit geraten — sondern über Jahre "
@@ -341,7 +341,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 10,
                 "price_detail": "2.875 € (1 Person) · +725 € je weiterer · ab 10 Personen 9.395 € pauschal · inkl. Follow-up nach 4 Wochen",
                 "duration": "1 Tag (2 Sessions à 3 h) + Follow-up",
-                "slug": "feedbackkultur",
+                "slug": "feedback-culture",
                 "details_html": (
                     "<p><strong>Kleingruppen-Schulung:</strong> Feedbackkultur und Führungsstil im Team-Rahmen — inklusive Follow-up nach 4 Wochen.</p>"
                     "<p>Eine Arbeitsumgebung, in der Mitarbeitende und Führung in die gleiche Richtung arbeiten. "
@@ -365,7 +365,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 8,
                 "price_detail": "3.475 € (1 Person) · +875 € je weiterer · ab 8 Personen 9.875 € pauschal · Kleingruppe, internationale Praxis",
                 "duration": "1,5–2 Tage (4 Sessions à 3 h)",
-                "slug": "kulturelles-management",
+                "slug": "cultural-management",
                 "details_html": (
                     "<p><strong>Kleingruppen-Schulung:</strong> Interkulturelles Management mit First-Hand-Erfahrung — Praxis für Ihr internationales Vorhaben.</p>"
                     "<p>Umfangreiche Schulung für internationale Teams, Joint Ventures, Tochtergründungen — und für alle, "
