@@ -1,16 +1,13 @@
-# GitHub Pages Deployment — English site (en.beraterium.de)
+# Deployment — English site (www.beraterium.com)
 
 Based on [codepo8/hosting-on-github-template](https://github.com/codepo8/hosting-on-github-template).
 
-## Quick Setup
+## Live setup
 
-1. Create a **separate** GitHub repository (e.g. `beraterium-site-en`).
-2. Push the contents of `Webseite/site-en/` to the `main` branch root.
-3. In **Settings → Pages**:
-   - Source: **Deploy from a branch**
-   - Branch: `main`, folder: **/ (root)**
-4. Add DNS: `CNAME` for `en.beraterium.de` → `{username}.github.io` (file `CNAME` included).
-5. Site URL: `https://en.beraterium.de/`
+- **Canonical URL:** `https://www.beraterium.com/`
+- **GitHub repo:** [beraterium-webseite-englisch](https://github.com/Tillimon33187/beraterium-webseite-englisch)
+- **Hosting:** Plesk (OpusX) — same origin as legacy `en.beraterium.de`
+- **Redirect (Plesk/nginx):** `en.beraterium.de/*` → `https://www.beraterium.com/$1` (301)
 
 ## Build locally
 
@@ -34,6 +31,6 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 | Blog | `content/blog/*.md` |
 | Team | `content/team/*.yaml` |
 | Legal fragments | `_content/*.html` |
-| Homepage (hand-maintained) | `index.html` (team/blog teasers patched by generator) |
+| Homepage (hand-maintained) | `index.html` (SEO/analytics/teasers patched by generator) |
 
 Copy glossary: `EN_COPY_GLOSSARY.md`

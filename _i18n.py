@@ -1,10 +1,9 @@
-"""Cross-language routing and hreflang mapping for Beraterium DE/EN sites."""
+"""Cross-language routing and hreflang mapping for Beraterium DE/EN/RU sites."""
 from __future__ import annotations
 
 DE_SITE_URL = "https://www.beraterium.de"
 EN_SITE_URL = "https://www.beraterium.com"
 
-# Static page slug mapping: DE path (no leading/trailing slash) -> EN path
 STATIC_ROUTE_MAP: dict[str, str] = {
     "": "",
     "ueber-uns": "about",
@@ -19,6 +18,11 @@ STATIC_ROUTE_MAP: dict[str, str] = {
     "angebote/solo": "services/solo",
     "preise": "pricing",
     "schulungen": "training",
+    "internationale-angebote": "international-services",
+    "internationale-angebote/gruendung-deutschland": "international-services/founding-germany",
+    "internationale-angebote/leben-arbeiten-deutschland": "international-services/living-working-germany",
+    "internationale-angebote/business-turnaround": "international-services/business-turnaround",
+    "internationale-angebote/expansion-tochtergesellschaft": "international-services/expansion-subsidiary",
     "schulungen/risikoexperte": "training/risk-expert",
     "schulungen/risk-awareness-kultur": "training/risk-awareness-culture",
     "schulungen/risikobewusster-manager": "training/risk-aware-manager",
@@ -50,7 +54,16 @@ STATIC_ROUTE_MAP: dict[str, str] = {
     "tools/ra-vorbereitung": "tools/ra-preparation",
 }
 
-# Blog slug mapping: DE slug -> EN slug
+RU_ROUTE_MAP: dict[str, str] = {
+    "internationale-angebote": "ru/internationale-angebote",
+    "internationale-angebote/gruendung-deutschland": "ru/internationale-angebote/osnovanie-biznesa-germaniya",
+    "internationale-angebote/leben-arbeiten-deutschland": "ru/internationale-angebote/zhizn-i-rabota-germaniya",
+    "internationale-angebote/business-turnaround": "ru/internationale-angebote/biznes-zdorovye-proverka",
+    "internationale-angebote/expansion-tochtergesellschaft": "ru/internationale-angebote/ekspansiya-dochernaya-kompaniya",
+}
+
+DE_FROM_RU_ROUTE_MAP: dict[str, str] = {v: k for k, v in RU_ROUTE_MAP.items()}
+
 BLOG_SLUG_MAP: dict[str, str] = {
     "auslandsgrundung-risiken-standortwahl-strategie": "international-expansion-risks-location-strategy",
     "emotionale-fuehrung-kmu-eisbergmodell-risiko": "emotional-leadership-smb-iceberg-model-risk",
@@ -61,6 +74,7 @@ BLOG_SLUG_MAP: dict[str, str] = {
     "iran-konflikt-oelpreis-lieferketten-unternehmen": "iran-conflict-oil-price-supply-chains",
     "ki-unternehmen-risiken-agenten-marie-ossenkopf": "ai-business-risks-agents-marie-ossenkopf",
     "ki-und-risikomanagement-mensch-im-mittelpunkt": "ai-and-risk-management-people-first",
+    "ki-verordnung-deutschland-unternehmen": "eu-ai-act-germany-companies",
     "mensch-vertrauen-risikomanagement": "people-trust-risk-management",
     "mitarbeitersensibilisierung-risikobewusste-kultur": "employee-awareness-risk-conscious-culture",
     "mittelstand-fokus-risikomanagement": "mid-market-focus-risk-management",
@@ -77,13 +91,7 @@ BLOG_SLUG_MAP: dict[str, str] = {
     "what-is-risk-management": "what-is-risk-management",
     "zeit-als-risikofaktor-unternehmer-risikomanagement": "time-as-risk-factor-entrepreneurs-risk-management",
     "notfallplan-unternehmen-payment-ausfall": "business-emergency-plan-payment-outage-smb",
-    "cashflow-analyse-risikomanagement-kmu": "cashflow-analysis-risk-management-smb",
-    "cyberangriff-was-tun-kmu": "cyber-attack-what-to-do-smb",
-    "risiken-selbststaendige-freelancer": "risks-self-employed-freelancers",
-    "risikomanagement-beratung-kmu-anbieter": "risk-management-consulting-smb-providers",
-    "scheinselbststaendigkeit-pruefen": "false-self-employment-check",
-    "schluesselpersonrisiko-erkennen-absichern": "key-person-risk-identify-mitigate",
-    "unternehmensnachfolge-uebersehene-risiken": "business-succession-overlooked-risks",
+    "gruender-risikomanagement-medtech-christian-senfleben": "founder-risk-management-medtech-christian-senfleben",
 }
 
 EN_STATIC_ROUTE_MAP: dict[str, str] = {v: k for k, v in STATIC_ROUTE_MAP.items()}
@@ -98,8 +106,7 @@ def de_to_en_route(de_route: str) -> str:
     key = _normalize_route(de_route)
     if key.startswith("blog/"):
         slug = key.split("/", 1)[1]
-        en_slug = BLOG_SLUG_MAP.get(slug, slug)
-        return f"blog/{en_slug}"
+        return f"blog/{BLOG_SLUG_MAP.get(slug, slug)}"
     return STATIC_ROUTE_MAP.get(key, key)
 
 
@@ -107,64 +114,88 @@ def en_to_de_route(en_route: str) -> str:
     key = _normalize_route(en_route)
     if key.startswith("blog/"):
         slug = key.split("/", 1)[1]
-        de_slug = EN_BLOG_SLUG_MAP.get(slug, slug)
-        return f"blog/{de_slug}"
+        return f"blog/{EN_BLOG_SLUG_MAP.get(slug, slug)}"
     return EN_STATIC_ROUTE_MAP.get(key, key)
 
 
-def alternate_url(canonical: str, *, from_locale: str, to_locale: str) -> str:
-    """Return the URL on to_locale for a page identified by canonical on from_locale."""
+def _de_route_from_canonical(canonical: str, *, from_locale: str) -> str:
     route = _normalize_route(canonical)
+    if from_locale == "de":
+        return route
+    if from_locale == "en":
+        return en_to_de_route(route)
+    if from_locale == "ru":
+        return DE_FROM_RU_ROUTE_MAP.get(route, "")
+    return route
+
+
+def has_ru_version(canonical: str, *, from_locale: str = "de") -> bool:
+    de_route = _de_route_from_canonical(canonical, from_locale=from_locale)
+    return bool(de_route and de_route in RU_ROUTE_MAP)
+
+
+def alternate_url(canonical: str, *, from_locale: str, to_locale: str) -> str:
+    route = _normalize_route(canonical)
+    de_route = _de_route_from_canonical(canonical, from_locale=from_locale)
+
     if to_locale == "de":
         base = DE_SITE_URL
-        if from_locale == "en":
-            if route.startswith("blog/"):
-                slug = route.split("/", 1)[1]
-                path = f"blog/{EN_BLOG_SLUG_MAP.get(slug, slug)}"
-            else:
-                path = EN_STATIC_ROUTE_MAP.get(route, route)
-        else:
-            path = route
-    else:
+        path = de_route if de_route else route
+    elif to_locale == "en":
         base = EN_SITE_URL
-        if from_locale == "de":
-            if route.startswith("blog/"):
-                slug = route.split("/", 1)[1]
+        if de_route:
+            if de_route.startswith("blog/"):
+                slug = de_route.split("/", 1)[1]
                 path = f"blog/{BLOG_SLUG_MAP.get(slug, slug)}"
             else:
-                path = STATIC_ROUTE_MAP.get(route, route)
-        else:
+                path = STATIC_ROUTE_MAP.get(de_route, de_route)
+        elif from_locale == "en":
             path = route
+        else:
+            path = de_to_en_route(route)
+    elif to_locale == "ru":
+        base = DE_SITE_URL
+        if not de_route or de_route not in RU_ROUTE_MAP:
+            return ""
+        path = RU_ROUTE_MAP[de_route]
+    else:
+        base = DE_SITE_URL
+        path = route
+
     if not path or path == "404":
         return f"{base}/"
     return f"{base}/{path}/"
 
 
 def hreflang_links(canonical: str, *, current_locale: str) -> str:
-    """Generate reciprocal hreflang link tags."""
     de_url = alternate_url(canonical, from_locale=current_locale, to_locale="de")
     en_url = alternate_url(canonical, from_locale=current_locale, to_locale="en")
-    x_default = de_url
-    return (
-        f'\n  <link rel="alternate" hreflang="de" href="{de_url}">'
-        f'\n  <link rel="alternate" hreflang="en" href="{en_url}">'
-        f'\n  <link rel="alternate" hreflang="x-default" href="{x_default}">'
-    )
+    ru_url = alternate_url(canonical, from_locale=current_locale, to_locale="ru")
+    lines = [
+        f'\n  <link rel="alternate" hreflang="de" href="{de_url}">',
+        f'\n  <link rel="alternate" hreflang="en" href="{en_url}">',
+    ]
+    if ru_url:
+        lines.append(f'\n  <link rel="alternate" hreflang="ru" href="{ru_url}">')
+    lines.append(f'\n  <link rel="alternate" hreflang="x-default" href="{de_url}">')
+    return "".join(lines)
 
 
 def language_switcher_html(*, current_locale: str, canonical: str, depth: int) -> str:
-    """Compact DE | EN switcher for header/footer."""
-    if current_locale == "en":
-        other_locale = "de"
-    else:
-        other_locale = "en"
-    other_url = alternate_url(canonical, from_locale=current_locale, to_locale=other_locale)
-    current_label = "DE" if current_locale == "de" else "EN"
-    other_label = "EN" if current_locale == "de" else "DE"
+    _ = depth
+    parts: list[str] = []
+    for loc, label in (("de", "DE"), ("en", "EN"), ("ru", "RU")):
+        if loc == current_locale:
+            parts.append(f'<span class="site-header__lang-current" aria-current="true">{label}</span>')
+        else:
+            url = alternate_url(canonical, from_locale=current_locale, to_locale=loc)
+            if not url:
+                continue
+            parts.append(
+                f'<a class="site-header__lang-link" href="{url}" hreflang="{loc}">{label}</a>'
+            )
+    inner = '<span class="site-header__lang-sep" aria-hidden="true">|</span>'.join(parts)
     return (
         f'<div class="site-header__lang" role="navigation" aria-label="Language">'
-        f'<span class="site-header__lang-current" aria-current="true">{current_label}</span>'
-        f'<span class="site-header__lang-sep" aria-hidden="true">|</span>'
-        f'<a class="site-header__lang-link" href="{other_url}" hreflang="{other_locale}">{other_label}</a>'
-        f"</div>"
+        f"{inner}</div>"
     )

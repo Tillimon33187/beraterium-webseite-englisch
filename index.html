@@ -24,7 +24,9 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BM435GHE6W"></script>
   <script>
     gtag('js', new Date());
-    gtag('config', 'G-BM435GHE6W');
+    gtag('config', 'G-BM435GHE6W', {
+      linker: { domains: ['beraterium.de', 'beraterium.com'] }
+    });
     function brtGrantAnalyticsConsent() {
       gtag('consent', 'update', { analytics_storage: 'granted' });
     }
@@ -47,15 +49,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Risk management for SMEs, startups &amp; self-employed professionals | Beraterium</title>
   <meta name="description" content="Beraterium makes enterprise risk management understandable, affordable and ready to use for mid-market businesses. Book a free intro call.">
-  <link rel="canonical" href="https://en.beraterium.de/">
+  <link rel="canonical" href="https://www.beraterium.com/">
   <link rel="alternate" hreflang="de" href="https://www.beraterium.de/">
-  <link rel="alternate" hreflang="en" href="https://en.beraterium.de/">
+  <link rel="alternate" hreflang="en" href="https://www.beraterium.com/">
   <link rel="alternate" hreflang="x-default" href="https://www.beraterium.de/">
 
   <meta property="og:title" content="Risk management for SMEs, startups &amp; self-employed professionals | Beraterium">
   <meta property="og:description" content="Beraterium makes enterprise risk management understandable, affordable and ready to use for mid-market businesses.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://en.beraterium.de/">
+  <meta property="og:url" content="https://www.beraterium.com/">
   <meta property="og:locale" content="en_GB">
 
   <link rel="icon" href="favicon.ico" sizes="any">
@@ -77,10 +79,10 @@
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://en.beraterium.de/#organization",
+        "@id": "https://www.beraterium.com/#organization",
         "name": "Beraterium",
-        "url": "https://en.beraterium.de/",
-        "logo": "https://en.beraterium.de/img/logo-en/logo-black.png",
+        "url": "https://www.beraterium.com/",
+        "logo": "https://www.beraterium.com/img/logo-en/logo-black.png",
         "description": "Risk management and business consulting for startups, SMEs and solo self-employed professionals – enterprise methods, understandable and affordable.",
         "founder": [
           { "@type": "Person", "name": "Till Manfred Blania" },
@@ -92,10 +94,10 @@
       },
       {
         "@type": "WebSite",
-        "@id": "https://en.beraterium.de/#website",
-        "url": "https://en.beraterium.de/",
+        "@id": "https://www.beraterium.com/#website",
+        "url": "https://www.beraterium.com/",
         "name": "Beraterium",
-        "publisher": { "@id": "https://en.beraterium.de/#organization" },
+        "publisher": { "@id": "https://www.beraterium.com/#organization" },
         "inLanguage": "en-GB"
       }
     ]
@@ -133,6 +135,7 @@
             <li><a href="services/smb/">SME</a></li>
             <li><a href="services/solo/">Solo self-employed</a></li>
             <li><a href="training/">Training</a></li>
+            <li><a href="international-services/">International Services</a></li>
             <li><a href="pricing/">Pricing</a></li>
           </ul>
         </li>
@@ -546,7 +549,7 @@
         </li>
         <li class="brt-card brt-card--blog brt-hover-lift" data-category="smb">
           <a class="brt-card__link" href="blog/business-emergency-plan-payment-outage-smb/">
-<div class="brt-card__thumb"><img src="img/blog/business-emergency-plan-payment-outage-smb-hero.png" alt="SME leadership and IT lead reviewing an emergency plan for payment failure and order system outage on a laptop in the office" class="brt-card__thumb-img" srcset="img/blog/business-emergency-plan-payment-outage-smb-hero-480w.webp 480w, img/blog/business-emergency-plan-payment-outage-smb-hero-960w.webp 960w, img/blog/business-emergency-plan-payment-outage-smb-hero-1440w.webp 1440w, img/blog/business-emergency-plan-payment-outage-smb-hero.png 1920w" sizes="(max-width: 768px) 100vw, 960px" loading="lazy" decoding="async"><span class="brt-ki-image-label">AI-generated image</span></div>
+<div class="brt-card__thumb"><img src="img/blog/business-emergency-plan-payment-outage-smb-hero.png" alt="SME leadership and IT lead reviewing an emergency plan for payment failure and order system outage on a laptop in the office" class="brt-card__thumb-img" width="1536" height="1024" srcset="img/blog/business-emergency-plan-payment-outage-smb-hero-480w.webp 480w, img/blog/business-emergency-plan-payment-outage-smb-hero-960w.webp 960w, img/blog/business-emergency-plan-payment-outage-smb-hero-1440w.webp 1440w, img/blog/business-emergency-plan-payment-outage-smb-hero.png 1536w" sizes="(max-width: 768px) 100vw, 960px" loading="lazy" decoding="async"><span class="brt-ki-image-label">AI-generated image</span></div>
             <div class="brt-card__body">
               <span class="brt-tag brt-tag--small">SME</span>
               <h3 class="brt-h3">Business Emergency Plan: What to Do When Payment or Your Order System Is Down for 48 Hours</h3>
@@ -743,6 +746,7 @@
         <li><a href="services/">Overview</a></li>
         <li><a href="pricing/">Pricing &amp; services</a></li>
         <li><a href="training/">Training</a></li>
+        <li><a href="international-services/">International Services</a></li>
       </ul>
     </section>
     <section>
@@ -822,6 +826,8 @@
 <script src="js/brt-analytics.js?v=20260810-ga4-events-v1"></script>
 <script src="js/brt-analytics.js?v=20260810-ga4-events-v1"></script>
 <script src="js/brt-analytics.js?v=20260810-ga4-events-v1"></script>
+<script src="js/brt-analytics.js?v=20260828-nav-training-cap-v1"></script>
+<script src="js/brt-analytics.js?v=20260828-nav-training-cap-v1"></script>
 <script src="js/brt-analytics.js?v=20260828-nav-training-cap-v1"></script>
 <script src="js/brt-analytics.js?v=20260828-nav-training-cap-v1"></script>
 <script src="js/brt-analytics.js?v=20260828-nav-training-cap-v1"></script>

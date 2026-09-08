@@ -4,8 +4,8 @@ backend:
   name: github
   repo: your-org/beraterium-site-en
   branch: main
-  base_url: https://en.beraterium.de
-  site_url: https://en.beraterium.de
+  base_url: https://www.beraterium.com
+  site_url: https://www.beraterium.com
 
 media_folder: img
 public_folder: img

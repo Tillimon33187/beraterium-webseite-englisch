@@ -1,23 +1,23 @@
-"""Zentrale, normalisierte Preisquelle für die Seite /pricing/.
+"""Zentrale, normalisierte Preisquelle für die Seite /preise/.
 
-Einzige Quelle für sichtbare Price tablen, Offer/OfferCatalog-JSON-LD und
+Einzige Quelle für sichtbare Preistabellen, Offer/OfferCatalog-JSON-LD und
 den Preis-Abschnitt in llms.txt. Normalisiert aus dem Angebotskatalog
 `Angebote/Nagebot mit PREISEN .xlsx` (Sheets: RA / WS / ZUS / HR).
 
 Preis-Modelle pro Angebot (genau eines):
-- price:      Festpreis in EUR (0 = free)
-- price_from: "ab"-Preis in EUR, mit optionalem unit ("per person" etc.);
+- price:      Festpreis in EUR (0 = kostenlos)
+- price_from: "ab"-Preis in EUR, mit optionalem unit ("pro Person" etc.);
               Staffel/Zusammensetzung als Klartext in price_detail
 - price_base: Basispreis in EUR (1 Teilnehmer) + price_add je weiterem
               Teilnehmer + price_team (gedeckelte Team-Pauschale) ab
               team_from Personen; Staffel als Klartext in price_detail
 Jedes Angebot hat details_html: eine ausklappbare Detail-Sektion auf
-/pricing/ (Lead-Absatz + Bullet-Liste), normalisiert aus den Spalten
+/preise/ (Lead-Absatz + Bullet-Liste), normalisiert aus den Spalten
 "Inhalt & Leistung"/"Resultate & Mehrwert" der xlsx-Sheets bzw. aus
-Angebote/Beraterium_Angebote_UEBERSICHT.md (HR). Training (SCH-*) haben
-zusätzlich slug (Unterseite /training/<slug>/) mit Link im Detail-Teaser;
-Quelle der Schulungsinhalte: Angebote/training/*.md
-Alle Preise excl. VAT excl. VAT
+Angebote/Beraterium_Angebote_UEBERSICHT.md (HR). Schulungen (SCH-*) haben
+zusätzlich slug (Unterseite /schulungen/<slug>/) mit Link im Detail-Teaser;
+Quelle der Schulungsinhalte: Angebote/schulungen/*.md
+Alle Preise netto zzgl. USt.
 """
 from __future__ import annotations
 
@@ -27,8 +27,8 @@ from typing import Any
 PRICE_CATEGORIES: list[dict[str, Any]] = [
     {
         "id": "analyse",
-        "title": "Risk analysis & strategy",
-        "tag": "ANALYSIS PACKAGES",
+        "title": "Risikoanalyse & Strategie",
+        "tag": "ANALYSEPAKETE",
         "lede": "Festpreis-Pakete von der ersten Analyse bis zur begleiteten Umsetzung — das Kernpaket Risiko-Analyse 360° bündelt Analyse, Strategie und Budget in einem Festpreis.",
         "offers": [
             {
@@ -117,16 +117,16 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
     {
         "id": "workshops",
         "title": "Workshops",
-        "tag": "TEAM WORKSHOPS",
-        "lede": "Preis per person mit Mengenstaffel — je größer die Gruppe, desto günstiger pro Kopf. Alle Workshops in Präsenz.",
+        "tag": "TEAM-WORKSHOPS",
+        "lede": "Preis pro Person mit Mengenstaffel — je größer die Gruppe, desto günstiger pro Kopf. Alle Workshops in Präsenz.",
         "offers": [
             {
                 "nr": "WS-01",
                 "name": "Risiken allgemein (60 Min.)",
                 "desc": "Einführung ins Risikomanagement: Was ist ein Risiko, warum betrifft es jedes Unternehmen — Team-Sensibilisierung.",
                 "price_from": 57,
-                "unit": "per person",
-                "price_detail": "Einzeln 127 € · ab 4 Personen 118 € · ab 8 Personen 57 € per person",
+                "unit": "pro Person",
+                "price_detail": "Einzeln 127 € · ab 4 Personen 118 € · ab 8 Personen 57 € pro Person",
                 "duration": "60 Minuten",
                 "details_html": (
                     "<p>Der niedrigschwellige Einstieg: Was ist überhaupt ein Risiko, warum betrifft es jedes Unternehmen — mit praktischen Beispielen statt Theorie.</p><ul><li>Team versteht: Risikomanagement muss nicht komplex sein</li><li>Erste Sensibilisierung als Grundlage für vertiefende Workshops (z. B. „Risiken sichtbar machen“)</li><li>Ideal vor oder direkt nach einer Analyse, um das ganze Team mitzunehmen</li></ul>"
@@ -137,8 +137,8 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "name": "Risiken sichtbar machen (120 Min.)",
                 "desc": "Wie erkennen Mitarbeitende und Führungskräfte Risiken im Alltag — und wie melden sie sie früh?",
                 "price_from": 97,
-                "unit": "per person",
-                "price_detail": "Einzeln 185 € · ab 4 Personen 147 € · ab 8 Personen 97 € per person",
+                "unit": "pro Person",
+                "price_detail": "Einzeln 185 € · ab 4 Personen 147 € · ab 8 Personen 97 € pro Person",
                 "duration": "120 Minuten",
                 "details_html": (
                     "<p>Wie erkennen Mitarbeitende und Führungskräfte Risiken im Alltag — und wie melden sie sie, bevor daraus ein Problem wird? Mit Szenarien, Rollenspielen und Fallbeispielen.</p><ul><li>Konkrete Handlungsschritte, wenn jemand ein Risiko bemerkt</li><li>Ziel: Probleme werden früh gemeldet statt spät entdeckt</li><li>Entlastet die Geschäftsführung, weil das Team proaktiv meldet statt zu schweigen</li></ul>"
@@ -149,8 +149,8 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "name": "Risiko-Grundlagen, wiederholend (60 Min.)",
                 "desc": "Vertiefung im Unternehmenskontext: das Team lernt, die eigenen Top-Risiken zu benennen und einzuordnen. Max. 20 Personen.",
                 "price_from": 117,
-                "unit": "per person",
-                "price_detail": "ab 117 € per person, nach Gruppengröße",
+                "unit": "pro Person",
+                "price_detail": "ab 117 € pro Person, nach Gruppengröße",
                 "duration": "60 Minuten",
                 "details_html": (
                     "<p>Vertiefung direkt im Unternehmenskontext, meist im Anschluss an eine Risikoanalyse: das Team lernt, die eigenen Top-Risiken zu benennen, einzuordnen und zu priorisieren.</p><ul><li>Strukturierte Kategorisierung: strategisch, operativ, finanziell, HR</li><li>Max. 20 Personen, damit wirklich jeder mitdiskutiert</li><li>Bindeglied zwischen Analyse und Umsetzung — das Team spricht danach dieselbe Sprache</li></ul>"
@@ -161,8 +161,8 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "name": "Kulturelle Grundlage (180 Min.)",
                 "desc": "Kultur-Workshop zu psychologischer Sicherheit: das Team traut sich, Probleme und Risiken offen anzusprechen.",
                 "price_from": 112,
-                "unit": "per person",
-                "price_detail": "Einzeln 197 € · ab 4 Personen 162 € · ab 8 Personen 112 € per person",
+                "unit": "pro Person",
+                "price_detail": "Einzeln 197 € · ab 4 Personen 162 € · ab 8 Personen 112 € pro Person",
                 "duration": "180 Minuten",
                 "details_html": (
                     "<p>Kein Workshop über Risiken, sondern über die Kultur, die Risikomanagement erst möglich macht: psychologische Sicherheit, damit sich niemand scheut, Probleme offen anzusprechen.</p><ul><li>Team entwickelt gemeinsam, was es braucht, um sich sicher zu fühlen</li><li>Verteilte Verantwortung statt einer Geschäftsführung, die allein alles trägt</li><li>Besonders wirksam bei schnell wachsenden Teams oder im Generationenwechsel</li></ul>"
@@ -173,8 +173,8 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "name": "Globale Risiken & Entwicklungen (60 Min.)",
                 "desc": "Für international agierende Unternehmen: aktuelle globale Risikolandschaft, Regulierung und Expansions-Märkte.",
                 "price_from": 177,
-                "unit": "per person",
-                "price_detail": "Einzeln 347 € · ab 4 Personen 287 € · ab 8 Personen 177 € per person",
+                "unit": "pro Person",
+                "price_detail": "Einzeln 347 € · ab 4 Personen 287 € · ab 8 Personen 177 € pro Person",
                 "duration": "60 Minuten",
                 "details_html": (
                     "<p>Für Unternehmen mit internationalem Geschäft: aktuelle globale Risikolandschaft, Marktvolatilität, Geopolitik und Regulierung (z. B. ESG, Green Deal) verständlich eingeordnet.</p><ul><li>Länderspezifische Einschätzung passend zu Ihren Expansionsplänen</li><li>Hilft, Investitionen in die richtigen Märkte statt in instabile zu priorisieren</li><li>Besonders relevant vor internationaler Expansion oder Export</li></ul>"
@@ -185,8 +185,8 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "name": "Risiken in der Expansionsphase (60 Min.)",
                 "desc": "Speziell für Startups und schnell wachsende Unternehmen: welche Risiken jede Wachstumsphase mitbringt.",
                 "price_from": 113,
-                "unit": "per person",
-                "price_detail": "Einzeln 197 € · ab 4 Personen 152 € · ab 8 Personen 113 € per person",
+                "unit": "pro Person",
+                "price_detail": "Einzeln 197 € · ab 4 Personen 152 € · ab 8 Personen 113 € pro Person",
                 "duration": "60 Minuten",
                 "details_html": (
                     "<p>Speziell für Startups und schnell wachsende Unternehmen: welche Risiken jede Wachstumsphase typischerweise mitbringt — von 0–10 über 10–50 bis 50–200 Mitarbeitende.</p><ul><li>Fallbeispiele, wie andere Unternehmen diese Phasen gemeistert haben</li><li>Vorbereitung statt Überraschung: Kulturbrüche, erste Führungsprobleme, Burnout-Wellen vermeiden</li><li>Ideal kurz vor oder während einer Wachstumsphase</li></ul>"
@@ -197,8 +197,8 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "name": "Themen-Workshop mit Experten (120 Min.)",
                 "desc": "Tiefenthema zu einem spezifischen Risikobereich (z. B. IT-Sicherheit, Digitalisierung) mit Fachexperte. Max. 20 Personen.",
                 "price_from": 117,
-                "unit": "per person",
-                "price_detail": "ab 117 € per person, abhängig von Thema und Experte",
+                "unit": "pro Person",
+                "price_detail": "ab 117 € pro Person, abhängig von Thema und Experte",
                 "duration": "120 Minuten",
                 "details_html": (
                     "<p>Ein Tiefenthema zu einem spezifischen Risikobereich — etwa IT-Sicherheit, Datenschutz, Compliance oder Lieferketten — gemeinsam mit einer externen Fachperson.</p><ul><li>Lösungsorientiert statt nur theoretisch: konkrete Maßnahmen für genau diesen Bereich</li><li>Max. 20 Personen, Preis abhängig von Thema und Expertise</li><li>Macht Ihr Team unabhängiger von externen Beratern im Alltag</li></ul>"
@@ -208,174 +208,174 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
     },
     {
         "id": "schulungen",
-        "title": "Training",
-        "tag": "MULTI-DAY TRAINING",
-        "lede": "In-depth training over one or more days — individual trainings in intensive format (1:1 or small group, significantly deeper than in the combined programme), combined Risk Expert programme from 9,875 €. Base price for the first person, add-on per additional participant, capped team flat rate from group size. Expand details per training or open the training page.",
+        "title": "Schulungen",
+        "tag": "MEHRSTÜNDIGE SCHULUNGEN",
+        "lede": "Vertiefende Trainings über einen oder mehrere Tage — Einzelschulungen im Intensivformat (1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi), Kombi-Ausbildung zum Risikoexperten ab 9.875 €. Basispreis für die erste Person, Aufpreis je weiterem Teilnehmer, gedeckelte Team-Pauschale ab Gruppengröße. Details je Schulung ausklappen oder die Schulungsseite öffnen.",
         "offers": [
             {
                 "nr": "SCH-07",
-                "name": "Risk Expert training (combined programme)",
-                "desc": "The complete programme: risk-awareness culture, risk-aware leadership and practical risk management in one flow — equips you to implement our method in your own organisation.",
+                "name": "Ausbildung zum Risikoexperten (Kombi-Schulung)",
+                "desc": "Die komplette Ausbildung: Risk-Awareness-Kultur, risikobewusste Führung und praktisches Risikomanagement in einem Durchgang — befähigt, unsere Methode im eigenen Unternehmen umzusetzen.",
                 "price_base": 9875,
                 "price_add": 4440,
                 "price_team": 22875,
                 "team_from": 4,
                 "team_max": 4,
-                "price_detail": "9,875 € (1 person) · 14,315 € (2 people) · +4,440 € per additional · max. 4 people 22,875 € flat rate · incl. hazard catalogue & certificate",
-                "duration": "3 intensive days (approx. 24 h) + transfer & certificate",
-                "slug": "risk-expert",
+                "price_detail": "9.875 € (1 Person) · 14.315 € (2 Personen) · +4.440 € je weiterer · max. 4 Personen 22.875 € pauschal · inkl. Gefahrenkatalog & Zertifikat",
+                "duration": "3 Tage intensiv (ca. 24 h) + Transfer & Zertifikat",
+                "slug": "risikoexperte",
                 "details_html": (
-                    "<p>The combined programme brings together our three risk management trainings into one complete "
-                    "course: risk-awareness culture, The Risk-Aware Manager and Putting Risk Management into Practice. "
-                    "For managers and employees who own risk management in the organisation and should implement "
-                    "our method themselves.</p>"
-                    "<p><strong>Investment in internal risk competence:</strong> The training is deliberately comparable to our guided Risk Analysis 360° (3,475 €) and the XL full package (9,675 €) — with the difference that you build the method in-house long term instead of buying risk management in permanently.</p>"
+                    "<p>Die Kombi-Schulung vereint unsere drei Risikomanagement-Schulungen zu einer vollständigen "
+                    "Ausbildung: Risk-Awareness-Kultur, \u201eDer risikobewusste Manager\u201c und \u201eRisikomanagement "
+                    "praktisch umsetzen\u201c. Für Manager und Mitarbeitende, die Risikomanagement im Unternehmen "
+                    "verantworten und unsere Methode selbst umsetzen sollen.</p>"
+                    "<p><strong>Investition in interne Risikokompetenz:</strong> Die Ausbildung liegt bewusst auf Augenh\u00f6he mit unserer begleiteten Risiko-Analyse 360\u00b0 (3.475 \u20ac) bzw. dem Gesamtpaket XL (9.675 \u20ac) \u2014 mit dem Unterschied, dass Sie die Methode dauerhaft im Haus aufbauen, statt Risikomanagement dauerhaft einzukaufen.</p>"
                     "<ul>"
-                    "<li>Module 1: build error and risk-awareness culture inspired by aviation</li>"
-                    "<li>Module 2: as a leader, take calculated risks and see the business from the outside</li>"
-                    "<li>Module 3: run risk analysis yourself — matrix, hazard catalogue (included), euro valuation, measures</li>"
-                    "<li>Closing: Risk Expert certificate and transfer plan for your organisation</li>"
+                    "<li>Modul 1: Fehler- und Risk-Awareness-Kultur nach Luftfahrt-Vorbild aufbauen</li>"
+                    "<li>Modul 2: als Führungskraft Risiken kalkuliert eingehen und das Unternehmen von außen sehen</li>"
+                    "<li>Modul 3: Risikoanalyse selbst durchführen — Matrix, Gefahrenkatalog (inklusive), Euro-Bewertung, Maßnahmen</li>"
+                    "<li>Abschluss: Zertifikat als Risikoexperte:in und Transferplan für das eigene Unternehmen</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-01",
-                "name": "Risk management: the path to a risk-awareness culture",
-                "desc": "Build a learn-from-mistakes culture inspired by aviation: away from blame, towards improving together — for leadership and team.",
+                "name": "Risikomanagement: Der Weg zur Risk-Awareness-Kultur",
+                "desc": "Nach Luftfahrt-Vorbild eine Aus-Fehlern-lernen-Kultur aufbauen: weg vom Fingerzeigen, hin zum gemeinsamen Verbessern — für Führung und Team.",
                 "price_base": 3975,
                 "price_add": 995,
                 "price_team": 11475,
                 "team_from": 10,
-                "price_detail": "Intensive format: 3,975 € (1 person) · +995 € per additional · from 10 people 11,475 € flat rate · 1:1 or small group, significantly deeper than in the combined programme",
-                "duration": "1 day (2 sessions × 3 h) + transfer package",
-                "slug": "risk-awareness-culture",
+                "price_detail": "Intensivformat: 3.975 € (1 Person) · +995 € je weiterer · ab 10 Personen 11.475 € pauschal · 1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi-Ausbildung",
+                "duration": "1 Tag (2 Sessions à 3 h) + Transfer-Paket",
+                "slug": "risk-awareness-kultur",
                 "details_html": (
-                    "<p><strong>Intensive format (1:1 or small group):</strong> Significantly deeper and more personal than the corresponding module in the combined Risk Expert programme — ideal if you only want to deepen this topic.</p>"
-                    "<p>How do you prepare a team so that risks are no longer off limits but part of learning? "
-                    "Using aviation as the example, we build a culture where openly admitted mistakes are recognised instead of punished.</p>"
+                    "<p><strong>Intensivformat (1:1 oder Kleinstgruppe):</strong> Wesentlich detaillierter und persönlicher als das entsprechende Modul in der Kombi-Ausbildung zum Risikoexperten — ideal, wenn Sie nur dieses Thema vertiefen wollen.</p>"
+                    "<p>Wie bereite ich ein Team so vor, dass Risiken kein No-Go mehr sind, sondern zum Lernprozess gehören? "
+                    "Am Beispiel Luftfahrt wird eine Kultur aufgebaut, in der offen zugegebene Fehler gefeiert statt bestraft werden.</p>"
                     "<ul>"
-                    "<li>Just Culture inspired by aviation: reporting channels, debriefings, error rituals</li>"
-                    "<li>Leadership structure where mistakes are learned from — instead of looking for someone to blame</li>"
-                    "<li>Team aspect: everyone contributes instead of sweeping mistakes under the carpet</li>"
-                    "<li>Practical simulation: debriefing a real (anonymised) incident</li>"
+                    "<li>Just Culture nach Luftfahrt-Vorbild: Meldewege, Debriefings, Fehler-Rituale</li>"
+                    "<li>Führungsstruktur, in der aus Fehlern gelernt wird — statt Schuldige zu suchen</li>"
+                    "<li>Team-Aspekt: alle bringen sich ein, statt Fehler unter den Tisch zu kehren</li>"
+                    "<li>Praxis-Simulation: Debriefing eines echten (anonymisierten) Fehlerfalls</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-02",
-                "name": "The risk-aware manager",
-                "desc": "Specifically for leaders: reduce fear of mistakes and risks, take calculated risks — and see your own company neutrally from the outside again.",
+                "name": "Der risikobewusste Manager",
+                "desc": "Speziell für Führungskräfte: Angst vor Fehlern und Risiken abbauen, Risiken kalkuliert eingehen — und die eigene Firma wieder neutral von außen sehen.",
                 "price_base": 3475,
                 "price_add": 875,
                 "price_team": 9875,
                 "team_from": 8,
-                "price_detail": "Intensive format: 3,475 € (1 leader) · +875 € per additional · from 8 people 9,875 € flat rate · protected 1:1 setting, significantly deeper than in the combined programme",
-                "duration": "1 compact day (6 h)",
-                "slug": "risk-aware-manager",
+                "price_detail": "Intensivformat: 3.475 € (1 Führungskraft) · +875 € je weiterer · ab 8 Personen 9.875 € pauschal · geschützter 1:1-Rahmen, deutlich tiefer als in der Kombi-Ausbildung",
+                "duration": "1 Kompakt-Tag (6 h)",
+                "slug": "risikobewusster-manager",
                 "details_html": (
-                    "<p><strong>Intensive format for leaders (1:1 or small group):</strong> Protected setting without your own employees — significantly more personal and deeper than module 2 in the combined programme.</p>"
-                    "<p>For managers only: see mistakes as opportunities to grow, do not fear risks but treat them as "
-                    "chances and take them with calculation — and look at your own business with a neutral outside lens.</p>"
+                    "<p><strong>Intensivformat für Führungskräfte (1:1 oder Kleinstgruppe):</strong> Geschützter Rahmen ohne eigene Mitarbeitende — deutlich persönlicher und tiefer als Modul 2 in der Kombi-Ausbildung.</p>"
+                    "<p>Nur für Manager:innen: Fehler als Chance zum Wachstum sehen, Risiken nicht fürchten, sondern als Chance "
+                    "begreifen und kalkuliert eingehen — und das eigene Unternehmen mit der neutralen Außenbrille betrachten.</p>"
                     "<ul>"
-                    "<li>Understand and let go of fear of mistakes — leading by example for the team</li>"
-                    "<li>Decision frameworks for calculated risks (worst case, reversibility)</li>"
-                    "<li>Overcome operational blindness: pre-mortem, competitor perspective, outside walkthrough</li>"
-                    "<li>Practical exercise on your core process: top 3 risks and opportunities</li>"
+                    "<li>Fehlerangst verstehen und ablegen — Vorbildwirkung für das Team</li>"
+                    "<li>Entscheidungs-Frameworks für kalkulierte Risiken (Worst Case, Reversibilität)</li>"
+                    "<li>Betriebsblindheit lösen: Pre-Mortem, Konkurrenz-Perspektive, Außensicht-Walkthrough</li>"
+                    "<li>Praxisübung am eigenen Kernprozess: Top-3-Risiken und -Chancen</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-03",
-                "name": "Putting risk management into practice",
-                "desc": "Learn to apply the Beraterium system yourself: risk analysis with the team, matrix, hazard catalogue (included), euro valuation and actionable measures.",
+                "name": "Risikomanagement praktisch umsetzen",
+                "desc": "Das Beraterium-System selbst anwenden lernen: Risikoanalyse mit dem Team, Matrix, Gefahrenkatalog (inklusive), Euro-Bewertung und umsetzbare Maßnahmen.",
                 "price_base": 4975,
                 "price_add": 1175,
                 "price_team": 14375,
                 "team_from": 10,
-                "price_detail": "Intensive format: 4,975 € (1 person) · +1,175 € per additional · from 10 people 14,375 € flat rate · incl. hazard catalogue · 1:1 or small group, significantly deeper than in the combined programme",
-                "duration": "1.5 days (3 sessions × 4 h)",
-                "slug": "practical-risk-management",
+                "price_detail": "Intensivformat: 4.975 € (1 Person) · +1.175 € je weiterer · ab 10 Personen 14.375 € pauschal · inkl. Gefahrenkatalog · 1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi-Ausbildung",
+                "duration": "1,5 Tage (3 Sessions à 4 h)",
+                "slug": "risikomanagement-praktisch",
                 "details_html": (
-                    "<p><strong>Intensive format (1:1 or small group):</strong> Full depth on matrix, euro valuation and practice on your real area — significantly more comprehensive than module 3 in the combined programme.</p>"
-                    "<p>Step by step learn our risk assessment system — for employees, leaders, risk managers "
-                    "from businesses and owners who want to solve risk management internally. How it is done in "
-                    "large corporations, broken down into practical SME steps.</p>"
+                    "<p><strong>Intensivformat (1:1 oder Kleinstgruppe):</strong> Volle Tiefe bei Matrix, Euro-Bewertung und Praxis an Ihrem echten Bereich — deutlich umfangreicher als Modul 3 in der Kombi-Ausbildung.</p>"
+                    "<p>Schritt für Schritt unser System der Risikobewertung lernen — für Mitarbeitende, Führungskräfte, "
+                    "Risikomanager aus Unternehmen und Unternehmer, die Risikomanagement intern lösen wollen. So wird es "
+                    "im Großkonzern gemacht, heruntergebrochen auf KMU-taugliche Schritte.</p>"
                     "<ul>"
-                    "<li>Run a risk analysis with the team: assessment and facilitation</li>"
-                    "<li>Score risks with the matrix and avoid typical scoring mistakes</li>"
-                    "<li>Work with the 3-level hazard catalogue — participants receive the full catalogue</li>"
-                    "<li>Value risks in euros and derive understandable, actionable measures</li>"
+                    "<li>Risikoanalyse mit dem Team durchführen: Erhebung und Moderation</li>"
+                    "<li>Risiken mit der Matrix bestimmen und typische Bewertungsfehler vermeiden</li>"
+                    "<li>Mit dem 3-Ebenen-Gefahrenkatalog arbeiten — Teilnehmende erhalten den vollständigen Katalog</li>"
+                    "<li>Risiken in Euro bewerten und daraus verständliche, umsetzbare Maßnahmen ableiten</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-04",
-                "name": "Innovation management training",
-                "desc": "Become and stay genuinely innovative: team, atmosphere, management and innovation culture — business, innovation and R&D under one roof.",
+                "name": "Schulung zu Innovationsmanagement",
+                "desc": "Durch und durch innovativ werden und bleiben: Team, Atmosphäre, Management und Innovationskultur — Business, Innovation und R&D unter einem Hut.",
                 "price_base": 2995,
                 "price_add": 745,
                 "price_team": 9695,
                 "team_from": 10,
-                "price_detail": "2,995 € (1 person) · +745 € per additional · from 10 people 9,695 € flat rate · small group, practice on your own topic",
-                "duration": "1 day (2 sessions × 3.5 h) + transfer package",
-                "slug": "innovation-management",
+                "price_detail": "2.995 € (1 Person) · +745 € je weiterer · ab 10 Personen 9.695 € pauschal · Kleingruppe, Praxis am eigenen Thema",
+                "duration": "1 Tag (2 Sessions à 3,5 h) + Transfer-Paket",
+                "slug": "innovationsmanagement",
                 "details_html": (
-                    "<p><strong>Small-group training:</strong> Innovation culture and pipeline on your own business — below typical on-site prices, with transfer package.</p>"
-                    "<p>Not launch one product and fade away — but stay innovative over years and compete even "
-                    "against much larger rivals.</p>"
+                    "<p><strong>Kleingruppen-Schulung:</strong> Innovationskultur und Pipeline am eigenen Unternehmen — unter üblichen Inhouse-Preisen, mit Transfer-Paket.</p>"
+                    "<p>Nicht einmal ein Produkt auf den Markt bringen und in Vergessenheit geraten — sondern über Jahre "
+                    "innovativ bleiben und sich auch gegen große Konkurrenten durchsetzen.</p>"
                     "<ul>"
-                    "<li>Innovation culture: team, atmosphere and management of innovation</li>"
-                    "<li>Lightweight innovation pipeline: idea → validation → pilot → scale</li>"
-                    "<li>Business, innovation and R&amp;D under one roof: resource split and metrics</li>"
-                    "<li>Practical part: mini-pipeline for a real innovation topic of your own</li>"
+                    "<li>Innovationskultur: Team, Atmosphäre und Management der Innovation</li>"
+                    "<li>Leichtgewichtige Innovations-Pipeline: Idee → Validierung → Pilot → Skalierung</li>"
+                    "<li>Business, Innovation und R&amp;D unter einem Hut: Ressourcen-Split und Kennzahlen</li>"
+                    "<li>Praxisteil: Mini-Pipeline für ein eigenes, reales Innovationsthema</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-05",
-                "name": "Feedback culture & a 1+ working environment",
-                "desc": "Build a culture with the team where everyone pulls together: feedback culture, understanding employees, motivating — plus making mission & vision transparent.",
+                "name": "Feedbackkultur & eine 1+ Arbeitsumgebung",
+                "desc": "Mit dem Team eine Kultur aufbauen, in der alle an einem Strang ziehen: Feedbackkultur, Mitarbeitende verstehen, motivieren — plus Mission & Vision transparent machen.",
                 "price_base": 2875,
                 "price_add": 725,
                 "price_team": 9395,
                 "team_from": 10,
-                "price_detail": "2,875 € (1 person) · +725 € per additional · from 10 people 9,395 € flat rate · incl. follow-up after 4 weeks",
-                "duration": "1 day (2 sessions × 3 h) + follow-up",
-                "slug": "feedback-culture",
+                "price_detail": "2.875 € (1 Person) · +725 € je weiterer · ab 10 Personen 9.395 € pauschal · inkl. Follow-up nach 4 Wochen",
+                "duration": "1 Tag (2 Sessions à 3 h) + Follow-up",
+                "slug": "feedbackkultur",
                 "details_html": (
-                    "<p><strong>Small-group training:</strong> Feedback culture and leadership style in a team setting — including follow-up after 4 weeks.</p>"
-                    "<p>A working environment where employees and leadership work in the same direction. "
-                    "Three core areas: feedback culture, understanding employees (what do they really want?), "
-                    "motivating and finding the right leadership style.</p>"
+                    "<p><strong>Kleingruppen-Schulung:</strong> Feedbackkultur und Führungsstil im Team-Rahmen — inklusive Follow-up nach 4 Wochen.</p>"
+                    "<p>Eine Arbeitsumgebung, in der Mitarbeitende und Führung in die gleiche Richtung arbeiten. "
+                    "Drei Kernbereiche: Feedbackkultur, Mitarbeitende verstehen (was wollen sie wirklich?), "
+                    "motivieren und den richtigen Führungsstil finden.</p>"
                     "<ul>"
-                    "<li>Feedback formats and rituals that build trust instead of destroying it</li>"
-                    "<li>Making mission &amp; vision transparent together and communicating them</li>"
-                    "<li>Result: less turnover, talent comes to you, team stays even in difficult times</li>"
-                    "<li>Follow-up call after 4 weeks: adjust the culture roadmap</li>"
+                    "<li>Feedback-Formate und -Rituale, die Vertrauen aufbauen statt zerstören</li>"
+                    "<li>Mission &amp; Vision gemeinsam transparent gestalten und kommunizieren</li>"
+                    "<li>Ergebnis: weniger Fluktuation, Fachkräfte kommen von allein, Team bleibt auch in Krisenzeiten</li>"
+                    "<li>Follow-up-Call nach 4 Wochen: Kultur-Fahrplan nachjustieren</li>"
                     "</ul>"
                 ),
             },
             {
                 "nr": "SCH-06",
-                "name": "Cross-cultural management training",
-                "desc": "Manage international teams and projects (joint ventures, subsidiaries) successfully — based on Meyer, Hofstede and Schwartz, with first-hand experience.",
+                "name": "Schulung zum Kulturellen Management",
+                "desc": "Internationale Teams und Projekte (Joint Ventures, Tochtergesellschaften) erfolgreich managen — basierend auf Meyer, Hofstede und Schwartz, mit First-Hand-Erfahrung.",
                 "price_base": 3475,
                 "price_add": 875,
                 "price_team": 9875,
                 "team_from": 8,
-                "price_detail": "3,475 € (1 person) · +875 € per additional · from 8 people 9,875 € flat rate · small group, international practice",
-                "duration": "1.5–2 days (4 sessions × 3 h)",
-                "slug": "cultural-management",
+                "price_detail": "3.475 € (1 Person) · +875 € je weiterer · ab 8 Personen 9.875 € pauschal · Kleingruppe, internationale Praxis",
+                "duration": "1,5–2 Tage (4 Sessions à 3 h)",
+                "slug": "kulturelles-management",
                 "details_html": (
-                    "<p><strong>Small-group training:</strong> Cross-cultural management with first-hand experience — practice for your international initiative.</p>"
-                    "<p>In-depth training for international teams, joint ventures, subsidiary setups — and for everyone "
-                    "who hires and leads employees from other cultures. First-hand experience from Germany/EU via "
-                    "Russia, the USA and South America to Africa, India and Pakistan.</p>"
+                    "<p><strong>Kleingruppen-Schulung:</strong> Interkulturelles Management mit First-Hand-Erfahrung — Praxis für Ihr internationales Vorhaben.</p>"
+                    "<p>Umfangreiche Schulung für internationale Teams, Joint Ventures, Tochtergründungen — und für alle, "
+                    "die Mitarbeitende aus anderen Kulturen einstellen und führen. First-Hand-Erfahrung von DE/EU über "
+                    "Russland, USA und Südamerika bis Afrika, Indien und Pakistan.</p>"
                     "<ul>"
-                    "<li>Cultural dimensions using Meyer, Hofstede and Schwartz — applied in practice</li>"
-                    "<li>Regional practice: communication, hierarchy and negotiation per cultural region</li>"
-                    "<li>Hire, onboard and lead across cultures</li>"
-                    "<li>Practical part: cultural risk analysis for your own international initiative</li>"
+                    "<li>Kulturdimensionen nach Meyer, Hofstede und Schwartz — praktisch angewendet</li>"
+                    "<li>Regionen-Praxis: Kommunikation, Hierarchie, Verhandlung je Kulturraum</li>"
+                    "<li>Interkulturell einstellen, onboarden und führen</li>"
+                    "<li>Praxisteil: Kultur-Risiko-Analyse für das eigene internationale Vorhaben</li>"
                     "</ul>"
                 ),
             },
@@ -383,9 +383,9 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
     },
     {
         "id": "einstieg",
-        "title": "Entry & compact checks",
-        "tag": "ENTRY & ADD-ONS",
-        "lede": "Vom freeen Erst-Check bis zur kompakten Kurzanalyse — der niedrigschwellige Einstieg ins Risikomanagement.",
+        "title": "Einstieg & kompakte Checks",
+        "tag": "EINSTIEG & ADD-ONS",
+        "lede": "Vom kostenlosen Erst-Check bis zur kompakten Kurzanalyse — der niedrigschwellige Einstieg ins Risikomanagement.",
         "offers": [
             {
                 "nr": "ZUS-07",
@@ -394,7 +394,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "price": 0,
                 "duration": "60 Minuten",
                 "details_html": (
-                    "<p>Eine freee Stunde für Neugründer mit bis zu 10.000 € Umsatz: ein erster Blick von außen auf Ihr junges Unternehmen.</p><ul><li>Identifikation von Schwachstellen, die das Wachstum bremsen könnten</li><li>Konkrete Quick-Wins, die Sie direkt umsetzen können</li><li>Der ideale erste Kontakt, bevor Sie sich für ein größeres Paket entscheiden</li></ul>"
+                    "<p>Eine kostenlose Stunde für Neugründer mit bis zu 10.000 € Umsatz: ein erster Blick von außen auf Ihr junges Unternehmen.</p><ul><li>Identifikation von Schwachstellen, die das Wachstum bremsen könnten</li><li>Konkrete Quick-Wins, die Sie direkt umsetzen können</li><li>Der ideale erste Kontakt, bevor Sie sich für ein größeres Paket entscheiden</li></ul>"
                 ),
             },
             {
@@ -463,8 +463,8 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
     },
     {
         "id": "hr",
-        "title": "HR, culture & leadership",
-        "tag": "HR MODULES",
+        "title": "HR, Kultur & Führung",
+        "tag": "HR-MODULE",
         "lede": "Stimmung, Führungsqualität und Kultur datenbasiert sichtbar machen — Pauschale plus Pro-Kopf-Staffel, Report optional.",
         "offers": [
             {
@@ -472,8 +472,8 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "name": "HR-Analyse per Fragebogen",
                 "desc": "Anonymer Kultur-Health-Check für alle Mitarbeitenden: Zufriedenheit, Kommunikation, Führung, Belastung — mit aggregierten Insights.",
                 "price_from": 12,
-                "unit": "per person",
-                "price_detail": "Pauschale 127 € + per person: ab 10 MA 27 € · ab 25 MA 22 € · ab 50 MA 17 € · ab 100 MA 12 € · Report +547 €",
+                "unit": "pro Person",
+                "price_detail": "Pauschale 127 € + pro Person: ab 10 MA 27 € · ab 25 MA 22 € · ab 50 MA 17 € · ab 100 MA 12 € · Report +547 €",
                 "duration": "Befragung + Auswertung",
                 "details_html": (
                     "<p>Ein anonymer Kultur-Health-Check für alle Mitarbeitenden: Zufriedenheit, Kommunikation, Führungsqualität, Zugehörigkeitsgefühl, Stressbelastung und Veränderungsbereitschaft.</p><ul><li>Vollständig anonyme Antworten, aggregierte Insights für die Geschäftsführung</li><li>Deckt früh Warnsignale auf — etwa Burnout-Tendenzen oder verdeckte Unzufriedenheit</li><li>Optionaler Report (+547 €) mit Trends und konkreten Handlungsimpulsen</li></ul>"
@@ -503,13 +503,176 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
             },
         ],
     },
+    {
+        "id": "international",
+        "title": "Internationale Angebote",
+        "tag": "RUSSISCHSPRACHIGE GRÜNDER & EXPANSION",
+        "lede": "Beratung und Begleitung für Unternehmer aus dem postsowjetischen Raum — auf Deutsch, Englisch und Russisch. Keine Rechts- oder Steuerberatung; Koordination mit unserem Netzwerk aus Anwälten und Steuerberatern.",
+        "offers": [
+            {
+                "nr": "INT-00",
+                "name": "Erstberatung Internationale Angebote",
+                "desc": "30 Minuten: Ihre Situation, Zielmarkt und nächster sinnvoller Schritt — unverbindlich, auf Deutsch, Englisch oder Russisch.",
+                "price": 50,
+                "duration": "30 Minuten",
+                "slug": "internationale-angebote",
+                "details_html": (
+                    "<p>Einstieg für alle internationalen Angebote: Wir klären, wo Sie stehen, was Sie anstreben und welches Paket passt — ohne Verkaufsdruck.</p>"
+                    "<ul><li>Persönliches Gespräch mit Veronika Berdnikova oder Till Blania</li>"
+                    "<li>Sprachen: Deutsch, Englisch, Russisch</li>"
+                    "<li>Ergebnis: klare Empfehlung für den nächsten Schritt</li></ul>"
+                ),
+            },
+            {
+                "nr": "INT-01",
+                "name": "Gründung in Deutschland (Übersicht)",
+                "desc": "Stufen einzeln buchbar oder als Paket — wie Risikoanalyse RA-01: Business Check, Roadmap, Begleitung, Risiko-Check.",
+                "price_from": 990,
+                "price_detail": "Stufen ab 990 € · Paket Roadmap+Begleitung 4.490 € · Gründung 360° 5.490 €",
+                "duration": "4–12 Wochen",
+                "slug": "gruendung-deutschland",
+                "details_html": (
+                    "<p>Beratung und Koordination — keine Rechts- oder Steuerberatung. Wählen Sie die Tiefe: von der Ideen-Validierung bis zur hands-on Launch-Begleitung.</p>"
+                    "<ul><li><strong>INT-01-A</strong> Business Check 990 €</li>"
+                    "<li><strong>INT-01-B</strong> Launch Roadmap 1.900 €</li>"
+                    "<li><strong>INT-01-C</strong> Launch Begleitung 2.900 €</li>"
+                    "<li><strong>INT-01-D</strong> Gründungs-Risiko-Check 1.250 €</li>"
+                    "<li>Paket <strong>Gründung 360°</strong> 5.490 € (Ersparnis 650 €)</li></ul>"
+                ),
+            },
+            {
+                "nr": "INT-01-A",
+                "name": "↳ Business Check",
+                "desc": "Standortbestimmung: Idee, Rechtsform-Optionen, Budget, Top-5-Risiken — Kurzprotokoll.",
+                "price": 990,
+                "duration": "2–3 h + Protokoll",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Bevor Notar und Steuerberater: ehrliche Einordnung Ihrer Gründungsidee in Deutschland.</p>",
+            },
+            {
+                "nr": "INT-01-B",
+                "name": "↳ Launch Roadmap",
+                "desc": "Persönlicher Plan Woche 1 → Monat 3 — Pre-Launch, Launch, erste Kunden, erste 90 Tage.",
+                "price": 1900,
+                "duration": "Dokument + Review-Call",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Vier Phasen mit Checklisten — Ihr Plan, kein Internet-Template.</p>",
+            },
+            {
+                "nr": "INT-01-C",
+                "name": "↳ Launch Begleitung",
+                "desc": "Hands-on: Timelines, Spezialisten, Behörden vorbereiten — 4–12 Wochen.",
+                "price": 2900,
+                "duration": "4–12 Wochen",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Wöchentliche Calls DE/EN/RU — nichts geht in E-Mail-Ordnern verloren.</p>",
+            },
+            {
+                "nr": "INT-01-D",
+                "name": "↳ Gründungs-Risiko-Check",
+                "desc": "Blind Spots vor Go-Live: Banking, Verträge, Aufenthalt — Top-5 priorisiert.",
+                "price": 1250,
+                "duration": "Workshop + Report",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Beraterium-Bewertungslogik — kein Ersatz für RA-01, Brücke zu RA-02 möglich.</p>",
+            },
+            {
+                "nr": "INT-01-P2",
+                "name": "↳ Paket Gründung 360°",
+                "desc": "A + B + C + D — kompletter Weg von der Idee zum abgesicherten Launch.",
+                "price": 5490,
+                "price_detail": "Einzeln 6.140 € · Ersparnis 650 €",
+                "duration": "Paket",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Unser meistgebuchtes Gründungspaket für russischsprachige Gründer.</p>",
+            },
+            {
+                "nr": "INT-02",
+                "name": "Leben & Arbeiten in Deutschland",
+                "desc": "1-zu-1: Kultur, Behörden, ELSTER — Stunde, Modul oder 6-Monats-Begleitung.",
+                "price_from": 180,
+                "unit": "pro Stunde",
+                "price_detail": "Stunde 180 € · Modul 490 € · 6 Monate 2.900 € · Integrations-Paket 1.490 €",
+                "duration": "Nach Bedarf",
+                "slug": "leben-arbeiten-deutschland",
+                "details_html": (
+                    "<p>Modular buchbar — parallel zur Gründung oder danach.</p>"
+                    "<ul><li>Einzelstunde, Themenmodul (3× Session), 6-Monats-Begleitung</li>"
+                    "<li>Behörden, ELSTER, Kommunikation & Kultur</li>"
+                    "<li>Optional: Objektsuche ab 1.900 €</li></ul>"
+                ),
+            },
+            {
+                "nr": "INT-03",
+                "name": "Business Health Check / Turnaround",
+                "desc": "Quick Check bis Turnaround — strukturierte Engpass-Diagnose für laufende Unternehmen.",
+                "price_from": 790,
+                "price_detail": "Quick Check 790 € · Health Check 3.500 € (BAFA) · Turnaround 12.500 €",
+                "duration": "1 Session – 8 Wochen",
+                "slug": "business-turnaround",
+                "details_html": (
+                    "<p>Einzelstufen einzeln buchbar — Pakete günstiger als die Summe.</p>"
+                    "<ul><li>INT-03-A Quick Check 790 €</li>"
+                    "<li>INT-03-B Health Check 3.500 € (BAFA-förderfähig)</li>"
+                    "<li>INT-03-F Turnaround Begleitung 12.500 €</li>"
+                    "<li>Paket Health Check + Turnaround 14.900 €</li></ul>"
+                ),
+            },
+            {
+                "nr": "INT-03-A",
+                "name": "↳ Quick Business Check",
+                "desc": "90–120 Min.: Top-5-Issues — schnelle Klarheit ohne 3.500 € Investment.",
+                "price": 790,
+                "duration": "1 Session",
+                "slug": "business-turnaround",
+                "parent_slug": "business-turnaround",
+                "sub": True,
+                "details_html": "<p>Diagnose — kein Ersatz für RA-01 oder RA-02.</p>",
+            },
+            {
+                "nr": "INT-03-B",
+                "name": "↳ Business Health Check (voll)",
+                "desc": "Beraterium-Methode, Workshops, Risikomatrix — BAFA-förderfähig.",
+                "price": 3500,
+                "duration": "2–4 Wochen",
+                "slug": "business-turnaround",
+                "parent_slug": "business-turnaround",
+                "sub": True,
+                "details_html": "<p>Top-5-Maßnahmen mit Verantwortlichkeiten — handlungsfähiger Fahrplan.</p>",
+            },
+            {
+                "nr": "INT-04",
+                "name": "Expansion / Tochtergesellschaft DE",
+                "desc": "EU-Markteintritt: Markt-Check, Setup, KYC — Retainer für Vertrieb und Management.",
+                "price_from": 2900,
+                "price_detail": "Markt-Check 2.900 € · Setup-Paket 12.900 € · Retainer ab 4.500 €/Monat",
+                "duration": "Setup 8–16 Wochen + Retainer",
+                "slug": "expansion-tochtergesellschaft",
+                "details_html": (
+                    "<p>Für etablierte Unternehmen im Ausland — Fulfillment kann im Heimatland bleiben.</p>"
+                    "<ul><li>Markt- & Risiko-Check, Setup Tochtergesellschaft, KYC/Sanktions-Modul</li>"
+                    "<li>Go-to-Market und Retainer ab 4.500 €/Monat</li></ul>"
+                ),
+            },
+        ],
+    },
 ]
 
 
 def format_eur(value: int) -> str:
-    """3475 -> '3.475 €'; 0 -> 'free'."""
+    """3475 -> '3.475 €'; 0 -> 'kostenlos'."""
     if value == 0:
-        return "free"
+        return "kostenlos"
     return f"{value:,.0f}".replace(",", ".") + " €"
 
 
@@ -540,8 +703,8 @@ def _selfcheck() -> None:
                 for key in ("price_add", "price_team", "team_from", "slug", "details_html"):
                     assert o.get(key), f"{o['nr']}: price_base needs {key}"
                 assert o["price_team"] > o["price_base"], o["nr"]
-    assert len(nrs) == 32, f"expected 32 offers, got {len(nrs)}"
-    assert format_eur(3475) == "3.475 €" and format_eur(0) == "free"
+    assert len(nrs) >= 37, f"expected at least 37 offers, got {len(nrs)}"
+    assert format_eur(3475) == "3.475 €" and format_eur(0) == "kostenlos"
     assert offer_price_text({"price_base": 745, "price_add": 125}) == "ab 745 €"
     print(f"pricing selfcheck OK ({len(nrs)} offers)")
 

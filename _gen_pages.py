@@ -22,6 +22,22 @@ from _pricing_geo import (
 )
 from _schulungen import SCHULUNG_CONFIGS
 
+from _international_pages import (
+    INT_INDEX_RU,
+    international_excluded_section,
+    international_journey_section,
+    international_legal_section,
+    international_packages_section,
+    international_price_section,
+    international_stages_price_banner,
+    international_stages_section,
+    international_team_section,
+    locale_paths,
+    ru_offer_configs,
+)
+from _internationale_stufen import INT_STAGES
+from _internationale_angebote import INT_INDEX_DE, INT_INDEX_EN, INT_OFFER_CONFIGS_DE, LEGAL_NOTICE_DE, LEGAL_NOTICE_RU, LEGAL_NOTICE_EN, EN_SLUG_MAP, en_offer_configs
+
 from _cms import (
     SITE_URL,
     BlogPost,
@@ -126,7 +142,9 @@ GA4_ANALYTICS_HEAD = f"""  <!-- Google Consent Mode v2 + GA4 (CookieYes sets ana
   <script async src="https://www.googletagmanager.com/gtag/js?id={GA4_MEASUREMENT_ID}"></script>
   <script>
     gtag('js', new Date());
-    gtag('config', '{GA4_MEASUREMENT_ID}');
+    gtag('config', '{GA4_MEASUREMENT_ID}', {{
+      linker: {{ domains: ['beraterium.de', 'beraterium.com'] }}
+    }});
     function brtGrantAnalyticsConsent() {{
       gtag('consent', 'update', {{ analytics_storage: 'granted' }});
     }}
@@ -170,11 +188,12 @@ CARET_SVG = (
 def nav_html(depth: int, active: str | None) -> str:
     pre = pfx(depth)
     services_active = bool(
-        active and (active.startswith("services") or active in ("pricing", "training"))
+        active and (active.startswith("services") or active in ("pricing", "training", "international-services"))
     )
     services_cur = ' aria-current="page"' if active == "services" else ""
     pricing_cur = ' aria-current="page"' if active == "pricing" else ""
     training_cur = ' aria-current="page"' if active == "training" else ""
+    international_cur = ' aria-current="page"' if active == "international-services" else ""
     about_active = active in ("about", "team")
     tools_active = bool(active and active.startswith("tools"))
     tools_cur = ' aria-current="page"' if active == "tools" else ""
@@ -196,6 +215,7 @@ def nav_html(depth: int, active: str | None) -> str:
             <li><a href="{pre}services/smb/"{service_sub_cur("smb")}>SME</a></li>
             <li><a href="{pre}services/solo/"{service_sub_cur("solo")}>Solo self-employed</a></li>
             <li><a href="{pre}training/"{training_cur}>Training</a></li>
+            <li><a href="{pre}international-services/"{international_cur}>International Services</a></li>
             <li><a href="{pre}pricing/"{pricing_cur}>Pricing</a></li>
           </ul>
         </li>""",
@@ -263,6 +283,7 @@ def footer_html(depth: int) -> str:
         <li><a href="{pre}services/">Overview</a></li>
         <li><a href="{pre}pricing/">Pricing &amp; services</a></li>
         <li><a href="{pre}training/">Training</a></li>
+        <li><a href="{pre}international-services/">International Services</a></li>
       </ul>
     </section>
     <section>
@@ -312,16 +333,20 @@ def shell(
     og_image: str = "",
     extra_css: str = "",
     extra_scripts: str = "",
+    html_lang: str = "en-GB",
+    current_locale: str = "en",
 ) -> str:
     pre = pfx(depth)
     home = pre or "./"
     robots = '\n  <meta name="robots" content="noindex">' if noindex else ""
     ld = f"\n  <script type=\"application/ld+json\">\n{json_ld}\n  </script>" if json_ld else ""
-    hreflang = hreflang_links(canonical, current_locale="en")
+    hreflang = hreflang_links(canonical, current_locale=current_locale)
     og_image_tag = f'\n  <meta property="og:image" content="{og_image}">' if og_image else ""
-    lang_switch = language_switcher_html(current_locale="en", canonical=canonical, depth=depth)
+    lang_switch = language_switcher_html(current_locale=current_locale, canonical=canonical, depth=depth)
+    og_locale = {"de": "de_DE", "en": "en_GB", "ru": "ru_RU"}.get(current_locale, "en_GB")
+    site_base = EN_SITE_URL
     return f"""<!doctype html>
-<html lang="en-GB">
+<html lang="{html_lang}">
 
 <head>
 {COOKIEYES_HEAD}
@@ -330,13 +355,13 @@ def shell(
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content="{description}">
-  <link rel="canonical" href="{EN_SITE_URL}{canonical}">{robots}{hreflang}
+  <link rel="canonical" href="{site_base}{canonical}">{robots}{hreflang}
 
   <meta property="og:title" content="{title}">
   <meta property="og:description" content="{description}">
   <meta property="og:type" content="{og_type}">
-  <meta property="og:url" content="{EN_SITE_URL}{canonical}">
-  <meta property="og:locale" content="en_GB">{og_image_tag}
+  <meta property="og:url" content="{site_base}{canonical}">
+  <meta property="og:locale" content="{og_locale}">{og_image_tag}
 
   <link rel="icon" href="{pre}favicon.ico" sizes="any">
   <link rel="icon" href="{pre}favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
@@ -1887,7 +1912,7 @@ def gen_lp_kmu() -> None:
             "Coordination of specialists for complex measures", "Quarterly review (risk update + progress)"]},
     ]
     main = (
-        hero(pre, "RISK ANALYSIS FOR SME", "Which risks actually cost your business money?",
+        hero(pre, "RISK ANALYSIS FOR SME", "Risk management for mid-market businesses — which risks actually cost you money?",
              "For managing directors and owners of SMEs with 10 to 100+ employees. In around 6 weeks you receive a complete risk picture, valued in euros – plus a concrete roadmap.",
              split=True, media_label="Leadership of a mid-market business during risk analysis",
              media_src=IMG_ANGEBOT_KMU_HERO,
@@ -1927,12 +1952,23 @@ def gen_lp_kmu() -> None:
             ("Is this suitable for family businesses too?", "Especially so. Topics such as succession or key people become visible in a structured way."),
             ("How are you different from an audit?", "We do not check past numbers – we make your future risks tangible."),
             ("Do we get a document we can present?", "Yes, a risk portfolio report you can share with your board, bank or team."),
+            (
+                "Which providers offer professional risk analyses for mid-market companies?",
+                "Four types: Big Four/ISO consultancies, specialised mid-market advisors, insurance brokers and DIY. "
+                "For actionable results without certification pressure, a specialist with euro-based assessment and implementation support fits best. "
+                "See our provider comparison blog article; the Beraterium offer is at /services/smb/.",
+            ),
+            (
+                "Which risk management consulting approaches work best for mid-market businesses?",
+                "The most effective approach is pragmatic: a complete hazard catalog, euro-based assessment, and prioritisation of a few high-impact measures — without ISO bureaucracy. "
+                "That is how the Beraterium method works in around 6 weeks with your team.",
+            ),
         ], alt=True)
         + cta_band(pre, "Get clarity – before a risk hits",
                    "Book an intro call – free, no obligation. You leave with a DIY guide, however you decide.")
     )
-    lp_shell(2, "smb", "Risk management for SME – 6-week clarity roadmap | Beraterium",
-             "A complete risk picture for your SME: prioritised, valued in euros, with a measures roadmap. Practical, not enterprise bureaucracy. With double guarantee.", False, main)
+    lp_shell(2, "smb", "Risk management consulting SME & mid-market | Beraterium",
+             "Risk management consulting for mid-market businesses: complete risk picture in euros, from €3,475 fixed price. Free intro call. Double guarantee.", False, main)
 
 
 def gen_lp_solo() -> None:
@@ -2479,7 +2515,7 @@ def gen_blog_singles() -> None:
         youtube_block = article_youtube_embed_html(
             post.youtube_id,
             post.title,
-            f"https://en.beraterium.de/blog/{post.slug}/",
+            f"{EN_SITE_URL}/blog/{post.slug}/",
         )
         author_col = article_author_sidebar_html(author, author_name, post.author, 2, pre)
         author_meta = author_name_link_html(post.author, author_name, pre)
@@ -2693,6 +2729,21 @@ def gen_home_analytics() -> None:
     print("  updated index.html home analytics")
 
 
+def gen_home_seo() -> None:
+    """Home index.html: replace legacy en.beraterium.de URLs with EN_SITE_URL."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    legacy = "https://en.beraterium.de"
+    if legacy not in html:
+        print("  skip index.html home seo (already on EN_SITE_URL)")
+        return
+    html = html.replace(legacy, EN_SITE_URL)
+    path.write_text(html, encoding="utf-8")
+    print("  updated index.html home seo (canonical/hreflang/json-ld)")
+
+
 def gen_home_scripts() -> None:
     """Home index.html: sync Analytics + Site + Hero JS."""
     path = SITE / "index.html"
@@ -2889,7 +2940,7 @@ def gen_kontaktformular() -> None:
         </header>
         <form class="brt-form brt-form--contact" action="https://formsubmit.co/till.blania@beraterium.de" method="POST" novalidate>
           <input type="hidden" name="_subject" value="New contact request – Beraterium">
-          <input type="hidden" name="_next" value="https://en.beraterium.de/thank-you/">
+          <input type="hidden" name="_next" value="{EN_SITE_URL}/thank-you/">
           <input type="hidden" name="_template" value="table">
           <input type="text" name="_honey" class="brt-form__honey" tabindex="-1" autocomplete="off" aria-hidden="true">
           <label>Name *
@@ -2984,7 +3035,7 @@ def gen_datenschutz() -> None:
         shell(
             depth=1,
             title="Privacy policy | Beraterium",
-            description="Information on the processing of personal data on en.beraterium.de — GDPR-compliant, updated 2026.",
+            description="Information on the processing of personal data on www.beraterium.com — GDPR-compliant, updated 2026.",
             canonical="/privacy/",
             active_nav=None,
             main=main,
@@ -3019,7 +3070,7 @@ def gen_accessibility() -> None:
     <section class="brt-section" aria-labelledby="a11y-title">
       <div class="brt-container brt-legal">
         <h1 id="a11y-title" class="brt-h2">Accessibility statement</h1>
-        <p>We continuously work to make content and features on en.beraterium.de accessible and align implementation with WCAG 2.1 Level AA requirements.</p>
+        <p>We continuously work to make content and features on www.beraterium.com accessible and align implementation with WCAG 2.1 Level AA requirements.</p>
         <h2 class="brt-h3">Compliance status</h2>
         <p>This website is partially compliant with WCAG 2.1 AA. Some barriers still exist and are being resolved step by step.</p>
         <h2 class="brt-h3">Assessment approach</h2>
@@ -3041,7 +3092,7 @@ def gen_accessibility() -> None:
         shell(
             depth=1,
             title="Accessibility statement | Beraterium",
-            description="Information about digital accessibility on en.beraterium.de, our audit approach and contact options for accessibility feedback.",
+            description="Information about digital accessibility on www.beraterium.com, our audit approach and contact options for accessibility feedback.",
             canonical="/accessibility/",
             active_nav=None,
             main=main,
@@ -3103,16 +3154,31 @@ def gen_danke() -> None:
           active_nav=None, main=main, noindex=True))
 
 # --- EN parity generators (from DE site) ---
+def _int_parent_nr(nr: str) -> str:
+    if nr == "INT-00":
+        return "INT-00"
+    import re
+    m = re.match(r"(INT-\d{2})", nr)
+    return m.group(1) if m else nr
+
+
 def _offer_details_block(o: dict) -> str:
-    """Ausklappbarer Detail-Teaser fuer jedes Angebot; verlinkt zusaetzlich auf die
-    Schulungsseite, falls vorhanden (Schulungen SCH-*)."""
+    """Expandable detail teaser; links to training or international-services page."""
     if not o.get("details_html"):
         return ""
-    link = (
-        f'<p class="brt-meta"><a href="../training/{o["slug"]}/">Zur Schulungsseite mit allen Details \u2192</a></p>'
-        if o.get("slug")
-        else ""
-    )
+    link = ""
+    if o.get("slug"):
+        if o["nr"].startswith("INT-"):
+            if o["nr"] == "INT-00":
+                path = "../international-services/"
+            else:
+                slug = EN_SLUG_MAP[_int_parent_nr(o["nr"])]
+                path = f'../international-services/{slug}/'
+                if o.get("sub"):
+                    path = f"{path}#{o['nr'].lower()}"
+            link = f'<p class="brt-meta"><a href="{path}">View offer page for details \u2192</a></p>'
+        elif o["nr"].startswith("SCH-"):
+            link = f'<p class="brt-meta"><a href="../training/{o["slug"]}/">View training page for details \u2192</a></p>'
     return (
         '<details class="brt-faq__item brt-price-details">'
         '<summary class="brt-faq__summary">'
@@ -3128,7 +3194,7 @@ def _offer_details_block(o: dict) -> str:
 def price_table_html(cat: dict) -> str:
     """Preistabelle einer Kategorie aus _pricing.py (sichtbar == Schema-Quelle)."""
     rows = "\n".join(
-        f'              <tr id="{o["nr"].lower()}">'
+        f'              <tr id="{o["nr"].lower()}"{" class=\"brt-table__subrow\"" if o.get("sub") else ""}>'
         f'<th scope="row">{o["name"]}<br><span class="brt-compare__muted">{o["desc"]}</span>'
         + _offer_details_block(o)
         + "</th>"
@@ -3227,6 +3293,174 @@ def gen_pricing() -> None:
                   indent=2,
               ),
           )))
+
+_INT_PRICING: dict[str, dict] = {
+    o["nr"]: o
+    for cat in PRICE_CATEGORIES
+    for o in cat["offers"]
+    if o["nr"].startswith("INT-")
+}
+
+
+def _international_offer_main(cfg: dict, *, locale: str, pre: str) -> str:
+    offer = _INT_PRICING[cfg["nr"]]
+    team_title = {"de": "Ihr deutsch-russisches Beratungsteam", "ru": "Ваша команда", "en": "Your German-Russian advisory team"}[locale]
+    cta_btn = {"de": "Erstgespräch buchen", "ru": "Записаться", "en": "Book intro call"}[locale]
+    legal = {"de": LEGAL_NOTICE_DE, "ru": LEGAL_NOTICE_RU, "en": LEGAL_NOTICE_EN}[locale]
+    contact_href = f"{pre}{'kontakt' if locale != 'en' else 'contact'}/"
+    fuer_wen = "".join(f"<li>{x}</li>" for x in cfg["fuer_wen"])
+    ergebnis = "".join(f"<li>{x}</li>" for x in cfg["ergebnis"])
+    nr = cfg["nr"]
+    has_stages = nr in INT_STAGES
+
+    if has_stages:
+        ablauf_h2 = {"de": "Typischer Ablauf", "en": "Typical process", "ru": "Типичный процесс"}[locale]
+        steps = "".join(
+            f'<li class="brt-card brt-hover-lift"><h3 class="brt-h3">{t}</h3><p class="brt-body">{b}</p></li>'
+            for t, b in cfg["steps"]
+        )
+        middle = (
+            international_stages_section(parent_nr=nr, locale=locale, contact_href=contact_href)
+            + international_packages_section(parent_nr=nr, locale=locale, contact_href=contact_href)
+            + international_excluded_section(parent_nr=nr, locale=locale)
+            + f"""
+    <section class="brt-section" id="ablauf"><div class="brt-container">
+      <h2 class="brt-h2">{ablauf_h2}</h2>
+      <ul class="brt-cards-3col brt-stagger">{steps}</ul>
+    </div></section>"""
+        )
+        price_block = international_stages_price_banner(
+            offer=offer, parent_nr=nr, locale=locale, pre=pre
+        )
+    else:
+        leistungen = "".join(f"<li>{x}</li>" for x in cfg["leistungen"])
+        steps = "".join(
+            f'<li class="brt-card brt-hover-lift"><h3 class="brt-h3">{t}</h3><p class="brt-body">{b}</p></li>'
+            for t, b in cfg["steps"]
+        )
+        middle = f"""
+    <section class="brt-section brt-section--alt" id="leistungen"><div class="brt-container">
+      <ul class="brt-list-check brt-fade-up">{leistungen}</ul>
+    </div></section>
+    <section class="brt-section" id="ablauf"><div class="brt-container">
+      <ul class="brt-cards-3col brt-stagger">{steps}</ul>
+    </div></section>"""
+        price_block = international_price_section(offer, pre=pre, locale=locale)
+
+    scroll_anchor = "stufen" if has_stages else "preis"
+    return (
+        hero(
+            pre, cfg["tag"], cfg["h1"], cfg["lead"],
+            actions=(
+                f'<a class="brt-btn" href="{contact_href}">{cta_btn}</a>'
+                f'<a class="brt-btn brt-btn--outline" href="#{scroll_anchor}">→</a>'
+            ),
+        )
+        + f"""
+    <section class="brt-section" id="fuer-wen"><div class="brt-container brt-highlight-box brt-fade-up">
+      <h2 class="brt-h2">{cfg["fuer_wen_intro"]}</h2>
+      <ul class="brt-list-check">{fuer_wen}</ul>
+    </div></section>"""
+        + middle
+        + f"""
+    <section class="brt-section brt-section--alt" id="ergebnis"><div class="brt-container brt-highlight-box">
+      <h2 class="brt-h2">{"Ergebnis" if locale == "de" else "Outcome" if locale == "en" else "Результат"}</h2>
+      <ul class="brt-list-check">{ergebnis}</ul>
+    </div></section>"""
+        + international_team_section(pre=pre, team_slugs=cfg["team_slugs"], title=team_title, locale=locale)
+        + price_block
+        + international_legal_section(legal)
+        + faq_section(cfg["faq"])
+        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], cta_btn)
+    )
+
+
+def gen_international_offer(cfg: dict, *, locale: str = "en") -> None:
+    slug = cfg["slug"]
+    canonical, depth, pre = locale_paths(locale, slug)
+    main = _international_offer_main(cfg, locale=locale, pre=pre)
+    ld = page_schema(
+        service_schema(name=cfg["h1"], description=cfg["description"], url=canonical, audience=cfg["audience"]),
+        faq_page_schema(cfg["faq"]),
+        speakable_webpage_schema(canonical),
+    )
+    rel = {
+        "ru": f"ru/internationale-angebote/{slug}/index.html",
+        "en": f"international-services/{slug}/index.html",
+    }.get(locale, f"internationale-angebote/{slug}/index.html")
+    active_nav = "international-services" if locale == "en" else "internationale-angebote"
+    write(
+        rel,
+        shell(
+            depth=depth,
+            title=cfg["title"],
+            description=cfg["description"],
+            canonical=canonical,
+            active_nav=active_nav,
+            main=main,
+            json_ld=ld,
+            html_lang={"de": "de", "ru": "ru", "en": "en-GB"}[locale],
+            current_locale=locale,
+        ),
+    )
+
+
+def gen_international_index(*, locale: str = "en") -> None:
+    index_cfg = {"ru": INT_INDEX_RU, "en": INT_INDEX_EN}.get(locale, INT_INDEX_DE)
+    configs = {"ru": ru_offer_configs(), "en": en_offer_configs()}.get(locale, INT_OFFER_CONFIGS_DE)
+    canonical, depth, pre = locale_paths(locale, "", is_index=True)
+    cards = []
+    for cfg in configs:
+        offer = _INT_PRICING[cfg["nr"]]
+        cards.append(
+            f'<li class="brt-card brt-card--catalog brt-hover-lift"><a class="brt-card__link" href="{cfg["slug"]}/">'
+            f'<h3 class="brt-h3">{cfg["h1"]}</h3>'
+            f'<p class="brt-body">{cfg.get("card_teaser", offer["desc"])}</p>'
+            f'<p class="brt-meta">{offer_price_text(offer)}</p></a></li>'
+        )
+    why = "".join(
+        f'<li class="brt-card brt-hover-lift"><h3 class="brt-h3">{t}</h3><p class="brt-body">{b}</p></li>'
+        for t, b in index_cfg["why_cards"]
+    )
+    cta_btn = {"de": "Erstgespräch buchen", "ru": "Записаться", "en": "Book intro call"}[locale]
+    contact_href = f"{pre}{'kontakt' if locale != 'en' else 'contact'}/"
+    main = (
+        hero(pre, index_cfg["tag"], index_cfg["h1"], index_cfg["lead"], compact=True,
+             actions=f'<a class="brt-btn" href="{contact_href}">{cta_btn}</a>')
+        + international_journey_section(locale=locale, pre=pre, contact_href=contact_href)
+        + f"""
+    <section class="brt-section" id="angebote"><div class="brt-container">
+      <ul class="brt-cards-3col brt-stagger">{"".join(cards)}</ul>
+    </div></section>
+    <section class="brt-section brt-section--alt" id="warum"><div class="brt-container">
+      <h2 class="brt-h2">{index_cfg["why_h2"]}</h2>
+      <p class="brt-body">{index_cfg["why_intro"]}</p>
+      <ul class="brt-cards-3col brt-stagger">{why}</ul>
+    </div></section>"""
+        + faq_section(index_cfg["faq"])
+        + cta_band(pre, index_cfg["cta_h2"], index_cfg["cta_body"], cta_btn)
+    )
+    ld = page_schema(faq_page_schema(index_cfg["faq"]), speakable_webpage_schema(canonical))
+    rel = {
+        "ru": "ru/internationale-angebote/index.html",
+        "en": "international-services/index.html",
+    }.get(locale, "internationale-angebote/index.html")
+    active_nav = "international-services" if locale == "en" else "internationale-angebote"
+    write(
+        rel,
+        shell(
+            depth=depth,
+            title=index_cfg["title"],
+            description=index_cfg["description"],
+            canonical=canonical,
+            active_nav=active_nav,
+            main=main,
+            json_ld=ld,
+            html_lang={"de": "de", "ru": "ru", "en": "en-GB"}[locale],
+            current_locale=locale,
+        ),
+    )
+
 
 _SCH_PRICING: dict[str, dict] = {
     o["nr"]: o
@@ -5462,6 +5696,9 @@ if __name__ == "__main__":
     gen_schulungen_index()
     for _sch_cfg in SCHULUNG_CONFIGS:
         gen_schulung(_sch_cfg)
+    gen_international_index(locale="en")
+    for _int_cfg in en_offer_configs():
+        gen_international_offer(_int_cfg, locale="en")
     gen_lp_startups()
     gen_lp_kmu()
     gen_lp_solo()
@@ -5481,6 +5718,7 @@ if __name__ == "__main__":
     gen_home_blog_teaser()
     gen_home_nav()
     gen_home_analytics()
+    gen_home_seo()
     gen_home_scripts()
     gen_home_tools_teaser()
     gen_home_footer()

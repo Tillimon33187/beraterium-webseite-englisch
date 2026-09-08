@@ -23,7 +23,9 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BM435GHE6W"></script>
   <script>
     gtag('js', new Date());
-    gtag('config', 'G-BM435GHE6W');
+    gtag('config', 'G-BM435GHE6W', {
+      linker: { domains: ['beraterium.de', 'beraterium.com'] }
+    });
     function brtGrantAnalyticsConsent() {
       gtag('consent', 'update', { analytics_storage: 'granted' });
     }
@@ -931,6 +933,138 @@
               }
             }
           ]
+        },
+        {
+          "@type": "OfferCatalog",
+          "name": "International Services",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "name": "Intro call — International Services (INT-00)",
+              "description": "30 minutes: your situation, target market, and the next sensible step — no obligation, in German, English, or Russian. Duration: 30 minutes.",
+              "url": "https://www.beraterium.com/pricing/#int-00",
+              "priceCurrency": "EUR",
+              "seller": {
+                "@id": "https://www.beraterium.com/#organization"
+              },
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Intro call — International Services",
+                "description": "30 minutes: your situation, target market, and the next sensible step — no obligation, in German, English, or Russian.",
+                "provider": {
+                  "@id": "https://www.beraterium.com/#organization"
+                }
+              },
+              "availability": "https://schema.org/InStock",
+              "price": "50",
+              "priceSpecification": {
+                "@type": "PriceSpecification",
+                "price": "50",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "Offer",
+              "name": "Start a business in Germany (INT-01)",
+              "description": "Support through the founding phase: business plan structure, authority coordination, network, risk analysis from day one. Duration: 4–12 weeks. Price: From €1,900 · Full founding support package €4,900.",
+              "url": "https://www.beraterium.com/pricing/#int-01",
+              "priceCurrency": "EUR",
+              "seller": {
+                "@id": "https://www.beraterium.com/#organization"
+              },
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Start a business in Germany",
+                "description": "Support through the founding phase: business plan structure, authority coordination, network, risk analysis from day one.",
+                "provider": {
+                  "@id": "https://www.beraterium.com/#organization"
+                }
+              },
+              "availability": "https://schema.org/InStock",
+              "price": "1900",
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "1900",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "Offer",
+              "name": "Living & working in Germany (INT-02)",
+              "description": "1-to-1 support: German business and everyday culture, authorities, ELSTER, typical pitfalls — bookable in modules. Duration: As needed. Price: Single hour from €180 · Topic module from €490 · 6-month package €2,900 · Property search from €1,900.",
+              "url": "https://www.beraterium.com/pricing/#int-02",
+              "priceCurrency": "EUR",
+              "seller": {
+                "@id": "https://www.beraterium.com/#organization"
+              },
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Living & working in Germany",
+                "description": "1-to-1 support: German business and everyday culture, authorities, ELSTER, typical pitfalls — bookable in modules.",
+                "provider": {
+                  "@id": "https://www.beraterium.com/#organization"
+                }
+              },
+              "availability": "https://schema.org/InStock",
+              "price": "180",
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "180",
+                "priceCurrency": "EUR",
+                "unitText": "per hour"
+              }
+            },
+            {
+              "@type": "Offer",
+              "name": "Business Health Check / Turnaround (INT-03)",
+              "description": "Risk analysis for running businesses: identify bottlenecks, prioritise solutions, eliminate costs. Duration: 2–8 weeks. Price: Health Check from €3,500 (BAFA-eligible) · Turnaround package €12,500.",
+              "url": "https://www.beraterium.com/pricing/#int-03",
+              "priceCurrency": "EUR",
+              "seller": {
+                "@id": "https://www.beraterium.com/#organization"
+              },
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Business Health Check / Turnaround",
+                "description": "Risk analysis for running businesses: identify bottlenecks, prioritise solutions, eliminate costs.",
+                "provider": {
+                  "@id": "https://www.beraterium.com/#organization"
+                }
+              },
+              "availability": "https://schema.org/InStock",
+              "price": "3500",
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "3500",
+                "priceCurrency": "EUR"
+              }
+            },
+            {
+              "@type": "Offer",
+              "name": "Expansion / German subsidiary (INT-04)",
+              "description": "Market entry Germany/EU: build a subsidiary, compliance, on-site sales — fulfilment can stay in the home country. Duration: Setup 8–16 weeks + retainer. Price: Setup from €9,500 · KYC/sanctions module from €1,500 · Retainer from €4,500/month (min. 6 months).",
+              "url": "https://www.beraterium.com/pricing/#int-04",
+              "priceCurrency": "EUR",
+              "seller": {
+                "@id": "https://www.beraterium.com/#organization"
+              },
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Expansion / German subsidiary",
+                "description": "Market entry Germany/EU: build a subsidiary, compliance, on-site sales — fulfilment can stay in the home country.",
+                "provider": {
+                  "@id": "https://www.beraterium.com/#organization"
+                }
+              },
+              "availability": "https://schema.org/InStock",
+              "price": "9500",
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "9500",
+                "priceCurrency": "EUR"
+              }
+            }
+          ]
         }
       ]
     },
@@ -940,7 +1074,7 @@
       "priceCurrency": "EUR",
       "lowPrice": "0",
       "highPrice": "9675",
-      "offerCount": 32,
+      "offerCount": 37,
       "url": "https://www.beraterium.com/pricing/"
     }
   },
@@ -1105,6 +1239,7 @@
             <li><a href="../services/smb/">SME</a></li>
             <li><a href="../services/solo/">Solo self-employed</a></li>
             <li><a href="../training/">Training</a></li>
+            <li><a href="../international-services/">International Services</a></li>
             <li><a href="../pricing/" aria-current="page">Pricing</a></li>
           </ul>
         </li>
@@ -1131,7 +1266,7 @@
         </li>
         <li><a href="../blog/">Blog</a></li>
       </ul>
-<div class="site-header__lang" role="navigation" aria-label="Language"><span class="site-header__lang-current" aria-current="true">EN</span><span class="site-header__lang-sep" aria-hidden="true">|</span><a class="site-header__lang-link" href="https://www.beraterium.de/preise/" hreflang="de">DE</a></div>
+<div class="site-header__lang" role="navigation" aria-label="Language"><a class="site-header__lang-link" href="https://www.beraterium.de/preise/" hreflang="de">DE</a><span class="site-header__lang-sep" aria-hidden="true">|</span><span class="site-header__lang-current" aria-current="true">EN</span></div>
       <a class="brt-btn brt-btn--outline site-header__cta" href="../contact/">Book a free intro call</a>
     </nav>
   </div>
@@ -1243,13 +1378,13 @@
               <tr><th scope="col">Angebot</th><th scope="col">Preis (netto)</th><th scope="col">Dauer &amp; Umfang</th></tr>
             </thead>
             <tbody>
-              <tr id="sch-07"><th scope="row">Risk Expert training (combined programme)<br><span class="brt-compare__muted">The complete programme: risk-awareness culture, risk-aware leadership and practical risk management in one flow — equips you to implement our method in your own organisation.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>The combined programme brings together our three risk management trainings into one complete course: risk-awareness culture, The Risk-Aware Manager and Putting Risk Management into Practice. For managers and employees who own risk management in the organisation and should implement our method themselves.</p><p><strong>Investment in internal risk competence:</strong> The training is deliberately comparable to our guided Risk Analysis 360° (3,475 €) and the XL full package (9,675 €) — with the difference that you build the method in-house long term instead of buying risk management in permanently.</p><ul><li>Module 1: build error and risk-awareness culture inspired by aviation</li><li>Module 2: as a leader, take calculated risks and see the business from the outside</li><li>Module 3: run risk analysis yourself — matrix, hazard catalogue (included), euro valuation, measures</li><li>Closing: Risk Expert certificate and transfer plan for your organisation</li></ul><p class="brt-meta"><a href="../training/risk-expert/">Zur Schulungsseite mit allen Details →</a></p></div></details></th><td><strong>ab 9.875 €</strong><br><span class="brt-compare__muted">9,875 € (1 person) · 14,315 € (2 people) · +4,440 € per additional · max. 4 people 22,875 € flat rate · incl. hazard catalogue & certificate</span></td><td>3 intensive days (approx. 24 h) + transfer & certificate</td></tr>
-              <tr id="sch-01"><th scope="row">Risk management: the path to a risk-awareness culture<br><span class="brt-compare__muted">Build a learn-from-mistakes culture inspired by aviation: away from blame, towards improving together — for leadership and team.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Intensive format (1:1 or small group):</strong> Significantly deeper and more personal than the corresponding module in the combined Risk Expert programme — ideal if you only want to deepen this topic.</p><p>How do you prepare a team so that risks are no longer off limits but part of learning? Using aviation as the example, we build a culture where openly admitted mistakes are recognised instead of punished.</p><ul><li>Just Culture inspired by aviation: reporting channels, debriefings, error rituals</li><li>Leadership structure where mistakes are learned from — instead of looking for someone to blame</li><li>Team aspect: everyone contributes instead of sweeping mistakes under the carpet</li><li>Practical simulation: debriefing a real (anonymised) incident</li></ul><p class="brt-meta"><a href="../training/risk-awareness-culture/">Zur Schulungsseite mit allen Details →</a></p></div></details></th><td><strong>ab 3.975 €</strong><br><span class="brt-compare__muted">Intensive format: 3,975 € (1 person) · +995 € per additional · from 10 people 11,475 € flat rate · 1:1 or small group, significantly deeper than in the combined programme</span></td><td>1 day (2 sessions × 3 h) + transfer package</td></tr>
-              <tr id="sch-02"><th scope="row">The risk-aware manager<br><span class="brt-compare__muted">Specifically for leaders: reduce fear of mistakes and risks, take calculated risks — and see your own company neutrally from the outside again.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Intensive format for leaders (1:1 or small group):</strong> Protected setting without your own employees — significantly more personal and deeper than module 2 in the combined programme.</p><p>For managers only: see mistakes as opportunities to grow, do not fear risks but treat them as chances and take them with calculation — and look at your own business with a neutral outside lens.</p><ul><li>Understand and let go of fear of mistakes — leading by example for the team</li><li>Decision frameworks for calculated risks (worst case, reversibility)</li><li>Overcome operational blindness: pre-mortem, competitor perspective, outside walkthrough</li><li>Practical exercise on your core process: top 3 risks and opportunities</li></ul><p class="brt-meta"><a href="../training/risk-aware-manager/">Zur Schulungsseite mit allen Details →</a></p></div></details></th><td><strong>ab 3.475 €</strong><br><span class="brt-compare__muted">Intensive format: 3,475 € (1 leader) · +875 € per additional · from 8 people 9,875 € flat rate · protected 1:1 setting, significantly deeper than in the combined programme</span></td><td>1 compact day (6 h)</td></tr>
-              <tr id="sch-03"><th scope="row">Putting risk management into practice<br><span class="brt-compare__muted">Learn to apply the Beraterium system yourself: risk analysis with the team, matrix, hazard catalogue (included), euro valuation and actionable measures.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Intensive format (1:1 or small group):</strong> Full depth on matrix, euro valuation and practice on your real area — significantly more comprehensive than module 3 in the combined programme.</p><p>Step by step learn our risk assessment system — for employees, leaders, risk managers from businesses and owners who want to solve risk management internally. How it is done in large corporations, broken down into practical SME steps.</p><ul><li>Run a risk analysis with the team: assessment and facilitation</li><li>Score risks with the matrix and avoid typical scoring mistakes</li><li>Work with the 3-level hazard catalogue — participants receive the full catalogue</li><li>Value risks in euros and derive understandable, actionable measures</li></ul><p class="brt-meta"><a href="../training/practical-risk-management/">Zur Schulungsseite mit allen Details →</a></p></div></details></th><td><strong>ab 4.975 €</strong><br><span class="brt-compare__muted">Intensive format: 4,975 € (1 person) · +1,175 € per additional · from 10 people 14,375 € flat rate · incl. hazard catalogue · 1:1 or small group, significantly deeper than in the combined programme</span></td><td>1.5 days (3 sessions × 4 h)</td></tr>
-              <tr id="sch-04"><th scope="row">Innovation management training<br><span class="brt-compare__muted">Become and stay genuinely innovative: team, atmosphere, management and innovation culture — business, innovation and R&D under one roof.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Small-group training:</strong> Innovation culture and pipeline on your own business — below typical on-site prices, with transfer package.</p><p>Not launch one product and fade away — but stay innovative over years and compete even against much larger rivals.</p><ul><li>Innovation culture: team, atmosphere and management of innovation</li><li>Lightweight innovation pipeline: idea → validation → pilot → scale</li><li>Business, innovation and R&amp;D under one roof: resource split and metrics</li><li>Practical part: mini-pipeline for a real innovation topic of your own</li></ul><p class="brt-meta"><a href="../training/innovation-management/">Zur Schulungsseite mit allen Details →</a></p></div></details></th><td><strong>ab 2.995 €</strong><br><span class="brt-compare__muted">2,995 € (1 person) · +745 € per additional · from 10 people 9,695 € flat rate · small group, practice on your own topic</span></td><td>1 day (2 sessions × 3.5 h) + transfer package</td></tr>
-              <tr id="sch-05"><th scope="row">Feedback culture & a 1+ working environment<br><span class="brt-compare__muted">Build a culture with the team where everyone pulls together: feedback culture, understanding employees, motivating — plus making mission & vision transparent.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Small-group training:</strong> Feedback culture and leadership style in a team setting — including follow-up after 4 weeks.</p><p>A working environment where employees and leadership work in the same direction. Three core areas: feedback culture, understanding employees (what do they really want?), motivating and finding the right leadership style.</p><ul><li>Feedback formats and rituals that build trust instead of destroying it</li><li>Making mission &amp; vision transparent together and communicating them</li><li>Result: less turnover, talent comes to you, team stays even in difficult times</li><li>Follow-up call after 4 weeks: adjust the culture roadmap</li></ul><p class="brt-meta"><a href="../training/feedback-culture/">Zur Schulungsseite mit allen Details →</a></p></div></details></th><td><strong>ab 2.875 €</strong><br><span class="brt-compare__muted">2,875 € (1 person) · +725 € per additional · from 10 people 9,395 € flat rate · incl. follow-up after 4 weeks</span></td><td>1 day (2 sessions × 3 h) + follow-up</td></tr>
-              <tr id="sch-06"><th scope="row">Cross-cultural management training<br><span class="brt-compare__muted">Manage international teams and projects (joint ventures, subsidiaries) successfully — based on Meyer, Hofstede and Schwartz, with first-hand experience.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Small-group training:</strong> Cross-cultural management with first-hand experience — practice for your international initiative.</p><p>In-depth training for international teams, joint ventures, subsidiary setups — and for everyone who hires and leads employees from other cultures. First-hand experience from Germany/EU via Russia, the USA and South America to Africa, India and Pakistan.</p><ul><li>Cultural dimensions using Meyer, Hofstede and Schwartz — applied in practice</li><li>Regional practice: communication, hierarchy and negotiation per cultural region</li><li>Hire, onboard and lead across cultures</li><li>Practical part: cultural risk analysis for your own international initiative</li></ul><p class="brt-meta"><a href="../training/cultural-management/">Zur Schulungsseite mit allen Details →</a></p></div></details></th><td><strong>ab 3.475 €</strong><br><span class="brt-compare__muted">3,475 € (1 person) · +875 € per additional · from 8 people 9,875 € flat rate · small group, international practice</span></td><td>1.5–2 days (4 sessions × 3 h)</td></tr>
+              <tr id="sch-07"><th scope="row">Risk Expert training (combined programme)<br><span class="brt-compare__muted">The complete programme: risk-awareness culture, risk-aware leadership and practical risk management in one flow — equips you to implement our method in your own organisation.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>The combined programme brings together our three risk management trainings into one complete course: risk-awareness culture, The Risk-Aware Manager and Putting Risk Management into Practice. For managers and employees who own risk management in the organisation and should implement our method themselves.</p><p><strong>Investment in internal risk competence:</strong> The training is deliberately comparable to our guided Risk Analysis 360° (3,475 €) and the XL full package (9,675 €) — with the difference that you build the method in-house long term instead of buying risk management in permanently.</p><ul><li>Module 1: build error and risk-awareness culture inspired by aviation</li><li>Module 2: as a leader, take calculated risks and see the business from the outside</li><li>Module 3: run risk analysis yourself — matrix, hazard catalogue (included), euro valuation, measures</li><li>Closing: Risk Expert certificate and transfer plan for your organisation</li></ul><p class="brt-meta"><a href="../training/risk-expert/">View training page for details →</a></p></div></details></th><td><strong>ab 9.875 €</strong><br><span class="brt-compare__muted">9,875 € (1 person) · 14,315 € (2 people) · +4,440 € per additional · max. 4 people 22,875 € flat rate · incl. hazard catalogue & certificate</span></td><td>3 intensive days (approx. 24 h) + transfer & certificate</td></tr>
+              <tr id="sch-01"><th scope="row">Risk management: the path to a risk-awareness culture<br><span class="brt-compare__muted">Build a learn-from-mistakes culture inspired by aviation: away from blame, towards improving together — for leadership and team.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Intensive format (1:1 or small group):</strong> Significantly deeper and more personal than the corresponding module in the combined Risk Expert programme — ideal if you only want to deepen this topic.</p><p>How do you prepare a team so that risks are no longer off limits but part of learning? Using aviation as the example, we build a culture where openly admitted mistakes are recognised instead of punished.</p><ul><li>Just Culture inspired by aviation: reporting channels, debriefings, error rituals</li><li>Leadership structure where mistakes are learned from — instead of looking for someone to blame</li><li>Team aspect: everyone contributes instead of sweeping mistakes under the carpet</li><li>Practical simulation: debriefing a real (anonymised) incident</li></ul><p class="brt-meta"><a href="../training/risk-awareness-culture/">View training page for details →</a></p></div></details></th><td><strong>ab 3.975 €</strong><br><span class="brt-compare__muted">Intensive format: 3,975 € (1 person) · +995 € per additional · from 10 people 11,475 € flat rate · 1:1 or small group, significantly deeper than in the combined programme</span></td><td>1 day (2 sessions × 3 h) + transfer package</td></tr>
+              <tr id="sch-02"><th scope="row">The risk-aware manager<br><span class="brt-compare__muted">Specifically for leaders: reduce fear of mistakes and risks, take calculated risks — and see your own company neutrally from the outside again.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Intensive format for leaders (1:1 or small group):</strong> Protected setting without your own employees — significantly more personal and deeper than module 2 in the combined programme.</p><p>For managers only: see mistakes as opportunities to grow, do not fear risks but treat them as chances and take them with calculation — and look at your own business with a neutral outside lens.</p><ul><li>Understand and let go of fear of mistakes — leading by example for the team</li><li>Decision frameworks for calculated risks (worst case, reversibility)</li><li>Overcome operational blindness: pre-mortem, competitor perspective, outside walkthrough</li><li>Practical exercise on your core process: top 3 risks and opportunities</li></ul><p class="brt-meta"><a href="../training/risk-aware-manager/">View training page for details →</a></p></div></details></th><td><strong>ab 3.475 €</strong><br><span class="brt-compare__muted">Intensive format: 3,475 € (1 leader) · +875 € per additional · from 8 people 9,875 € flat rate · protected 1:1 setting, significantly deeper than in the combined programme</span></td><td>1 compact day (6 h)</td></tr>
+              <tr id="sch-03"><th scope="row">Putting risk management into practice<br><span class="brt-compare__muted">Learn to apply the Beraterium system yourself: risk analysis with the team, matrix, hazard catalogue (included), euro valuation and actionable measures.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Intensive format (1:1 or small group):</strong> Full depth on matrix, euro valuation and practice on your real area — significantly more comprehensive than module 3 in the combined programme.</p><p>Step by step learn our risk assessment system — for employees, leaders, risk managers from businesses and owners who want to solve risk management internally. How it is done in large corporations, broken down into practical SME steps.</p><ul><li>Run a risk analysis with the team: assessment and facilitation</li><li>Score risks with the matrix and avoid typical scoring mistakes</li><li>Work with the 3-level hazard catalogue — participants receive the full catalogue</li><li>Value risks in euros and derive understandable, actionable measures</li></ul><p class="brt-meta"><a href="../training/practical-risk-management/">View training page for details →</a></p></div></details></th><td><strong>ab 4.975 €</strong><br><span class="brt-compare__muted">Intensive format: 4,975 € (1 person) · +1,175 € per additional · from 10 people 14,375 € flat rate · incl. hazard catalogue · 1:1 or small group, significantly deeper than in the combined programme</span></td><td>1.5 days (3 sessions × 4 h)</td></tr>
+              <tr id="sch-04"><th scope="row">Innovation management training<br><span class="brt-compare__muted">Become and stay genuinely innovative: team, atmosphere, management and innovation culture — business, innovation and R&D under one roof.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Small-group training:</strong> Innovation culture and pipeline on your own business — below typical on-site prices, with transfer package.</p><p>Not launch one product and fade away — but stay innovative over years and compete even against much larger rivals.</p><ul><li>Innovation culture: team, atmosphere and management of innovation</li><li>Lightweight innovation pipeline: idea → validation → pilot → scale</li><li>Business, innovation and R&amp;D under one roof: resource split and metrics</li><li>Practical part: mini-pipeline for a real innovation topic of your own</li></ul><p class="brt-meta"><a href="../training/innovation-management/">View training page for details →</a></p></div></details></th><td><strong>ab 2.995 €</strong><br><span class="brt-compare__muted">2,995 € (1 person) · +745 € per additional · from 10 people 9,695 € flat rate · small group, practice on your own topic</span></td><td>1 day (2 sessions × 3.5 h) + transfer package</td></tr>
+              <tr id="sch-05"><th scope="row">Feedback culture & a 1+ working environment<br><span class="brt-compare__muted">Build a culture with the team where everyone pulls together: feedback culture, understanding employees, motivating — plus making mission & vision transparent.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Small-group training:</strong> Feedback culture and leadership style in a team setting — including follow-up after 4 weeks.</p><p>A working environment where employees and leadership work in the same direction. Three core areas: feedback culture, understanding employees (what do they really want?), motivating and finding the right leadership style.</p><ul><li>Feedback formats and rituals that build trust instead of destroying it</li><li>Making mission &amp; vision transparent together and communicating them</li><li>Result: less turnover, talent comes to you, team stays even in difficult times</li><li>Follow-up call after 4 weeks: adjust the culture roadmap</li></ul><p class="brt-meta"><a href="../training/feedback-culture/">View training page for details →</a></p></div></details></th><td><strong>ab 2.875 €</strong><br><span class="brt-compare__muted">2,875 € (1 person) · +725 € per additional · from 10 people 9,395 € flat rate · incl. follow-up after 4 weeks</span></td><td>1 day (2 sessions × 3 h) + follow-up</td></tr>
+              <tr id="sch-06"><th scope="row">Cross-cultural management training<br><span class="brt-compare__muted">Manage international teams and projects (joint ventures, subsidiaries) successfully — based on Meyer, Hofstede and Schwartz, with first-hand experience.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p><strong>Small-group training:</strong> Cross-cultural management with first-hand experience — practice for your international initiative.</p><p>In-depth training for international teams, joint ventures, subsidiary setups — and for everyone who hires and leads employees from other cultures. First-hand experience from Germany/EU via Russia, the USA and South America to Africa, India and Pakistan.</p><ul><li>Cultural dimensions using Meyer, Hofstede and Schwartz — applied in practice</li><li>Regional practice: communication, hierarchy and negotiation per cultural region</li><li>Hire, onboard and lead across cultures</li><li>Practical part: cultural risk analysis for your own international initiative</li></ul><p class="brt-meta"><a href="../training/cultural-management/">View training page for details →</a></p></div></details></th><td><strong>ab 3.475 €</strong><br><span class="brt-compare__muted">3,475 € (1 person) · +875 € per additional · from 8 people 9,875 € flat rate · small group, international practice</span></td><td>1.5–2 days (4 sessions × 3 h)</td></tr>
             </tbody>
           </table>
         </div>
@@ -1298,6 +1433,30 @@
               <tr id="hr-01"><th scope="row">HR-Analyse per Fragebogen<br><span class="brt-compare__muted">Anonymer Kultur-Health-Check für alle Mitarbeitenden: Zufriedenheit, Kommunikation, Führung, Belastung — mit aggregierten Insights.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>Ein anonymer Kultur-Health-Check für alle Mitarbeitenden: Zufriedenheit, Kommunikation, Führungsqualität, Zugehörigkeitsgefühl, Stressbelastung und Veränderungsbereitschaft.</p><ul><li>Vollständig anonyme Antworten, aggregierte Insights für die Geschäftsführung</li><li>Deckt früh Warnsignale auf — etwa Burnout-Tendenzen oder verdeckte Unzufriedenheit</li><li>Optionaler Report (+547 €) mit Trends und konkreten Handlungsimpulsen</li></ul></div></details></th><td><strong>ab 12 € per person</strong><br><span class="brt-compare__muted">Pauschale 127 € + per person: ab 10 MA 27 € · ab 25 MA 22 € · ab 50 MA 17 € · ab 100 MA 12 € · Report +547 €</span></td><td>Befragung + Auswertung</td></tr>
               <tr id="hr-02"><th scope="row">Führungskräfte-Interviews<br><span class="brt-compare__muted">Tiefe 1:1-Interviews (je 1 h) mit Ihren Führungskräften, transkribiert und in Mustern ausgewertet.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>Vertrauliche 1:1-Interviews (je 1 Stunde) mit Ihren Führungskräften — zu Teamdynamik, Herausforderungen, Führungsansatz und Zusammenarbeit auf FK-Ebene.</p><ul><li>Interviews werden transkribiert und auf gemeinsame Muster analysiert</li><li>Deckt Spannungen zwischen Führungskräften auf, die von außen unsichtbar bleiben</li><li>Optionaler Report (+1.525 €) mit Cluster-Analyse und Handlungsempfehlungen</li></ul></div></details></th><td><strong>ab 197 € pro Interview</strong><br><span class="brt-compare__muted">Pauschale 257 € + pro Interview: einzeln 227 € · ab 10 222 € · ab 25 212 € · ab 50 197 € · Report +1.525 €</span></td><td>1 h je Interview + Auswertung</td></tr>
               <tr id="hr-03"><th scope="row">Auswertung & Handlungsempfehlungen<br><span class="brt-compare__muted">Aus Fragebogen- und Interview-Daten werden konkrete Maßnahmen mit Prioritäten, Reihenfolge und Timeline — als Strategiepapier.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>Auf Basis der Fragebogen- und/oder Interview-Daten entwickeln wir gemeinsam mit der Geschäftsführung konkrete Maßnahmen — mit Priorität, Reihenfolge und Ressourcenbedarf.</p><ul><li>Ergebnis: ein Strategiepapier statt einer bloßen Datensammlung</li><li>Klare Timeline mit Verantwortlichkeiten je Maßnahme</li><li>Macht den ROI von HR-Investitionen sichtbar und nachvollziehbar</li></ul></div></details></th><td><strong>2.475 €</strong></td><td>Workshop + Strategiepapier</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section class="brt-section" id="international" aria-labelledby="preise-international-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">RUSSIAN-SPEAKING FOUNDERS & EXPANSION</p>
+          <h2 id="preise-international-title" class="brt-h2">International Services</h2>
+          <p class="brt-body">Consulting and support for entrepreneurs from the post-Soviet space — in German, English, and Russian. Not legal or tax advice; we coordinate with our network of attorneys and tax advisors.</p>
+        </header>
+        <div class="brt-table-wrap brt-fade-up">
+          <table class="brt-table">
+            <caption class="brt-sr-only">Preise: International Services</caption>
+            <thead>
+              <tr><th scope="col">Angebot</th><th scope="col">Preis (netto)</th><th scope="col">Dauer &amp; Umfang</th></tr>
+            </thead>
+            <tbody>
+              <tr id="int-00"><th scope="row">Intro call — International Services<br><span class="brt-compare__muted">30 minutes: your situation, target market, and the next sensible step — no obligation, in German, English, or Russian.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>Entry point for all international offers: we clarify where you stand, what you aim for, and which package fits — without sales pressure.</p><ul><li>Personal conversation with Veronika Berdnikova or Till Blania</li><li>Languages: German, English, Russian</li><li>Outcome: clear recommendation for the next step</li></ul><p class="brt-meta"><a href="../international-services/">View offer page for details →</a></p></div></details></th><td><strong>50 €</strong></td><td>30 minutes</td></tr>
+              <tr id="int-01"><th scope="row">Start a business in Germany<br><span class="brt-compare__muted">Support through the founding phase: business plan structure, authority coordination, network, risk analysis from day one.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>Consulting and coordination — not legal or tax advice. We structure your founding path and bring in specialists.</p><ul><li>Legal form options explained (sole trader, GbR, UG, GmbH)</li><li>Business plan structure and financial plan support</li><li>Coordination: trade registration, ELSTER, chamber of commerce</li><li>Referrals to notary, attorney, tax advisor</li><li>Funding research and risk analysis included</li></ul><p class="brt-meta"><a href="../international-services/founding-germany/">View offer page for details →</a></p></div></details></th><td><strong>ab 1.900 €</strong><br><span class="brt-compare__muted">From €1,900 · Full founding support package €4,900</span></td><td>4–12 weeks</td></tr>
+              <tr id="int-02"><th scope="row">Living & working in Germany<br><span class="brt-compare__muted">1-to-1 support: German business and everyday culture, authorities, ELSTER, typical pitfalls — bookable in modules.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>Individual coaching for founders with a migration background — soft skills and practical authority navigation.</p><ul><li>Communication and culture in German business life</li><li>Tax office, trade office, immigration authority — preparation and process</li><li>ELSTER, appointments, written confirmations</li><li>Optional: residential or commercial property search</li></ul><p class="brt-meta"><a href="../international-services/living-working-germany/">View offer page for details →</a></p></div></details></th><td><strong>ab 180 € per hour</strong><br><span class="brt-compare__muted">Single hour from €180 · Topic module from €490 · 6-month package €2,900 · Property search from €1,900</span></td><td>As needed</td></tr>
+              <tr id="int-03"><th scope="row">Business Health Check / Turnaround<br><span class="brt-compare__muted">Risk analysis for running businesses: identify bottlenecks, prioritise solutions, eliminate costs.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>For companies already founded but hitting limits — tax office, regulation, customers, or processes.</p><ul><li>Structured risk analysis using the Beraterium method</li><li>Bottleneck diagnosis: finance, sales, people, IT, compliance</li><li>Prioritised measures with implementation roadmap</li><li>BAFA funding possible (up to 80% for Health Check)</li></ul><p class="brt-meta"><a href="../international-services/business-turnaround/">View offer page for details →</a></p></div></details></th><td><strong>ab 3.500 €</strong><br><span class="brt-compare__muted">Health Check from €3,500 (BAFA-eligible) · Turnaround package €12,500</span></td><td>2–8 weeks</td></tr>
+              <tr id="int-04"><th scope="row">Expansion / German subsidiary<br><span class="brt-compare__muted">Market entry Germany/EU: build a subsidiary, compliance, on-site sales — fulfilment can stay in the home country.</span><details class="brt-faq__item brt-price-details"><summary class="brt-faq__summary"><span class="brt-faq__toggle" aria-hidden="true"></span><span class="brt-faq__question">Mehr zu diesem Angebot anzeigen</span><span class="brt-faq__chevron" aria-hidden="true"></span></summary><div class="brt-faq__answer"><p>For established companies abroad entering the EU market — without relocating immediately.</p><ul><li>Market entry and risk analysis</li><li>Subsidiary setup — coordination with notary/attorney</li><li>Compliance, sanctions check, KYC/AML</li><li>On-site management: sales, customer contact, local presence</li></ul><p class="brt-meta"><a href="../international-services/expansion-subsidiary/">View offer page for details →</a></p></div></details></th><td><strong>ab 9.500 €</strong><br><span class="brt-compare__muted">Setup from €9,500 · KYC/sanctions module from €1,500 · Retainer from €4,500/month (min. 6 months)</span></td><td>Setup 8–16 weeks + retainer</td></tr>
             </tbody>
           </table>
         </div>
@@ -1528,6 +1687,7 @@
         <li><a href="../services/">Overview</a></li>
         <li><a href="../pricing/">Pricing &amp; services</a></li>
         <li><a href="../training/">Training</a></li>
+        <li><a href="../international-services/">International Services</a></li>
       </ul>
     </section>
     <section>

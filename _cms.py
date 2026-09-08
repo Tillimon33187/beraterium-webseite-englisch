@@ -103,6 +103,7 @@ class TeamMember:
     goal: str = ""
     extended: list[dict[str, str]] = field(default_factory=list)
     teaser_bio: str = ""
+    languages: list[str] = field(default_factory=list)
     email: str = ""
     phone: str = ""
     linkedin: str = ""
@@ -172,6 +173,7 @@ def load_team_members() -> list[TeamMember]:
                 goal=data.get("goal", ""),
                 extended=list(data.get("extended") or []),
                 teaser_bio=data.get("teaser_bio", ""),
+                languages=list(data.get("languages") or []),
                 email=data.get("email", ""),
                 phone=data.get("phone", ""),
                 linkedin=data.get("linkedin", ""),
@@ -1780,6 +1782,11 @@ def gen_sitemap_urls() -> list[str]:
         "/training/innovation-management/",
         "/training/feedback-culture/",
         "/training/cultural-management/",
+        "/international-services/",
+        "/international-services/founding-germany/",
+        "/international-services/living-working-germany/",
+        "/international-services/business-turnaround/",
+        "/international-services/expansion-subsidiary/",
         "/risk-radar/",
         "/tools/",
         "/tools/blindspot-check/",
