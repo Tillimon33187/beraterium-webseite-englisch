@@ -321,6 +321,10 @@
       var nextBtn = slider.querySelector(".brt-cards-slider__btn--next");
       if (!viewport || !track) return;
 
+      var autoplayMs = parseInt(slider.getAttribute("data-cards-slider-autoplay") || "0", 10);
+      var autoplayTimer = null;
+      var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
       function scrollStep() {
         var card = track.querySelector("li");
         if (!card) return viewport.clientWidth;
@@ -328,29 +332,68 @@
         return card.offsetWidth + gap;
       }
 
+      function scrollBehavior() {
+        return reducedMotion ? "auto" : "smooth";
+      }
+
+      function maxScrollLeft() {
+        return viewport.scrollWidth - viewport.clientWidth;
+      }
+
       function scrollByCards(direction) {
         viewport.scrollBy({
           left: direction * scrollStep(),
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+          behavior: scrollBehavior(),
         });
+      }
+
+      function scrollNextAutoplay() {
+        var maxScroll = maxScrollLeft();
+        if (maxScroll <= 1) return;
+        if (viewport.scrollLeft >= maxScroll - 1) {
+          viewport.scrollTo({ left: 0, behavior: scrollBehavior() });
+        } else {
+          scrollByCards(1);
+        }
       }
 
       function updateButtons() {
         if (!prevBtn || !nextBtn) return;
-        var maxScroll = viewport.scrollWidth - viewport.clientWidth;
-        prevBtn.disabled = viewport.scrollLeft <= 1;
-        nextBtn.disabled = viewport.scrollLeft >= maxScroll - 1;
+        var maxScroll = maxScrollLeft();
+        var wrap = autoplayMs > 0 && maxScroll > 1;
+        prevBtn.disabled = !wrap && viewport.scrollLeft <= 1;
+        nextBtn.disabled = !wrap && viewport.scrollLeft >= maxScroll - 1;
+      }
+
+      function stopAutoplay() {
+        if (autoplayTimer) {
+          clearInterval(autoplayTimer);
+          autoplayTimer = null;
+        }
+      }
+
+      function startAutoplay() {
+        if (!autoplayMs || reducedMotion || document.hidden) return;
+        stopAutoplay();
+        autoplayTimer = setInterval(scrollNextAutoplay, autoplayMs);
+      }
+
+      function resetAutoplay() {
+        stopAutoplay();
+        startAutoplay();
       }
 
       if (prevBtn) {
         prevBtn.addEventListener("click", function () {
           scrollByCards(-1);
+          resetAutoplay();
         });
       }
 
       if (nextBtn) {
         nextBtn.addEventListener("click", function () {
           scrollByCards(1);
+          resetAutoplay();
         });
       }
 
@@ -359,13 +402,26 @@
         if (e.key === "ArrowLeft") {
           e.preventDefault();
           scrollByCards(-1);
+          resetAutoplay();
         } else if (e.key === "ArrowRight") {
           e.preventDefault();
           scrollByCards(1);
+          resetAutoplay();
         }
+      });
+      slider.addEventListener("mouseenter", stopAutoplay);
+      slider.addEventListener("mouseleave", startAutoplay);
+      slider.addEventListener("focusin", stopAutoplay);
+      slider.addEventListener("focusout", function (e) {
+        if (!slider.contains(e.relatedTarget)) startAutoplay();
+      });
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) stopAutoplay();
+        else startAutoplay();
       });
       window.addEventListener("resize", updateButtons);
       updateButtons();
+      startAutoplay();
     });
   }
 

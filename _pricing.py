@@ -223,7 +223,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_max": 4,
                 "price_detail": "9.875 € (1 Person) · 14.315 € (2 Personen) · +4.440 € je weiterer · max. 4 Personen 22.875 € pauschal · inkl. Gefahrenkatalog & Zertifikat",
                 "duration": "3 Tage intensiv (ca. 24 h) + Transfer & Zertifikat",
-                "slug": "risk-expert",
+                "slug": "risikoexperte",
                 "details_html": (
                     "<p>Die Kombi-Schulung vereint unsere drei Risikomanagement-Schulungen zu einer vollständigen "
                     "Ausbildung: Risk-Awareness-Kultur, \u201eDer risikobewusste Manager\u201c und \u201eRisikomanagement "
@@ -248,7 +248,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 10,
                 "price_detail": "Intensivformat: 3.975 € (1 Person) · +995 € je weiterer · ab 10 Personen 11.475 € pauschal · 1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi-Ausbildung",
                 "duration": "1 Tag (2 Sessions à 3 h) + Transfer-Paket",
-                "slug": "risk-awareness-culture",
+                "slug": "risk-awareness-kultur",
                 "details_html": (
                     "<p><strong>Intensivformat (1:1 oder Kleinstgruppe):</strong> Wesentlich detaillierter und persönlicher als das entsprechende Modul in der Kombi-Ausbildung zum Risikoexperten — ideal, wenn Sie nur dieses Thema vertiefen wollen.</p>"
                     "<p>Wie bereite ich ein Team so vor, dass Risiken kein No-Go mehr sind, sondern zum Lernprozess gehören? "
@@ -271,7 +271,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 8,
                 "price_detail": "Intensivformat: 3.475 € (1 Führungskraft) · +875 € je weiterer · ab 8 Personen 9.875 € pauschal · geschützter 1:1-Rahmen, deutlich tiefer als in der Kombi-Ausbildung",
                 "duration": "1 Kompakt-Tag (6 h)",
-                "slug": "risk-aware-manager",
+                "slug": "risikobewusster-manager",
                 "details_html": (
                     "<p><strong>Intensivformat für Führungskräfte (1:1 oder Kleinstgruppe):</strong> Geschützter Rahmen ohne eigene Mitarbeitende — deutlich persönlicher und tiefer als Modul 2 in der Kombi-Ausbildung.</p>"
                     "<p>Nur für Manager:innen: Fehler als Chance zum Wachstum sehen, Risiken nicht fürchten, sondern als Chance "
@@ -294,7 +294,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 10,
                 "price_detail": "Intensivformat: 4.975 € (1 Person) · +1.175 € je weiterer · ab 10 Personen 14.375 € pauschal · inkl. Gefahrenkatalog · 1:1 oder Kleinstgruppe, deutlich tiefer als in der Kombi-Ausbildung",
                 "duration": "1,5 Tage (3 Sessions à 4 h)",
-                "slug": "practical-risk-management",
+                "slug": "risikomanagement-praktisch",
                 "details_html": (
                     "<p><strong>Intensivformat (1:1 oder Kleinstgruppe):</strong> Volle Tiefe bei Matrix, Euro-Bewertung und Praxis an Ihrem echten Bereich — deutlich umfangreicher als Modul 3 in der Kombi-Ausbildung.</p>"
                     "<p>Schritt für Schritt unser System der Risikobewertung lernen — für Mitarbeitende, Führungskräfte, "
@@ -318,7 +318,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 10,
                 "price_detail": "2.995 € (1 Person) · +745 € je weiterer · ab 10 Personen 9.695 € pauschal · Kleingruppe, Praxis am eigenen Thema",
                 "duration": "1 Tag (2 Sessions à 3,5 h) + Transfer-Paket",
-                "slug": "innovation-management",
+                "slug": "innovationsmanagement",
                 "details_html": (
                     "<p><strong>Kleingruppen-Schulung:</strong> Innovationskultur und Pipeline am eigenen Unternehmen — unter üblichen Inhouse-Preisen, mit Transfer-Paket.</p>"
                     "<p>Nicht einmal ein Produkt auf den Markt bringen und in Vergessenheit geraten — sondern über Jahre "
@@ -341,7 +341,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 10,
                 "price_detail": "2.875 € (1 Person) · +725 € je weiterer · ab 10 Personen 9.395 € pauschal · inkl. Follow-up nach 4 Wochen",
                 "duration": "1 Tag (2 Sessions à 3 h) + Follow-up",
-                "slug": "feedback-culture",
+                "slug": "feedbackkultur",
                 "details_html": (
                     "<p><strong>Kleingruppen-Schulung:</strong> Feedbackkultur und Führungsstil im Team-Rahmen — inklusive Follow-up nach 4 Wochen.</p>"
                     "<p>Eine Arbeitsumgebung, in der Mitarbeitende und Führung in die gleiche Richtung arbeiten. "
@@ -365,7 +365,7 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "team_from": 8,
                 "price_detail": "3.475 € (1 Person) · +875 € je weiterer · ab 8 Personen 9.875 € pauschal · Kleingruppe, internationale Praxis",
                 "duration": "1,5–2 Tage (4 Sessions à 3 h)",
-                "slug": "cultural-management",
+                "slug": "kulturelles-management",
                 "details_html": (
                     "<p><strong>Kleingruppen-Schulung:</strong> Interkulturelles Management mit First-Hand-Erfahrung — Praxis für Ihr internationales Vorhaben.</p>"
                     "<p>Umfangreiche Schulung für internationale Teams, Joint Ventures, Tochtergründungen — und für alle, "
@@ -513,11 +513,11 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "nr": "INT-00",
                 "name": "Erstberatung Internationale Angebote",
                 "desc": "30 Minuten: Ihre Situation, Zielmarkt und nächster sinnvoller Schritt — unverbindlich, auf Deutsch, Englisch oder Russisch.",
-                "price": 50,
+                "price": 0,
                 "duration": "30 Minuten",
                 "slug": "internationale-angebote",
                 "details_html": (
-                    "<p>Einstieg für alle internationalen Angebote: Wir klären, wo Sie stehen, was Sie anstreben und welches Paket passt — ohne Verkaufsdruck.</p>"
+                    "<p>Kostenloser Einstieg für alle internationalen Angebote: Wir klären, wo Sie stehen, was Sie anstreben und welcher Weg passt — ohne Verkaufsdruck.</p>"
                     "<ul><li>Persönliches Gespräch mit Veronika Berdnikova oder Till Blania</li>"
                     "<li>Sprachen: Deutsch, Englisch, Russisch</li>"
                     "<li>Ergebnis: klare Empfehlung für den nächsten Schritt</li></ul>"
@@ -526,41 +526,65 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
             {
                 "nr": "INT-01",
                 "name": "Gründung in Deutschland (Übersicht)",
-                "desc": "Stufen einzeln buchbar oder als Paket — wie Risikoanalyse RA-01: Business Check, Roadmap, Begleitung, Risiko-Check.",
-                "price_from": 990,
-                "price_detail": "Stufen ab 990 € · Paket Roadmap+Begleitung 4.490 € · Gründung 360° 5.490 €",
+                "desc": "Vom kostenlosen Erstgespräch bis Gründung 360° — Begleitung bei 0 oder direkt Launch.",
+                "price_from": 150,
+                "price_detail": "Orientierung 150 € · Begleitung bei 0 2.390 € · Launch-Paket 4.490 € · Gründung 360° 7.490 € · + Förder-Check 7.990 €",
                 "duration": "4–12 Wochen",
                 "slug": "gruendung-deutschland",
                 "details_html": (
-                    "<p>Beratung und Koordination — keine Rechts- oder Steuerberatung. Wählen Sie die Tiefe: von der Ideen-Validierung bis zur hands-on Launch-Begleitung.</p>"
-                    "<ul><li><strong>INT-01-A</strong> Business Check 990 €</li>"
-                    "<li><strong>INT-01-B</strong> Launch Roadmap 1.900 €</li>"
+                    "<p>Beratung und Koordination — keine Rechts- oder Steuerberatung. Zwei Wege: <strong>Begleitung bei 0</strong> (Planung) oder <strong>Launch</strong> (Umsetzung).</p>"
+                    "<ul><li><strong>INT-01-E</strong> Deutschland-Orientierung 150 €</li>"
+                    "<li><strong>INT-01-A</strong> Business Check 790 €</li>"
+                    "<li><strong>INT-01-B</strong> Gründungsplanung 1.900 €</li>"
+                    "<li><strong>INT-01-F</strong> Launch Roadmap 1.900 €</li>"
                     "<li><strong>INT-01-C</strong> Launch Begleitung 2.900 €</li>"
                     "<li><strong>INT-01-D</strong> Gründungs-Risiko-Check 1.250 €</li>"
-                    "<li>Paket <strong>Gründung 360°</strong> 5.490 € (Ersparnis 650 €)</li></ul>"
+                    "<li>Paket <strong>Begleitung bei 0</strong> 2.390 € · <strong>Gründung 360°</strong> 7.490 €</li></ul>"
                 ),
+            },
+            {
+                "nr": "INT-01-E",
+                "name": "↳ Deutschland-Orientierung",
+                "desc": "1:1-Vortrag 45 Min. + 45 Min. Fragen: Markt, Rahmenbedingungen, typische Stolpersteine in DE.",
+                "price": 150,
+                "duration": "1,5 h",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Informieren, bevor Sie gründen — für alle, die erst verstehen wollen, was in Deutschland möglich ist.</p>",
             },
             {
                 "nr": "INT-01-A",
                 "name": "↳ Business Check",
-                "desc": "Standortbestimmung: Idee, Rechtsform-Optionen, Budget, Top-5-Risiken — Kurzprotokoll.",
-                "price": 990,
+                "desc": "Standortbestimmung: Idee(n), Rechtsform, Budget, Top-5-Risiken — Kurzprotokoll.",
+                "price": 790,
                 "duration": "2–3 h + Protokoll",
                 "slug": "gruendung-deutschland",
                 "parent_slug": "gruendung-deutschland",
                 "sub": True,
-                "details_html": "<p>Bevor Notar und Steuerberater: ehrliche Einordnung Ihrer Gründungsidee in Deutschland.</p>",
+                "details_html": "<p>Bevor Notar und Steuerberater: ehrliche Einordnung — auch wenn die Idee noch vage ist.</p>",
             },
             {
                 "nr": "INT-01-B",
+                "name": "↳ Gründungsplanung",
+                "desc": "Gemeinsam Business planen: Markt, Modell, SWOT, PESTEL — Sie arbeiten, wir leiten an.",
+                "price": 1900,
+                "duration": "Mehrere Sessions",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Kein investor-ready BP durch uns — strukturierte Anleitung zum Selber-Planen.</p>",
+            },
+            {
+                "nr": "INT-01-F",
                 "name": "↳ Launch Roadmap",
-                "desc": "Persönlicher Plan Woche 1 → Monat 3 — Pre-Launch, Launch, erste Kunden, erste 90 Tage.",
+                "desc": "Persönlicher Umsetzungsplan Woche 1 → Monat 3 — wenn Idee und Planung stehen.",
                 "price": 1900,
                 "duration": "Dokument + Review-Call",
                 "slug": "gruendung-deutschland",
                 "parent_slug": "gruendung-deutschland",
                 "sub": True,
-                "details_html": "<p>Vier Phasen mit Checklisten — Ihr Plan, kein Internet-Template.</p>",
+                "details_html": "<p>Pre-Launch, Launch, erste Kunden, erste 90 Tage — Ihr Umsetzungsfahrplan.</p>",
             },
             {
                 "nr": "INT-01-C",
@@ -585,16 +609,40 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "details_html": "<p>Beraterium-Bewertungslogik — kein Ersatz für RA-01, Brücke zu RA-02 möglich.</p>",
             },
             {
-                "nr": "INT-01-P2",
-                "name": "↳ Paket Gründung 360°",
-                "desc": "A + B + C + D — kompletter Weg von der Idee zum abgesicherten Launch.",
-                "price": 5490,
-                "price_detail": "Einzeln 6.140 € · Ersparnis 650 €",
+                "nr": "INT-01-P0",
+                "name": "↳ Paket Begleitung bei 0",
+                "desc": "Business Check + Gründungsplanung — Markt, Modell, SWOT, PESTEL gemeinsam erarbeiten.",
+                "price": 2390,
+                "price_detail": "Einzeln 2.690 € · Ersparnis 300 €",
                 "duration": "Paket",
                 "slug": "gruendung-deutschland",
                 "parent_slug": "gruendung-deutschland",
                 "sub": True,
-                "details_html": "<p>Unser meistgebuchtes Gründungspaket für russischsprachige Gründer.</p>",
+                "details_html": "<p>Für Gründer ohne konkrete Idee — Planung von null an, Sie arbeiten, wir leiten an.</p>",
+            },
+            {
+                "nr": "INT-01-P1",
+                "name": "↳ Paket Launch",
+                "desc": "Launch Roadmap + Launch Begleitung — wenn Idee und Planung stehen.",
+                "price": 4490,
+                "price_detail": "Einzeln 4.800 € · Ersparnis 310 €",
+                "duration": "Paket",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Umsetzungsfahrplan plus hands-on Begleitung bei Behörden, Bank und Spezialisten.</p>",
+            },
+            {
+                "nr": "INT-01-P2",
+                "name": "↳ Paket Gründung 360°",
+                "desc": "A + B + F + C + D — kompletter Weg von null bis abgesicherter Launch.",
+                "price": 7490,
+                "price_detail": "Einzeln 8.740 € · Ersparnis 1.250 €",
+                "duration": "Paket",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Unser meistgebuchtes Gründungspaket — Planung, Umsetzung und Risiko-Check.</p>",
             },
             {
                 "nr": "INT-02",

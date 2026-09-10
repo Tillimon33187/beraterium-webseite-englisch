@@ -1,8 +1,12 @@
 """Cross-language routing and hreflang mapping for Beraterium DE/EN/RU sites."""
 from __future__ import annotations
 
+from _internationale_stufen_detail import build_i18n_stage_routes
+
 DE_SITE_URL = "https://www.beraterium.de"
 EN_SITE_URL = "https://www.beraterium.com"
+
+_STATIC_STAGE_ROUTES, _RU_STAGE_ROUTES, _ = build_i18n_stage_routes()
 
 STATIC_ROUTE_MAP: dict[str, str] = {
     "": "",
@@ -52,6 +56,7 @@ STATIC_ROUTE_MAP: dict[str, str] = {
     "danke": "thank-you",
     "404": "404",
     "tools/ra-vorbereitung": "tools/ra-preparation",
+    **_STATIC_STAGE_ROUTES,
 }
 
 RU_ROUTE_MAP: dict[str, str] = {
@@ -60,6 +65,7 @@ RU_ROUTE_MAP: dict[str, str] = {
     "internationale-angebote/leben-arbeiten-deutschland": "ru/internationale-angebote/zhizn-i-rabota-germaniya",
     "internationale-angebote/business-turnaround": "ru/internationale-angebote/biznes-zdorovye-proverka",
     "internationale-angebote/expansion-tochtergesellschaft": "ru/internationale-angebote/ekspansiya-dochernaya-kompaniya",
+    **_RU_STAGE_ROUTES,
 }
 
 DE_FROM_RU_ROUTE_MAP: dict[str, str] = {v: k for k, v in RU_ROUTE_MAP.items()}

@@ -12,6 +12,10 @@ from typing import Any
 import markdown
 import yaml
 
+from _internationale_stufen_detail import en_sitemap_paths
+
+_EN_STAGE_SITEMAP_PATHS = en_sitemap_paths()
+
 SITE = Path(__file__).parent
 CONTENT = SITE / "content"
 BLOG_DIR = CONTENT / "blog"
@@ -1787,6 +1791,7 @@ def gen_sitemap_urls() -> list[str]:
         "/international-services/living-working-germany/",
         "/international-services/business-turnaround/",
         "/international-services/expansion-subsidiary/",
+        *_EN_STAGE_SITEMAP_PATHS,
         "/risk-radar/",
         "/tools/",
         "/tools/blindspot-check/",

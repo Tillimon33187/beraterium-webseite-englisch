@@ -9,25 +9,25 @@ from _pricing import format_eur
 # Customer journey on /internationale-angebote/ index
 INT_JOURNEY: dict[str, list[dict]] = {
     "de": [
-        {"key": "start", "label": "START", "question": "Ich will in DE gründen — wo fange ich an?", "nr": "INT-00", "price": 50},
-        {"key": "roadmap", "label": "ROADMAP", "question": "Ich will den gesamten Weg verstehen", "nr": "INT-01-B", "price": 1900},
-        {"key": "launch", "label": "LAUNCH", "question": "Ich brauche Begleitung bei der Umsetzung", "nr": "INT-01-C", "price": 2900},
+        {"key": "start", "label": "START", "question": "Kostenlos klären: Passt Beraterium zu mir?", "nr": "INT-00", "price": 0},
+        {"key": "orient", "label": "ORIENTIERUNG", "question": "Ich will erst verstehen, wie der Markt in DE funktioniert", "nr": "INT-01-E", "price": 150},
+        {"key": "plan", "label": "PLANUNG", "question": "Noch keine konkrete Idee — ich brauche Begleitung bei 0", "nr": "INT-01-P0", "price": 2390},
+        {"key": "launch", "label": "LAUNCH", "question": "Idee steht — ich brauche Umsetzung und Begleitung", "nr": "INT-01-P1", "price": 4490},
         {"key": "check", "label": "CHECK", "question": "Mein Business läuft — wo hakt es?", "nr": "INT-03-A", "price": 790},
-        {"key": "scale", "label": "RISK & SCALE", "question": "Wir wollen wachsen — vorbereitet?", "nr": "INT-03-P3", "price": 7900},
     ],
     "en": [
-        {"key": "start", "label": "START", "question": "I want to start in Germany — where do I begin?", "nr": "INT-00", "price": 50},
-        {"key": "roadmap", "label": "ROADMAP", "question": "I want to understand the full path", "nr": "INT-01-B", "price": 1900},
-        {"key": "launch", "label": "LAUNCH", "question": "I need hands-on launch support", "nr": "INT-01-C", "price": 2900},
+        {"key": "start", "label": "START", "question": "Free intro: is Beraterium a fit?", "nr": "INT-00", "price": 0},
+        {"key": "orient", "label": "ORIENTATION", "question": "I want to understand the German market first", "nr": "INT-01-E", "price": 150},
+        {"key": "plan", "label": "PLANNING", "question": "No concrete idea yet — guide me from zero", "nr": "INT-01-P0", "price": 2390},
+        {"key": "launch", "label": "LAUNCH", "question": "Idea is ready — I need execution support", "nr": "INT-01-P1", "price": 4490},
         {"key": "check", "label": "CHECK", "question": "Business is running — what's weak?", "nr": "INT-03-A", "price": 790},
-        {"key": "scale", "label": "RISK & SCALE", "question": "We're growing — are we ready?", "nr": "INT-03-P3", "price": 7900},
     ],
     "ru": [
-        {"key": "start", "label": "START", "question": "Хочу открыть бизнес в Германии — с чего начать?", "nr": "INT-00", "price": 50},
-        {"key": "roadmap", "label": "ROADMAP", "question": "Хочу понять весь путь", "nr": "INT-01-B", "price": 1900},
-        {"key": "launch", "label": "LAUNCH", "question": "Нужно сопровождение при запуске", "nr": "INT-01-C", "price": 2900},
+        {"key": "start", "label": "START", "question": "Бесплатно: подходит ли Beraterium?", "nr": "INT-00", "price": 0},
+        {"key": "orient", "label": "ОРИЕНТАЦИЯ", "question": "Сначала хочу понять рынок Германии", "nr": "INT-01-E", "price": 150},
+        {"key": "plan", "label": "ПЛАН", "question": "Нет конкретной идеи — нужна поддержка с нуля", "nr": "INT-01-P0", "price": 2390},
+        {"key": "launch", "label": "LAUNCH", "question": "Идея есть — нужна реализация", "nr": "INT-01-P1", "price": 4490},
         {"key": "check", "label": "CHECK", "question": "Бизнес работает — где слабые места?", "nr": "INT-03-A", "price": 790},
-        {"key": "scale", "label": "RISK & SCALE", "question": "Растём — готовы ли мы?", "nr": "INT-03-P3", "price": 7900},
     ],
 }
 
@@ -37,20 +37,36 @@ INT_STAGES: dict[str, dict] = {
     "INT-01": {
         "stages_h2": {"de": "Einzelstufen — einzeln buchbar", "en": "Individual stages — book separately", "ru": "Отдельные этапы"},
         "stages_intro": {
-            "de": "Wie bei unserer Risikoanalyse: Sie wählen die Tiefe — jede Stufe liefert ein klares Ergebnis.",
-            "en": "Like our risk analysis: you choose the depth — each stage delivers a clear outcome.",
-            "ru": "Как при анализе рисков: вы выбираете глубину — каждый этап даёт понятный результат.",
+            "de": "Zwei Wege: Begleitung bei 0 (noch keine Idee) oder direkt Launch (Idee steht). Jede Stufe liefert ein klares Ergebnis — Pakete sparen gegenüber Einzelbuchung.",
+            "en": "Two paths: starting from zero (no idea yet) or straight to launch (idea ready). Each stage delivers a clear outcome — bundles save vs. booking separately.",
+            "ru": "Два пути: с нуля (идеи ещё нет) или сразу к запуску (идея готова). Каждый этап — понятный результат; пакеты выгоднее.",
         },
         "stages": [
+            {
+                "nr": "INT-01-E",
+                "name": {"de": "Deutschland-Orientierung", "en": "Germany orientation", "ru": "Ориентация по Германии"},
+                "teaser": {
+                    "de": "1:1-Vortrag 45 Min. + 45 Min. Fragen: Markt, Rahmenbedingungen, typische Stolpersteine — bevor Sie gründen.",
+                    "en": "1:1 briefing 45 min + 45 min Q&A: market, framework, typical pitfalls — before you commit.",
+                    "ru": "1:1 брифинг 45 мин + 45 мин вопросы: рынок, условия, типичные ошибки.",
+                },
+                "price": 150,
+                "duration": {"de": "1,5 h", "en": "1.5 h", "ru": "1,5 ч"},
+                "highlights": {
+                    "de": ["Markt & Branchenüberblick DE", "Rechtsformen & Behörden grob", "Was Gründer unterschätzen", "Ihre Fragen im 1:1"],
+                    "en": ["German market overview", "Legal forms & authorities", "Common founder blind spots", "Your questions in 1:1"],
+                    "ru": ["Обзор рынка DE", "Формы и ведомства", "Типичные ошибки", "Ваши вопросы 1:1"],
+                },
+            },
             {
                 "nr": "INT-01-A",
                 "name": {"de": "Business Check", "en": "Business Check", "ru": "Business Check"},
                 "teaser": {
-                    "de": "Standortbestimmung: Idee, Rechtsform-Optionen, Budget, Top-Risiken — bevor Notar und Steuerberater.",
-                    "en": "Reality check: idea, legal form options, budget, top risks — before notary and tax advisor.",
-                    "ru": "Оценка идеи, формы бизнеса, бюджета и рисков — до нотариуса и Steuerberater.",
+                    "de": "Standortbestimmung: Idee(n), Rechtsform, Budget, Top-Risiken — bevor Notar und Steuerberater.",
+                    "en": "Reality check: idea(s), legal form, budget, top risks — before notary and tax advisor.",
+                    "ru": "Оценка идеи, формы, бюджета и рисков — до нотариуса и Steuerberater.",
                 },
-                "price": 990,
+                "price": 790,
                 "duration": {"de": "2–3 h + Kurzprotokoll", "en": "2–3 h + brief report", "ru": "2–3 ч + отчёт"},
                 "highlights": {
                     "de": ["Rechtsform-Optionen einordnen", "Behördenweg grob", "Top-5 Gründungsrisiken", "Nächste Schritte"],
@@ -60,11 +76,27 @@ INT_STAGES: dict[str, dict] = {
             },
             {
                 "nr": "INT-01-B",
+                "name": {"de": "Gründungsplanung", "en": "Founding planning", "ru": "Планирование основания"},
+                "teaser": {
+                    "de": "Gemeinsam Ihr Business planen — Markt, Wettbewerb, Modell, SWOT, PESTEL. Sie arbeiten, wir leiten an (kein investor-ready BP durch uns).",
+                    "en": "Plan your business together — market, competitors, model, SWOT, PESTEL. You do the work, we guide (no investor-ready BP by us).",
+                    "ru": "Планируем бизнес вместе — рынок, конкуренты, модель, SWOT, PESTEL. Вы делаете, мы ведём.",
+                },
+                "price": 1900,
+                "duration": {"de": "Mehrere Sessions + Arbeitsdokument", "en": "Multiple sessions + workbook", "ru": "Несколько сессий + документ"},
+                "highlights": {
+                    "de": ["Markt- & Wettbewerbsanalyse", "Geschäftsmodell & Angebote", "SWOT & PESTEL", "Finanzplan-Struktur"],
+                    "en": ["Market & competitor analysis", "Business model & offers", "SWOT & PESTEL", "Financial plan structure"],
+                    "ru": ["Рынок и конкуренты", "Модель и предложения", "SWOT & PESTEL", "Структура финплана"],
+                },
+            },
+            {
+                "nr": "INT-01-F",
                 "name": {"de": "Launch Roadmap", "en": "Launch Roadmap", "ru": "Launch Roadmap"},
                 "teaser": {
-                    "de": "Persönlicher Plan Woche 1 → Monat 3: Pre-Launch, Launch, erste Kunden, erste 90 Tage.",
-                    "en": "Personal plan week 1 → month 3: pre-launch, launch, first clients, first 90 days.",
-                    "ru": "План неделя 1 → месяц 3: подготовка, запуск, первые клиенты, 90 дней.",
+                    "de": "Persönlicher Umsetzungsplan Woche 1 → Monat 3 — wenn Idee und Planung stehen.",
+                    "en": "Personal execution plan week 1 → month 3 — when idea and planning are done.",
+                    "ru": "План реализации неделя 1 → месяц 3 — когда идея и план готовы.",
                 },
                 "price": 1900,
                 "duration": {"de": "Dokument + Review-Call", "en": "Document + review call", "ru": "Документ + созвон"},
@@ -107,49 +139,67 @@ INT_STAGES: dict[str, dict] = {
                 },
             },
         ],
-        "packages_h2": {"de": "Pakete — günstiger als einzeln", "en": "Bundles — save vs. individual stages", "ru": "Пакеты — выгоднее"},
+        "packages_h2": {"de": "Pakete — der passende Weg", "en": "Bundles — your path", "ru": "Пакеты — ваш путь"},
         "packages": [
             {
+                "nr": "INT-01-P0",
+                "name": {"de": "Begleitung bei 0", "en": "Starting from zero", "ru": "С нуля"},
+                "teaser": {
+                    "de": "Noch keine konkrete Idee: Business Check plus Gründungsplanung — Sie arbeiten, wir führen Schritt für Schritt.",
+                    "en": "No concrete idea yet: Business Check plus founding planning — you do the work, we guide each step.",
+                    "ru": "Нет идеи: Business Check и планирование — вы работаете, мы ведём шаг за шагом.",
+                },
+                "price": 2390,
+                "single_sum": 2690,
+                "includes": ["INT-01-A", "INT-01-B"],
+                "featured": False,
+            },
+            {
                 "nr": "INT-01-P1",
-                "name": {"de": "Roadmap + Begleitung", "en": "Roadmap + Support", "ru": "Roadmap + сопровождение"},
+                "name": {"de": "Launch-Paket", "en": "Launch bundle", "ru": "Пакет запуска"},
+                "teaser": {
+                    "de": "Idee steht: Launch Roadmap plus Gründungsbegleitung — operativ bis zur Gewerbeanmeldung.",
+                    "en": "Idea ready: Launch Roadmap plus founding support — operational through trade registration.",
+                    "ru": "Идея есть: Launch Roadmap и сопровождение — до регистрации Gewerbe.",
+                },
                 "price": 4490,
                 "single_sum": 4800,
-                "includes": ["INT-01-B", "INT-01-C"],
+                "includes": ["INT-01-F", "INT-01-C"],
                 "featured": False,
             },
             {
                 "nr": "INT-01-P2",
                 "name": {"de": "Gründung 360°", "en": "Founding 360°", "ru": "Gründung 360°"},
-                "price": 5490,
-                "single_sum": 6140,
-                "includes": ["INT-01-A", "INT-01-B", "INT-01-C", "INT-01-D"],
+                "price": 7490,
+                "single_sum": 8740,
+                "includes": ["INT-01-A", "INT-01-B", "INT-01-F", "INT-01-C", "INT-01-D"],
                 "featured": True,
             },
             {
                 "nr": "INT-01-P3",
                 "name": {"de": "Gründung 360° + Förder-Check", "en": "Founding 360° + funding check", "ru": "360° + Förder-Check"},
-                "price": 5990,
+                "price": 7990,
                 "single_sum": None,
                 "includes": ["INT-01-P2", "Förder-Check"],
                 "featured": False,
             },
         ],
-        "package_cols": ["INT-01-A", "INT-01-B", "INT-01-C", "INT-01-D"],
+        "package_cols": ["INT-01-A", "INT-01-B", "INT-01-F", "INT-01-C", "INT-01-D"],
         "excluded": {
             "de": [
                 "Rechtsberatung (RDG) und Steuerberatung (StBerG)",
                 "Gewerbeanmeldung oder Notartermine in unserem Namen",
-                "Fertiger Businessplan durch uns — Struktur ja, Inhalt mit Steuerberater",
+                "Fertiger investor-ready Businessplan durch uns — wir leiten Sie an, Sie erstellen den Inhalt",
             ],
             "en": [
                 "Legal advice (RDG) and tax advice (StBerG)",
                 "Trade registration or notary appointments in our name",
-                "Full business plan by us — structure yes, content with your tax advisor",
+                "Investor-ready business plan by us — we guide, you create the content",
             ],
             "ru": [
                 "Юридические и налоговые услуги (RDG/StBerG)",
                 "Регистрация от нашего имени",
-                "Готовый бизнес-план — структура да, содержание со Steuerberater",
+                "Investor-ready бизнес-план от нас — мы ведём, содержание делаете вы",
             ],
         },
     },
@@ -173,6 +223,7 @@ INT_STAGES: dict[str, dict] = {
         "excluded": {"de": ["Kein Sprachkurs", "Keine Rechtsberatung bei Verträgen"], "en": ["Not a language course", "No legal advice on contracts"], "ru": ["Не языковой курс", "Не юруслуги"]},
     },
     "INT-03": {
+        "packages_h2": {"de": "Pakete — vom Check bis Turnaround", "en": "Bundles — from check to turnaround", "ru": "Пакеты — от check до turnaround"},
         "stages_h2": {"de": "Einzelstufen", "en": "Individual stages", "ru": "Этапы"},
         "stages_intro": {
             "de": "Vom 90-Minuten-Check bis zur achtwöchigen Turnaround-Begleitung — BAFA für den vollen Health Check.",
@@ -190,34 +241,165 @@ INT_STAGES: dict[str, dict] = {
         "packages": [
             {"nr": "INT-03-P1", "name": {"de": "Quick Check Plus", "en": "Quick Check Plus", "ru": "Quick Plus"}, "price": 990, "single_sum": None, "includes": ["INT-03-A", "Top-5 schriftlich"], "featured": False},
             {"nr": "INT-03-P2", "name": {"de": "Health Check + Turnaround", "en": "Health Check + Turnaround", "ru": "Health + Turnaround"}, "price": 14900, "single_sum": 16000, "includes": ["INT-03-B", "INT-03-F"], "featured": True},
-            {"nr": "INT-03-P3", "name": {"de": "Scale-up + RA-01 360°", "en": "Scale-up + RA-01 360°", "ru": "Scale-up + RA-01"}, "price": 7900, "single_sum": None, "includes": ["INT-03-D", "RA-01"], "featured": False},
+            {"nr": "INT-03-P3", "name": {"de": "Scale-up + Risiko-Analyse 360°", "en": "Scale-up + 360° risk analysis", "ru": "Scale-up + анализ 360°"}, "price": 7900, "single_sum": None, "includes": ["INT-03-D", "RA-01"], "featured": False},
         ],
         "package_cols": [],
         "excluded": {
-            "de": ["Keine Einzel-Risikoanalyse auf Abruf", "Quick Check ersetzt nicht RA-01"],
-            "en": ["No on-demand single risk analysis", "Quick check is not RA-01"],
-            "ru": ["Не RA-02 по запросу", "Quick Check ≠ RA-01"],
+            "de": ["Keine Einzel-Risikoanalyse auf Abruf", "Quick Check ersetzt nicht die Risiko-Analyse 360°"],
+            "en": ["No on-demand single risk analysis", "Quick check is not a full 360° risk analysis"],
+            "ru": ["Не анализ по запросу", "Quick Check ≠ полный анализ 360°"],
         },
     },
     "INT-04": {
-        "stages_h2": {"de": "Bausteine", "en": "Building blocks", "ru": "Блоки"},
-        "stages_intro": {
-            "de": "Markt-Check, Setup, Compliance — Retainer für Go-to-Market und laufendes Management.",
-            "en": "Market check, setup, compliance — retainer for go-to-market and ongoing management.",
-            "ru": "Рынок, setup, compliance — retainer для продаж и управления.",
+        "offer_model": "project",
+        "project_h2": {
+            "de": "Projektphasen — individuell geplant",
+            "en": "Project phases — planned individually",
+            "ru": "Фазы проекта — индивидуально",
         },
-        "stages": [
-            {"nr": "INT-04-A", "name": {"de": "Markt- & Risiko-Check", "en": "Market & risk check", "ru": "Рынок и риски"}, "teaser": {"de": "Go/No-Go vor Investment in DE-Setup.", "en": "Go/no-go before DE setup investment.", "ru": "Go/no-go до setup."}, "price": 2900, "duration": {"de": "2–3 Wochen", "en": "2–3 weeks", "ru": "2–3 нед."}, "highlights": {"de": ["Markt & Wettbewerb", "Regulatorik-Überblick", "Sanktions-Risiko"], "en": ["Market & competition", "Regulatory overview", "Sanctions risk"], "ru": ["Рынок", "Регуляторика", "Санкции"]}},
-            {"nr": "INT-04-B", "name": {"de": "Setup Tochtergesellschaft", "en": "Subsidiary setup", "ru": "Setup дочки"}, "teaser": {"de": "Koordination Notar, Konto, Prozesse — bis operativ.", "en": "Notary, account, processes — until operational.", "ru": "Notar, счёт, процессы."}, "price": 9500, "duration": {"de": "8–16 Wochen", "en": "8–16 weeks", "ru": "8–16 нед."}, "highlights": {"de": ["GmbH/UG/Zweigstelle", "Geschäftsführer vor Ort", "Projektmanagement"], "en": ["GmbH/UG/branch", "Local managing director", "Project management"], "ru": ["GmbH/UG", "GF", "PM"]}},
-            {"nr": "INT-04-C", "name": {"de": "KYC / Sanktions-Modul", "en": "KYC / sanctions module", "ru": "KYC / санкции"}, "teaser": {"de": "Pflicht bei GUS-Herkunft — saubere Trennung.", "en": "Required for CIS origin — clean separation.", "ru": "Обязательно для GUS."}, "price": 1500, "duration": {"de": "Modul", "en": "Module", "ru": "Модуль"}, "highlights": {"de": ["KYC/AML-Vorbereitung", "Banken-Dokumentation", "Geldfluss"], "en": ["KYC/AML prep", "Bank documentation", "Money flows"], "ru": ["KYC", "Банк", "Потоки"]}},
-            {"nr": "INT-04-D", "name": {"de": "Go-to-Market", "en": "Go-to-market", "ru": "Go-to-market"}, "teaser": {"de": "Vor-Ort-Vertrieb — ab 3 Monate.", "en": "On-site sales — from 3 months.", "ru": "Продажи на месте."}, "price": 4500, "unit": {"de": "/ Monat", "en": "/ month", "ru": "/ мес."}, "duration": {"de": "min. 3 Mon.", "en": "min. 3 mo.", "ru": "мин. 3 мес."}, "highlights": {"de": ["Erste Kunden DE", "LinkedIn & Netzwerk", "Wöchentliches Reporting"], "en": ["First DE customers", "LinkedIn & network", "Weekly reporting"], "ru": ["Клиенты", "LinkedIn", "Отчёты"]}},
-            {"nr": "INT-04-E", "name": {"de": "Retainer Management", "en": "Management retainer", "ru": "Retainer"}, "teaser": {"de": "Laufendes DE-Management — min. 6 Monate.", "en": "Ongoing DE management — min. 6 months.", "ru": "Управление в DE."}, "price": 4500, "unit": {"de": "/ Monat", "en": "/ month", "ru": "/ мес."}, "duration": {"de": "min. 6 Mon.", "en": "min. 6 mo.", "ru": "мин. 6 мес."}, "highlights": {"de": ["Team vor Ort", "Eskalation", "Reporting an HQ"], "en": ["Local team", "Escalation", "HQ reporting"], "ru": ["Команда", "Эскалация", "HQ"]}},
+        "project_intro": {
+            "de": (
+                "Jede Expansion startet als neues Projekt. Umfang, Timeline und Team legen wir gemeinsam fest — "
+                "abhängig von Ihrem Budget und Ihren Zielen. Es gibt keine festen Paketpreise."
+            ),
+            "en": (
+                "Every expansion starts as a new project. Scope, timeline, and team are defined together — "
+                "based on your budget and goals. There are no fixed bundle prices."
+            ),
+            "ru": (
+                "Каждая экспансия — отдельный проект. Объём, сроки и команда определяются вместе — "
+                "по вашему бюджету и целям. Фиксированных пакетных цен нет."
+            ),
+        },
+        "project_phases": [
+            {
+                "name": {"de": "Strategie & Markt", "en": "Strategy & market", "ru": "Стратегия и рынок"},
+                "teaser": {
+                    "de": "Go/No-Go, Markt, Wettbewerb, Sanktions- und Compliance-Rahmen.",
+                    "en": "Go/no-go, market, competition, sanctions and compliance framework.",
+                    "ru": "Go/no-go, рынок, конкуренты, санкции и compliance.",
+                },
+                "highlights": {
+                    "de": ["Marktanalyse DE/EU", "Risiko & Regulatorik", "Projekt-Roadmap"],
+                    "en": ["DE/EU market analysis", "Risk & regulation", "Project roadmap"],
+                    "ru": ["Анализ рынка DE/EU", "Риски и регуляторика", "Roadmap"],
+                },
+            },
+            {
+                "name": {"de": "Setup Tochtergesellschaft", "en": "Subsidiary setup", "ru": "Setup дочки"},
+                "teaser": {
+                    "de": "Gesellschaft, Konten, Prozesse — bis operativ, mit koordinierten Spezialisten.",
+                    "en": "Entity, accounts, processes — until operational, with coordinated specialists.",
+                    "ru": "Компания, счета, процессы — до запуска, с координацией специалистов.",
+                },
+                "highlights": {
+                    "de": ["GmbH/UG/Zweigstelle", "Notar & Anwalt koordiniert", "Bank & Behörden"],
+                    "en": ["GmbH/UG/branch", "Notary & attorney coordinated", "Bank & authorities"],
+                    "ru": ["GmbH/UG", "Notar и юрист", "Банк и ведомства"],
+                },
+            },
+            {
+                "name": {"de": "Compliance & KYC", "en": "Compliance & KYC", "ru": "Compliance и KYC"},
+                "teaser": {
+                    "de": "Saubere Struktur bei GUS-Herkunft — KYC/AML, Geldflüsse, Dokumentation.",
+                    "en": "Clean structure for CIS origin — KYC/AML, money flows, documentation.",
+                    "ru": "Чистая структура для GUS — KYC/AML, потоки, документы.",
+                },
+                "highlights": {
+                    "de": ["KYC/AML-Vorbereitung", "Sanktions-Check", "Banken-Dokumentation"],
+                    "en": ["KYC/AML prep", "Sanctions check", "Bank documentation"],
+                    "ru": ["KYC/AML", "Санкции", "Банк"],
+                },
+            },
+            {
+                "name": {"de": "Go-to-Market", "en": "Go-to-market", "ru": "Go-to-market"},
+                "teaser": {
+                    "de": "Vertrieb vor Ort, erste Kunden, lokale Präsenz — Dauer nach Projektplan.",
+                    "en": "On-site sales, first customers, local presence — duration per project plan.",
+                    "ru": "Продажи на месте, первые клиенты — по плану проекта.",
+                },
+                "highlights": {
+                    "de": ["Erste Kunden DE", "LinkedIn & Netzwerk", "Reporting an HQ"],
+                    "en": ["First DE customers", "LinkedIn & network", "HQ reporting"],
+                    "ru": ["Клиенты DE", "LinkedIn", "Отчёт HQ"],
+                },
+            },
+            {
+                "name": {"de": "Laufendes Management", "en": "Ongoing management", "ru": "Управление"},
+                "teaser": {
+                    "de": "Team vor Ort, Eskalation, Betrieb — so lange, wie das Projekt es braucht.",
+                    "en": "Local team, escalation, operations — as long as the project requires.",
+                    "ru": "Команда на месте, эскалация, операции — по потребности проекта.",
+                },
+                "highlights": {
+                    "de": ["Operatives DE-Management", "Team & Prozesse", "Langfristige Begleitung"],
+                    "en": ["Operational DE management", "Team & processes", "Long-term support"],
+                    "ru": ["Операционное управление", "Команда", "Долгосрочно"],
+                },
+            },
         ],
-        "packages": [
-            {"nr": "INT-04-P", "name": {"de": "Setup-Paket", "en": "Setup bundle", "ru": "Setup-пакет"}, "price": 12900, "single_sum": 13900, "includes": ["INT-04-A", "INT-04-B", "INT-04-C"], "featured": True},
-        ],
-        "package_cols": ["INT-04-A", "INT-04-B", "INT-04-C"],
-        "excluded": {"de": ["Keine Rechts- oder Steuerberatung"], "en": ["No legal or tax advice"], "ru": ["Не юр./налог. услуги"]},
+        "project_coordinated_h2": {
+            "de": "Was wir koordinieren",
+            "en": "What we coordinate",
+            "ru": "Что мы координируем",
+        },
+        "project_coordinated_intro": {
+            "de": (
+                "Beraterium führt das Projekt — und bindet die Spezialisten ein, die Ihr Vorhaben braucht. "
+                "Rechts- und Steuerberatung erbringen unsere Partner; wir koordinieren und übersetzen für Sie."
+            ),
+            "en": (
+                "Beraterium leads the project and brings in the specialists your venture needs. "
+                "Legal and tax services are delivered by our partners; we coordinate and bridge for you."
+            ),
+            "ru": (
+                "Beraterium ведёт проект и подключает нужных специалистов. "
+                "Юридические и налоговые услуги — через партнёров; мы координируем и переводим."
+            ),
+        },
+        "project_coordinated": {
+            "de": [
+                "Anwälte, Notare und Steuerberater aus unserem Netzwerk — Auswahl und Koordination durch Beraterium",
+                "Branchen-, IT- oder HR-Experten — je nach Projekt, wenn nötig",
+                "Behörden, Banken, IHK — Termine vorbereiten, nichts geht verloren",
+                "Projektmanagement DE/EN/RU — ein Ansprechpartner für Sie",
+            ],
+            "en": [
+                "Attorneys, notaries, and tax advisors from our network — selected and coordinated by Beraterium",
+                "Industry, IT, or HR experts — added per project when needed",
+                "Authorities, banks, chambers — appointments prepared, nothing gets lost",
+                "Project management DE/EN/RU — one point of contact for you",
+            ],
+            "ru": [
+                "Юристы, нотариусы, Steuerberater из сети — подбор и координация Beraterium",
+                "Отраслевые, IT или HR эксперты — по необходимости проекта",
+                "Ведомства, банки, IHK — подготовка, ничего не теряется",
+                "PM DE/EN/RU — один контакт для вас",
+            ],
+        },
+        "project_budget": {
+            "de": {
+                "range": "30.000 – 100.000 € netto",
+                "note": (
+                    "Typisches Projektvolumen — je nach Umfang, Dauer und Experten. "
+                    "Festes Angebot erst nach Strategiegespräch und Scope-Definition."
+                ),
+            },
+            "en": {
+                "range": "€30,000 – €100,000 net",
+                "note": (
+                    "Typical project volume — depending on scope, duration, and experts. "
+                    "Fixed quote only after strategy call and scope definition."
+                ),
+            },
+            "ru": {
+                "range": "30.000 – 100.000 € нетто",
+                "note": (
+                    "Типичный объём проекта — по объёму, срокам и экспертам. "
+                    "Фиксированное предложение — после стратегической сессии и scope."
+                ),
+            },
+        },
     },
 }
 
@@ -227,6 +409,13 @@ def stage_price_label(stage: dict, locale: str) -> str:
     unit = stage.get("unit", {})
     u = unit.get(locale, unit.get("de", "")) if isinstance(unit, dict) else unit
     base = f"ab {format_eur(stage['price'])}" if pf else format_eur(stage["price"])
+    return f"{base}{u}" if u else base
+
+
+def package_price_label(pkg: dict, locale: str) -> str:
+    unit = pkg.get("unit", {})
+    u = unit.get(locale, unit.get("de", "")) if isinstance(unit, dict) else unit
+    base = format_eur(pkg["price"])
     return f"{base}{u}" if u else base
 
 

@@ -6,11 +6,7 @@ import json
 from html import escape
 from pathlib import Path
 
-from _blindspot import blindspot_config_json
-from _blindspot import selfcheck as blindspot_selfcheck
-from _ra_prep import ra_prep_config_json
-from _ra_prep import selfcheck as ra_prep_selfcheck
-from _i18n import EN_SITE_URL, hreflang_links, language_switcher_html
+from _i18n import DE_SITE_URL, EN_SITE_URL, hreflang_links, language_switcher_html
 
 from _pricing import PRICE_CATEGORIES, format_eur, offer_price_text
 from _pricing_geo import (
@@ -20,15 +16,29 @@ from _pricing_geo import (
     schulungen_value_section,
     schulung_geo_note,
 )
+
 from _schulungen import SCHULUNG_CONFIGS
 
 from _international_pages import (
     INT_INDEX_RU,
+    cards_slider_block,
+    int_faq_title,
+    int_is_project_offer,
+    int_team_member_intros,
+    international_audience_section,
     international_excluded_section,
     international_journey_section,
+    international_stage_scope_section,
     international_legal_section,
+    international_next_stages_section,
+    international_outcome_section,
     international_packages_section,
     international_price_section,
+    international_process_section,
+    international_project_price_banner,
+    international_project_section,
+    international_single_stage_price_banner,
+    international_stage_scope_section,
     international_stages_price_banner,
     international_stages_section,
     international_team_section,
@@ -36,14 +46,24 @@ from _international_pages import (
     ru_offer_configs,
 )
 from _internationale_stufen import INT_STAGES
-from _internationale_angebote import INT_INDEX_DE, INT_INDEX_EN, INT_OFFER_CONFIGS_DE, LEGAL_NOTICE_DE, LEGAL_NOTICE_RU, LEGAL_NOTICE_EN, EN_SLUG_MAP, en_offer_configs
+from _internationale_stufen_detail import (
+    iter_stage_pages,
+    merged_stage,
+    parent_slug,
+    stage_rel_path,
+    stage_slug,
+)
+from _internationale_stufen_detail_ru import apply_stage_locale
+from _internationale_angebote import INT_INDEX_DE, INT_INDEX_EN, INT_OFFER_CONFIGS_DE, LEGAL_NOTICE_DE, LEGAL_NOTICE_RU, LEGAL_NOTICE_EN, en_offer_configs
+
+from _blindspot import blindspot_config_json
+from _blindspot import selfcheck as blindspot_selfcheck
+from _ra_prep import ra_prep_config_json
+from _ra_prep import selfcheck as ra_prep_selfcheck
 
 from _cms import (
-    SITE_URL,
     BlogPost,
     TeamMember,
-    about_founder_section_html,
-    about_team_section_html,
     article_author_sidebar_html,
     article_faq_section_html,
     faq_section_html,
@@ -52,15 +72,18 @@ from _cms import (
     article_youtube_embed_html,
     blog_card_html,
     blog_filters_html,
+    blog_meta_description,
     blog_posting_schema,
+    blog_hero_public_url,
+    blog_shell_title,
     combine_jsonld,
-    course_schema,
     faq_page_schema,
-    format_date_en,
-    local_business_schema,
     offer_catalog_schema,
+    course_schema,
     service_schema,
     speakable_webpage_schema,
+    local_business_schema,
+    format_date_de,
     header_logo_html,
     home_team_section_html,
     img_html,
@@ -73,12 +96,16 @@ from _cms import (
     team_profile_bio_html,
     team_profile_section,
     team_section_id,
-    team_teaser_card,
+    about_founder_section_html,
+    about_team_section_html,
     write_sitemap,
 )
 
 SITE = Path(__file__).parent
-BRT_ASSET_VERSION = "20260828-nav-training-cap-v1"
+BRT_ASSET_VERSION = "20260810-ga4-events-v1"
+
+ALT_TILL = "Till Manfred Blania, Geschäftsführer Beraterium"
+ALT_PETER = "Peter Münstermann, Beraterium"
 
 IMG_HOME_ANALYSE = "img/home/analyse-situation.webp"
 IMG_METHODE_GEFAHRENKATALOG = "img/methode/gefahrenkatalog-3-ebenen.webp"
@@ -90,9 +117,6 @@ IMG_RELEVANZ_SCHWELLE = "img/garantie/relevanz-schwelle.webp"
 IMG_NUTZEN_KRITERIEN = "img/garantie/nutzen-kriterien.webp"
 IMG_BLINDSPOT_WARUM = "img/tools/blindspot-warum.webp"
 IMG_RA_PREP_VORBEREITUNG = "img/tools/ra-prep-vorbereitung.webp"
-
-ALT_TILL = "Till Manfred Blania, Managing Director Beraterium"
-ALT_PETER = "Peter Münstermann, Beraterium"
 
 
 def _depth_from_pre(pre: str) -> int:
@@ -124,7 +148,7 @@ COOKIEYES_HEAD = """  <!-- Start cookieyes banner -->
 
 GA4_MEASUREMENT_ID = "G-BM435GHE6W"
 
-GA4_ANALYTICS_HEAD = f"""  <!-- Google Consent Mode v2 + GA4 (CookieYes sets analytics_storage) -->
+GA4_ANALYTICS_HEAD = f"""  <!-- Google Consent Mode v2 + GA4 (CookieYes setzt analytics_storage) -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){{dataLayer.push(arguments);}}
@@ -164,10 +188,10 @@ GA4_ANALYTICS_HEAD = f"""  <!-- Google Consent Mode v2 + GA4 (CookieYes sets ana
   </script>"""
 
 NAV = [
-    ("services", "Services"),
-    ("method", "Method"),
-    ("about", "About us"),
-    ("risk-radar", "Risk Radar"),
+    ("angebote", "Angebote"),
+    ("methode", "Methode"),
+    ("ueber-uns", "Über uns"),
+    ("risikoradar", "RisikoRadar"),
     ("tools", "Tools"),
     ("blog", "Blog"),
 ]
@@ -187,50 +211,50 @@ CARET_SVG = (
 
 def nav_html(depth: int, active: str | None) -> str:
     pre = pfx(depth)
-    services_active = bool(
-        active and (active.startswith("services") or active in ("pricing", "training", "international-services"))
+    angebote_active = bool(
+        active and (active.startswith("angebote") or active in ("preise", "schulungen", "internationale-angebote"))
     )
-    services_cur = ' aria-current="page"' if active == "services" else ""
-    pricing_cur = ' aria-current="page"' if active == "pricing" else ""
-    training_cur = ' aria-current="page"' if active == "training" else ""
-    international_cur = ' aria-current="page"' if active == "international-services" else ""
-    about_active = active in ("about", "team")
+    angebote_cur = ' aria-current="page"' if active == "angebote" else ""
+    preise_cur = ' aria-current="page"' if active == "preise" else ""
+    schulungen_cur = ' aria-current="page"' if active == "schulungen" else ""
+    internationale_cur = ' aria-current="page"' if active == "internationale-angebote" else ""
+    ueber_active = active in ("ueber-uns", "team")
     tools_active = bool(active and active.startswith("tools"))
     tools_cur = ' aria-current="page"' if active == "tools" else ""
 
-    def service_sub_cur(slug: str) -> str:
-        return ' aria-current="page"' if active == f"services/{slug}" else ""
+    def angebot_sub_cur(slug: str) -> str:
+        return ' aria-current="page"' if active == f"angebote/{slug}" else ""
 
     def nav_cur(slug: str) -> str:
         return ' aria-current="page"' if active == slug else ""
 
     items = [
-        f"""        <li class="site-header__item site-header__item--has-menu{" is-active" if services_active else ""}">
-          <a href="{pre}services/" class="site-header__parent-link"{services_cur} aria-expanded="false">
-            Services
+        f"""        <li class="site-header__item site-header__item--has-menu{" is-active" if angebote_active else ""}">
+          <a href="{pre}angebote/" class="site-header__parent-link"{angebote_cur} aria-expanded="false">
+            Angebote
             {CARET_SVG}
           </a>
-          <ul class="site-header__submenu" aria-label="Services">
-            <li><a href="{pre}services/startups/"{service_sub_cur("startups")}>Startups</a></li>
-            <li><a href="{pre}services/smb/"{service_sub_cur("smb")}>SME</a></li>
-            <li><a href="{pre}services/solo/"{service_sub_cur("solo")}>Solo self-employed</a></li>
-            <li><a href="{pre}training/"{training_cur}>Training</a></li>
-            <li><a href="{pre}international-services/"{international_cur}>International Services</a></li>
-            <li><a href="{pre}pricing/"{pricing_cur}>Pricing</a></li>
+          <ul class="site-header__submenu" aria-label="Angebote">
+            <li><a href="{pre}angebote/startups/"{angebot_sub_cur("startups")}>Startups</a></li>
+            <li><a href="{pre}angebote/kmu/"{angebot_sub_cur("kmu")}>KMU</a></li>
+            <li><a href="{pre}angebote/solo/"{angebot_sub_cur("solo")}>Solo-Selbstständige</a></li>
+            <li><a href="{pre}schulungen/"{schulungen_cur}>Schulungen</a></li>
+            <li><a href="{pre}internationale-angebote/"{internationale_cur}>Internationale Angebote</a></li>
+            <li><a href="{pre}preise/"{preise_cur}>Preise</a></li>
           </ul>
         </li>""",
-        f'        <li><a href="{pre}method/"{nav_cur("method")}>Method</a></li>',
-        f"""        <li class="site-header__item site-header__item--has-menu{" is-active" if about_active else ""}">
-          <a href="{pre}about/" class="site-header__parent-link" aria-expanded="false">
-            About us
+        f'        <li><a href="{pre}methode/"{nav_cur("methode")}>Methode</a></li>',
+        f"""        <li class="site-header__item site-header__item--has-menu{" is-active" if ueber_active else ""}">
+          <a href="{pre}ueber-uns/" class="site-header__parent-link" aria-expanded="false">
+            Über uns
             {CARET_SVG}
           </a>
-          <ul class="site-header__submenu" aria-label="About us">
-            <li><a href="{pre}about/"{nav_cur("about")}>About the company</a></li>
-            <li><a href="{pre}team/"{nav_cur("team")}>Our team</a></li>
+          <ul class="site-header__submenu" aria-label="Über uns">
+            <li><a href="{pre}ueber-uns/"{nav_cur("ueber-uns")}>Über das Unternehmen</a></li>
+            <li><a href="{pre}team/"{nav_cur("team")}>Unser Team</a></li>
           </ul>
         </li>""",
-        f'        <li><a href="{pre}risk-radar/"{nav_cur("risk-radar")}>Risk Radar</a></li>',
+        f'        <li><a href="{pre}risikoradar/"{nav_cur("risikoradar")}>RisikoRadar</a></li>',
         f"""        <li class="site-header__item site-header__item--has-menu{" is-active" if tools_active else ""}">
           <a href="{pre}tools/" class="site-header__parent-link"{tools_cur} aria-expanded="false">
             Tools
@@ -248,16 +272,16 @@ def nav_html(depth: int, active: str | None) -> str:
 def footer_html(depth: int) -> str:
     pre = pfx(depth)
     lp_links = "\n".join(
-        f'        <li><a href="{pre}solutions/{cfg["slug"]}/">{cfg["breadcrumb_name"]}</a></li>'
+        f'        <li><a href="{pre}loesungen/{cfg["slug"]}/">{cfg["breadcrumb_name"]}</a></li>'
         for cfg in LP_CONFIGS
     )
     standort_items = "\n".join(
-        f'        <li><a href="{pre}locations/{cfg["slug"]}/">{cfg["breadcrumb_name"]}</a></li>'
+        f'        <li><a href="{pre}standort/{cfg["slug"]}/">{cfg["breadcrumb_name"]}</a></li>'
         for cfg in STANDORT_CONFIGS
     )
     standort_section = (
         f"""    <section>
-      <h2>Beraterium on location</h2>
+      <h2>Beraterium vor Ort</h2>
       <ul>
 {standort_items}
       </ul>
@@ -270,48 +294,48 @@ def footer_html(depth: int) -> str:
   <div class="site-footer__inner">
     <section>
       <h2>Beraterium</h2>
-      <p>Enterprise risk management, translated for mid-market businesses.</p>
+      <p>Konzern-Risikomanagement, übersetzt für den Mittelstand.</p>
       <a href="https://www.linkedin.com/company/beraterium">LinkedIn</a>
       <a href="https://www.youtube.com/@Beraterium">YouTube</a>
     </section>
     <section>
-      <h2>Services</h2>
+      <h2>Angebote</h2>
       <ul>
-        <li><a href="{pre}services/startups/">Startups</a></li>
-        <li><a href="{pre}services/smb/">SME</a></li>
-        <li><a href="{pre}services/solo/">Solo self-employed</a></li>
-        <li><a href="{pre}services/">Overview</a></li>
-        <li><a href="{pre}pricing/">Pricing &amp; services</a></li>
-        <li><a href="{pre}training/">Training</a></li>
-        <li><a href="{pre}international-services/">International Services</a></li>
+        <li><a href="{pre}angebote/startups/">Startups</a></li>
+        <li><a href="{pre}angebote/kmu/">KMU</a></li>
+        <li><a href="{pre}angebote/solo/">Solo-Selbstständige</a></li>
+        <li><a href="{pre}angebote/">Übersicht</a></li>
+        <li><a href="{pre}preise/">Preise &amp; Leistungen</a></li>
+        <li><a href="{pre}schulungen/">Schulungen</a></li>
+        <li><a href="{pre}internationale-angebote/">Internationale Angebote</a></li>
       </ul>
     </section>
     <section>
-      <h2>Solutions</h2>
+      <h2>Lösungen</h2>
       <ul>
 {lp_links}
       </ul>
     </section>
 {standort_section}    <section>
-      <h2>Company</h2>
+      <h2>Unternehmen</h2>
       <ul>
-        <li><a href="{pre}about/">About us</a></li>
+        <li><a href="{pre}ueber-uns/">Über uns</a></li>
         <li><a href="{pre}team/">Team</a></li>
         <li><a href="{pre}mission-vision/">Mission &amp; Vision</a></li>
-        <li><a href="{pre}method/">Method</a></li>
-        <li><a href="{pre}benefit-guarantee/">Value guarantee</a></li>
-        <li><a href="{pre}relevance-guarantee/">Relevance guarantee</a></li>
+        <li><a href="{pre}methode/">Methode</a></li>
+        <li><a href="{pre}nutzen-garantie/">Nutzen-Garantie</a></li>
+        <li><a href="{pre}relevanz-garantie/">Relevanz-Garantie</a></li>
       </ul>
     </section>
     <section>
-      <h2>Contact</h2>
+      <h2>Kontakt</h2>
       <ul>
-        <li><a href="{pre}contact/">Book a free intro call</a></li>
-        <li><a href="{pre}contact-form/">Contact form</a></li>
-        <li><a href="{pre}accessibility/">Accessibility statement</a></li>
-        <li><a href="{pre}legal-notice/">Legal notice</a></li>
-        <li><a href="{pre}privacy/">Privacy</a></li>
-        <li><a href="{pre}terms/">Terms</a></li>
+        <li><a href="{pre}kontakt/">Erstgespräch buchen</a></li>
+        <li><a href="{pre}kontaktformular/">Kontaktformular</a></li>
+        <li><a href="{pre}barrierefreiheit/">Barrierefreiheit</a></li>
+        <li><a href="{pre}impressum/">Impressum</a></li>
+        <li><a href="{pre}datenschutz/">Datenschutz</a></li>
+        <li><a href="{pre}agb/">AGB</a></li>
       </ul>
     </section>
   </div>
@@ -333,8 +357,8 @@ def shell(
     og_image: str = "",
     extra_css: str = "",
     extra_scripts: str = "",
-    html_lang: str = "en-GB",
-    current_locale: str = "en",
+    html_lang: str = "de",
+    current_locale: str = "de",
 ) -> str:
     pre = pfx(depth)
     home = pre or "./"
@@ -343,7 +367,7 @@ def shell(
     hreflang = hreflang_links(canonical, current_locale=current_locale)
     og_image_tag = f'\n  <meta property="og:image" content="{og_image}">' if og_image else ""
     lang_switch = language_switcher_html(current_locale=current_locale, canonical=canonical, depth=depth)
-    og_locale = {"de": "de_DE", "en": "en_GB", "ru": "ru_RU"}.get(current_locale, "en_GB")
+    og_locale = {"de": "de_DE", "en": "en_GB", "ru": "ru_RU"}.get(current_locale, "de_DE")
     site_base = EN_SITE_URL
     return f"""<!doctype html>
 <html lang="{html_lang}">
@@ -364,34 +388,31 @@ def shell(
   <meta property="og:locale" content="{og_locale}">{og_image_tag}
 
   <link rel="icon" href="{pre}favicon.ico" sizes="any">
-  <link rel="icon" href="{pre}favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="{pre}icon.png" type="image/png" sizes="192x192">
-  <link rel="icon" href="{pre}icon-dark.png" type="image/png" sizes="192x192" media="(prefers-color-scheme: dark)">
-  <link rel="apple-touch-icon" href="{pre}apple-touch-icon.png">
+  <link rel="icon" href="{pre}icon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0E1116">
-  <link rel="manifest" href="{pre}site.webmanifest">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <link rel="stylesheet" href="{pre}css/brt.css?v={BRT_ASSET_VERSION}" data-brt-css>
   <link rel="stylesheet" href="{pre}css/brt-fallback.css?v={BRT_ASSET_VERSION}">
-  <link rel="stylesheet" href="{pre}css/brt-layout-fix.css?v={BRT_ASSET_VERSION}">{extra_css}
+  <link rel="stylesheet" href="{pre}css/brt-layout-fix.css?v={BRT_ASSET_VERSION}">
+  <link rel="stylesheet" href="{pre}css/brt-print.css?v={BRT_ASSET_VERSION}" media="print">{extra_css}
   <script src="{pre}js/brt-init.js"></script>{ld}
 </head>
 
 <body class="brt-page brt-page--inner">
 
-<a class="brt-skip-link" href="#main-content">Skip to content</a>
+<a class="brt-skip-link" href="#main-content">Zum Inhalt springen</a>
 
-<header class="site-header site-header--solid" aria-label="Main navigation">
+<header class="site-header site-header--solid" aria-label="Hauptnavigation">
   <div class="site-header__inner">
 {header_logo_html(home, pre)}
-    <button class="site-header__toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
-    <nav id="site-nav" class="site-header__nav" aria-label="Primary navigation">
+    <button class="site-header__toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menü</button>
+    <nav id="site-nav" class="site-header__nav" aria-label="Primäre Navigation">
       <ul>
 {nav_html(depth, active_nav)}
       </ul>
 {lang_switch}
-      <a class="brt-btn brt-btn--outline site-header__cta" href="{pre}contact/">Book a free intro call</a>
+      <a class="brt-btn brt-btn--outline site-header__cta" href="{pre}kontakt/">Erstgespräch buchen</a>
     </nav>
   </div>
 </header>
@@ -442,7 +463,7 @@ def hero(
             )
         else:
             media_inner = f"""        <div class="brt-image-placeholder" role="img" aria-label="{media_label}">
-          <span class="brt-image-placeholder__label">Image coming soon</span>
+          <span class="brt-image-placeholder__label">Bild folgt</span>
         </div>"""
         media = f"""
       <div class="brt-page-hero__media brt-fade-up" style="--fade-delay: 120ms">
@@ -461,16 +482,51 @@ def hero(
     </section>"""
 
 
-def cta_band(pre: str, h2: str, body: str, btn: str = "Book a free intro call", *, note: str = "") -> str:
+_CARDS_SLIDER_SVG_PREV = (
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    'stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
+)
+_CARDS_SLIDER_SVG_NEXT = (
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    'stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'
+)
+
+
+def cards_slider_block(
+    cards_html: str,
+    *,
+    aria_label: str,
+    prev_label: str = "Zurück",
+    next_label: str = "Weiter",
+    autoplay_ms: int = 10000,
+) -> str:
+    """Horizontal card slider — 3 visible on desktop; optional autoplay (initCardsSlider)."""
+    autoplay_attr = f' data-cards-slider-autoplay="{autoplay_ms}"' if autoplay_ms else ""
+    return (
+        f'<div class="brt-cards-slider brt-fade-up" data-cards-slider{autoplay_attr}>'
+        f'<div class="brt-cards-slider__viewport" tabindex="0" role="group" aria-label="{aria_label}">'
+        f'<ul class="brt-cards-slider__track">{cards_html}</ul>'
+        "</div>"
+        '<div class="brt-cards-slider__nav">'
+        f'<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--prev" '
+        f'aria-label="{prev_label}">{_CARDS_SLIDER_SVG_PREV}</button>'
+        f'<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--next" '
+        f'aria-label="{next_label}">{_CARDS_SLIDER_SVG_NEXT}</button>'
+        "</div></div>"
+    )
+
+
+def cta_band(pre: str, h2: str, body: str, btn: str = "Erstgespräch buchen", *, note: str = "") -> str:
     note_html = f'\n        <p class="brt-meta brt-body--on-dark">{note}</p>' if note else ""
     return f"""
     <section class="brt-cta-band brt-cta-band--dark brt-section" aria-labelledby="final-cta">
       <div class="brt-container brt-cta-band__inner brt-fade-up">
         <h2 id="final-cta" class="brt-h2 brt-h2--on-dark">{h2}</h2>
         <p class="brt-body brt-body--on-dark">{body}</p>
-        <a class="brt-btn brt-btn--on-dark brt-btn--lg" href="{pre}contact/">{btn}</a>{note_html}
+        <a class="brt-btn brt-btn--on-dark brt-btn--lg" href="{pre}kontakt/" data-print-url="{DE_SITE_URL}/kontakt/">{btn}</a>{note_html}
       </div>
     </section>"""
+
 
 
 
@@ -561,22 +617,22 @@ def guarantee_pair_section(pre: str, *, current: str) -> str:
     """Both guarantees side-by-side (homepage pattern). current: relevanz | nutzen."""
     cards = {
         "relevanz": {
-            "slug": "relevance-guarantee",
+            "slug": "relevanz-garantie",
             "num": "01",
             "icon": ICON_GUARANTEE_SHIELD,
-            "title": "Relevance guarantee",
-            "quote": "“We don’t find a relevant risk? Money back.”",
-            "body": "If the analysis doesn’t identify a single risk above the agreed damage threshold, we refund the full amount.",
-            "link": "Learn more →",
+            "title": "Relevanz-Garantie",
+            "quote": "\u201eWir finden kein relevantes Risiko? Geld zur\u00fcck.\u201c",
+            "body": "Identifiziert die Analyse kein einziges Risiko mit relevanter Schadensh\u00f6he, erstatten wir den vollen Betrag.",
+            "link": "Mehr erfahren \u2192",
         },
         "nutzen": {
-            "slug": "benefit-guarantee",
+            "slug": "nutzen-garantie",
             "num": "02",
             "icon": ICON_GUARANTEE_TARGET,
-            "title": "Value guarantee",
-            "quote": "“No measurable value? Money back.”",
-            "body": "If even one of the three agreed criteria isn’t met at the end, we refund 100% of the project price.",
-            "link": "Learn more →",
+            "title": "Nutzen-Garantie",
+            "quote": "\u201eKein messbarer Nutzen? Geld zur\u00fcck.\u201c",
+            "body": "Wird am Ende auch nur eines der drei vereinbarten Kriterien nicht erf\u00fcllt, erstatten wir 100 % des Projektpreises.",
+            "link": "Mehr erfahren \u2192",
         },
     }
 
@@ -589,7 +645,7 @@ def guarantee_pair_section(pre: str, *, current: str) -> str:
         else:
             cls += " brt-hover-lift"
         foot = (
-            f'<div class="brt-guarantee-card__foot"><span class="brt-guarantee-here"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>You are here</span></div>'
+            f'<div class="brt-guarantee-card__foot"><span class="brt-guarantee-here"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Sie sind hier</span></div>'
             if is_current
             else f'<div class="brt-guarantee-card__foot"><a href="{pre}{c["slug"]}/">{c["link"]}</a></div>'
         )
@@ -610,9 +666,9 @@ def guarantee_pair_section(pre: str, *, current: str) -> str:
     <section class="brt-section brt-section--alt brt-section--compact" aria-labelledby="guarantee-pair">
       <div class="brt-container">
         <header class="brt-section__header brt-section__header--center brt-fade-up">
-          <p class="brt-tag">DOUBLE GUARANTEE</p>
-          <h2 id="guarantee-pair" class="brt-h2">Both pillars of our safety promise</h2>
-          <p class="brt-body brt-section__lede">Two clear promises – if we don’t deliver, we refund the full amount.</p>
+          <p class="brt-tag">DOPPELTE GARANTIE</p>
+          <h2 id="guarantee-pair" class="brt-h2">Beide S\u00e4ulen unseres Sicherheitsversprechens</h2>
+          <p class="brt-body brt-section__lede">Zwei klare Versprechen \u2013 wenn wir nicht liefern, erstatten wir den vollen Betrag.</p>
         </header>
         <ul class="brt-guarantee-duo brt-stagger">
           {card_html("relevanz")}
@@ -623,17 +679,16 @@ def guarantee_pair_section(pre: str, *, current: str) -> str:
 
 
 
-
 def guarantee_rich_cta(
     pre: str,
     lead: str,
     sub: str,
     btn: str,
     *,
-    contact_slug: str = "contact",
-    team_name: str = "Your Beraterium team",
-    team_note: str = "We’re here for you.",
-    aria: str = "Book intro call",
+    contact_slug: str = "kontakt",
+    team_name: str = "Ihr Beraterium-Team",
+    team_note: str = "Wir sind für Sie da.",
+    aria: str = "Erstgespräch vereinbaren",
 ) -> str:
     img = f"{pre}img/team/"
     return f"""
@@ -650,8 +705,8 @@ def guarantee_rich_cta(
           <a class="brt-btn brt-btn--white" href="{pre}{contact_slug}/">{btn}</a>
           <div class="brt-guarantee-cta__team">
             <div class="brt-guarantee-cta__avatars">
-              <img src="{img}till-blania.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
-              <img src="{img}peter-muenstermann.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
+              <img src="{img}till-blania.webp" alt="{ALT_TILL}" width="80" height="80" loading="lazy" decoding="async">
+              <img src="{img}peter-muenstermann.webp" alt="{ALT_PETER}" width="80" height="80" loading="lazy" decoding="async">
             </div>
             <div>
               <p class="brt-guarantee-cta__team-name">{team_name}</p>
@@ -662,10 +717,9 @@ def guarantee_rich_cta(
       </div>
     </section>"""
 
-
 def steps_flow_section(*, en: bool = False) -> str:
     if en:
-        tag = "THREE STEPS"
+        tag = "IMMER DREI STUFEN"
         h2 = "From risk picture to guided implementation"
         lede = "Three levels that build on each other – you choose the depth, we deliver clarity in euros."
         section_id = "steps-explainer"
@@ -818,9 +872,9 @@ def case_studies_section(pre: str, *, en: bool = False) -> str:
                 "title": "Solo self-employed, growing studio",
                 "meta": [("industry", "Creative crafts"), ("phase", "Running business, scaling offer"), ("team", "1 person, project support")],
                 "text": "Many open fronts, little time – but no shared priority. What to tackle first without spinning in circles was unclear. She carries every risk alone: customers, IT, premises, contracts, social media.",
-                "approach_headline": "Stage&nbsp;1 + Stage&nbsp;2 + follow-on modules",
-                "approach_body": "Stage&nbsp;1: four equally weighted top risks. Stage&nbsp;2: action logic for cyber, reputation, total loss and organisation. Follow-on modules: revenue mix transparency (levers) and a focused 3-month acquisition channel test.",
-                "stats": [("4", "Top risks: IT/cyber, reputation, total loss, processes"), ("A–D", "Stage&nbsp;2 blocks with next steps"), ("3", "Phases: now, 1–3 months, follow-ups"), ("↗", "Revenue mix + 1 channel test")],
+                "approach_headline": "Stage&nbsp;1 + Stage&nbsp;2",
+                "approach_body": "Stage&nbsp;1 revealed four equally weighted top risks. In Stage&nbsp;2 we turned each into action logic – cyber, reputation, physical total loss and organisation – with effort vs. impact trade-offs.",
+                "stats": [("4", "Top risks: IT/cyber, reputation, total loss, processes"), ("A–D", "Stage&nbsp;2 blocks with next steps"), ("3", "Phases: now, 1–3 months, follow-ups"), ("↓", "Capacity freed for top risks")],
                 "quote": "&ldquo;Stage&nbsp;1 showed which risks really carry the building – Stage&nbsp;2 how to tackle them without burning out.&rdquo;",
             },
             {
@@ -888,9 +942,9 @@ def case_studies_section(pre: str, *, en: bool = False) -> str:
                 "title": "Solo-Selbstständige im laufenden Betrieb",
                 "meta": [("industry", "Kreativhandwerk"), ("phase", "Laufender Betrieb, Wachstum"), ("team", "1 Person, projektweise Unterstützung")],
                 "text": "Viele Baustellen, wenig Zeit – aber keine gemeinsame Priorität. Was zuerst angehen, ohne sich im Hamsterrad zu verlieren, war unklar. Alle Risiken trägt sie allein: Kunden, IT, Räume, Verträge, Social Media.",
-                "approach_headline": "Stufe&nbsp;1 + Stufe&nbsp;2",
-                "approach_body": "Stufe&nbsp;1 machte vier gleich gewichtete Top-Risiken sichtbar. In Stufe&nbsp;2 wurden daraus Bearbeitungslogiken – IT/Cyber, Reputation, physischer Totalausfall und Organisation – mit Aufwand-Wirkungs-Abwägung.",
-                "stats": [("4", "Top-Risiken: IT/Cyber, Reputation, Totalausfall, Prozesse"), ("A–D", "Stufe-2-Blöcke mit nächsten Schritten"), ("3", "Phasen: Sofort, 1–3 Monate, Folgetermine"), ("↓", "Kapazität für Top-Risiken frei")],
+                "approach_headline": "Stufe&nbsp;1 + Stufe&nbsp;2 + Folgemodule",
+                "approach_body": "Stufe&nbsp;1: vier gleich gewichtete Top-Risiken. Stufe&nbsp;2: Bearbeitungslogiken für IT/Cyber, Reputation, Totalausfall und Organisation. Folgemodule: Finanztransparenz (Umsatzmix, Hebel) und fokussierter 3-Monats-Akquise-Test.",
+                "stats": [("4", "Top-Risiken: IT/Cyber, Reputation, Totalausfall, Prozesse"), ("A–D", "Stufe-2-Blöcke mit nächsten Schritten"), ("3", "Phasen: Sofort, 1–3 Monate, Folgetermine"), ("↗", "Umsatzmix + 1 Kanal-Test")],
                 "quote": "&bdquo;Stufe&nbsp;1 hat gezeigt, welche wirklich das Gebäude tragen – Stufe&nbsp;2, wie ich sie ohne Selbstzerstörung angehen kann.&ldquo;",
             },
             {
@@ -966,24 +1020,32 @@ def case_studies_section(pre: str, *, en: bool = False) -> str:
 
 def guarantee(
     pre: str,
-    h2: str = "Double guarantee",
+    h2: str = "Doppelte Garantie",
     *,
     tag: str | None = None,
-    subtitle: str = "Two clear promises &mdash; if we don&rsquo;t deliver, you get a full refund.",
+    subtitle: str = "Zwei klare Versprechen – wenn wir nicht liefern, erstatten wir den vollen Betrag.",
     du: bool = False,
 ) -> str:
     img = f"{pre}img/team/"
     if tag is None:
-        tag = "Your risk is on us" if du else "Your risk is on us"
+        tag = "Dein Risiko liegt bei uns" if du else "Ihr Risiko liegt bei uns"
     nutzen_body = (
-        "Before we start, we agree 3&ndash;5 value criteria together. If none are met at the end, you receive a full refund. No questions asked."
+        "Wir legen vor dem Start gemeinsam drei Nutzen-Kriterien fest – zwei messbare, eines emotional. Erfüllst du am Ende auch nur eines nicht, bekommst du den vollen Betrag zurück. Ohne Diskussion."
         if du
-        else "Before we start, we agree 3&ndash;5 value criteria together. If none are met at the end, you receive a full refund. No questions asked."
+        else "Wir legen vor dem Start gemeinsam drei Nutzen-Kriterien fest – zwei messbare, eines emotional. Wird am Ende auch nur eines nicht erfüllt, bekommen Sie den vollen Betrag zurück. Ohne Diskussion."
     )
-    cta_lead = "Let&rsquo;s turn your risk into clarity." if du else "Let&rsquo;s turn your risk into clarity."
-    cta_sub = "Book a free, no-obligation intro call today."
-    team_name = "Your Beraterium team"
-    team_note = "We&rsquo;re here for you."
+    cta_lead = (
+        "Lass uns dein Risiko in Klarheit verwandeln."
+        if du
+        else "Lassen Sie uns Ihr Risiko in Klarheit verwandeln."
+    )
+    cta_sub = (
+        "Vereinbare jetzt ein unverbindliches Erstgespräch."
+        if du
+        else "Vereinbaren Sie jetzt ein unverbindliches Erstgespräch."
+    )
+    team_name = "Dein Beraterium-Team" if du else "Ihr Beraterium-Team"
+    team_note = "Wir sind für dich da." if du else "Wir sind für Sie da."
     return f"""
     <section class="brt-section brt-section--guarantee" aria-labelledby="garantie-title">
       <div class="brt-container">
@@ -1000,10 +1062,10 @@ def guarantee(
               </div>
               <span class="brt-guarantee__num" aria-hidden="true">01</span>
             </div>
-            <h3 class="brt-h3">Relevance guarantee</h3>
-            <p class="brt-quote">&ldquo;No relevant risk found? Money back.&rdquo;</p>
-            <p class="brt-body">If the analysis does not identify a single risk with relevant financial impact (threshold agreed jointly in advance), we refund the full amount.</p>
-            <a href="{pre}relevance-guarantee/">Learn more &rarr;</a>
+            <h3 class="brt-h3">Relevanz-Garantie</h3>
+            <p class="brt-quote">„Wir finden kein relevantes Risiko? Geld zurück."</p>
+            <p class="brt-body">Identifiziert die Analyse kein einziges Risiko mit relevanter Schadenshöhe (Schwelle vorab gemeinsam definiert), erstatten wir den vollen Betrag.</p>
+            <a href="{pre}relevanz-garantie/">Mehr erfahren →</a>
           </li>
           <li class="brt-card brt-card--guarantee brt-hover-lift">
             <div class="brt-guarantee__visual">
@@ -1012,13 +1074,13 @@ def guarantee(
               </div>
               <span class="brt-guarantee__num" aria-hidden="true">02</span>
             </div>
-            <h3 class="brt-h3">Value guarantee</h3>
-            <p class="brt-quote">&ldquo;No measurable value? Money back.&rdquo;</p>
+            <h3 class="brt-h3">Nutzen-Garantie</h3>
+            <p class="brt-quote">„Kein messbarer Nutzen? Geld zurück."</p>
             <p class="brt-body">{nutzen_body}</p>
-            <a href="{pre}benefit-guarantee/">Learn more &rarr;</a>
+            <a href="{pre}nutzen-garantie/">Mehr erfahren →</a>
           </li>
         </ul>
-        <aside class="brt-guarantee-cta brt-fade-up" aria-label="Book an intro call">
+        <aside class="brt-guarantee-cta brt-fade-up" aria-label="Erstgespräch vereinbaren">
           <div class="brt-guarantee-cta__icon" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
           </div>
@@ -1026,11 +1088,11 @@ def guarantee(
             <p class="brt-guarantee-cta__lead">{cta_lead}</p>
             <p class="brt-guarantee-cta__sub">{cta_sub}</p>
           </div>
-          <a class="brt-btn brt-btn--white" href="{pre}contact/">Book an appointment now &rarr;</a>
+          <a class="brt-btn brt-btn--white" href="{pre}kontakt/">Jetzt Termin vereinbaren →</a>
           <div class="brt-guarantee-cta__team">
-            <div class="brt-guarantee-cta__avatars" aria-hidden="true">
-              <img src="{img}till-blania.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
-              <img src="{img}peter-muenstermann.webp" alt="" width="80" height="80" loading="lazy" decoding="async">
+            <div class="brt-guarantee-cta__avatars">
+              <img src="{img}till-blania.webp" alt="{ALT_TILL}" width="80" height="80" loading="lazy" decoding="async">
+              <img src="{img}peter-muenstermann.webp" alt="{ALT_PETER}" width="80" height="80" loading="lazy" decoding="async">
             </div>
             <div>
               <p class="brt-guarantee-cta__team-name">{team_name}</p>
@@ -1042,7 +1104,7 @@ def guarantee(
     </section>"""
 
 
-def faq_section(items: list[tuple[str, str]], *, alt: bool = False, title: str = "Frequently asked questions") -> str:
+def faq_section(items: list[tuple[str, str]], *, alt: bool = False, title: str = "Häufige Fragen") -> str:
     return faq_section_html(items, title=title, alt=alt)
 
 
@@ -1061,43 +1123,43 @@ def gen_ueber_uns() -> None:
     pre = "../"
     radar_media = split_media_html(
         IMG_UEBER_UNS_RISIKORADAR,
-        "Network and collaboration at Risk Radar",
+        "Netzwerk und Zusammenarbeit bei RisikoRadar",
         1,
     )
     main = (
         hero(
             pre,
-            "ABOUT BERATERIUM",
-            "Why Beraterium exists",
-            "Understanding risk should not be a privilege of large corporations. We bring professional risk management to where it has been missing: mid-market businesses, startups, and solo self-employed professionals.",
+            "ÜBER BERATERIUM",
+            "Warum es Beraterium gibt",
+            "Risiken verstehen sollte kein Privileg großer Konzerne sein. Wir bringen professionelles Risikomanagement dorthin, wo es bisher gefehlt hat: in den Mittelstand, zu Startups und Solo-Selbstständigen.",
         )
         + """
     <section class="brt-section brt-section--narrow" aria-labelledby="story-title">
       <div class="brt-container brt-fade-up">
-        <h2 id="story-title" class="brt-h2">A method that fits how businesses actually work</h2>
-        <p class="brt-body">Many business owners know risks exist. But few know which risks matter most for their business.</p>
-        <p class="brt-body">Classic risk management methods are often built for corporations: complex, theoretical, and time-consuming. For mid-market businesses, startups, or smaller companies, they rarely match reality.</p>
-        <p class="brt-body">Beraterium was born from exactly this gap. We developed a method that helps businesses, together with their people, build a clear picture of their most important risks in a short time – understandable, practical, and without bureaucracy.</p>
+        <h2 id="story-title" class="brt-h2">Eine Methode, die zur Realität von Unternehmern passt</h2>
+        <p class="brt-body">Viele Unternehmer wissen, dass Risiken existieren. Aber nur wenige wissen wirklich, welche Risiken für ihr Unternehmen die größten sind.</p>
+        <p class="brt-body">Klassische Risikomanagement-Methoden sind oft für Konzerne gemacht: komplex, theoretisch und aufwendig. Für mittelständische Unternehmen, Startups oder Kleinunternehmen passen sie selten zur Realität.</p>
+        <p class="brt-body">Beraterium ist aus genau dieser Lücke entstanden. Wir haben eine Methode entwickelt, mit der Unternehmen gemeinsam mit ihren Mitarbeitenden in kurzer Zeit ein klares Bild ihrer wichtigsten Risiken erhalten – verständlich, praxisnah und ohne Bürokratie.</p>
       </div>
     </section>
     <section class="brt-section brt-section--alt" aria-labelledby="values-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">WHAT WE STAND FOR</p>
-          <h2 id="values-title" class="brt-h2">Enterprise-grade substance, without the corporate coldness</h2>
+          <p class="brt-tag">WOFÜR WIR STEHEN</p>
+          <h2 id="values-title" class="brt-h2">Konzern-Erfahrung, Start-up-Spirit, echte Augenhöhe</h2>
         </header>
         <ul class="brt-cards-3col brt-stagger">
           <li class="brt-card brt-hover-lift">
-            <h3 class="brt-h3">Corporate experience for everyone</h3>
-            <p class="brt-body">What was once only available to large corporations, we make understandable, affordable, and ready to use for startups, SMEs, and smaller businesses.</p>
+            <h3 class="brt-h3">Konzern-Erfahrung für alle</h3>
+            <p class="brt-body">Was bisher nur großen Unternehmen zur Verfügung stand, machen wir für Startups, KMU und kleine Unternehmen verständlich, erschwinglich und einsatzbereit.</p>
           </li>
           <li class="brt-card brt-hover-lift">
-            <h3 class="brt-h3">People before systems</h3>
-            <p class="brt-body">The focus is on your people, not the tool. We run analyses with the people involved – not over their heads. That produces realistic results and genuine buy-in.</p>
+            <h3 class="brt-h3">Mensch vor System</h3>
+            <p class="brt-body">Im Mittelpunkt steht der Mitarbeiter, nicht das Tool. Wir führen Analysen mit den Menschen durch – nicht über ihre Köpfe hinweg. So entstehen realistische Ergebnisse und echte Akzeptanz.</p>
           </li>
           <li class="brt-card brt-hover-lift">
-            <h3 class="brt-h3">Impact before perfection</h3>
-            <p class="brt-body">A good estimate beats a perfect calculation that never gets done. We look for not the most measures – but the right ones.</p>
+            <h3 class="brt-h3">Wirkung vor Perfektion</h3>
+            <p class="brt-body">Lieber eine gute Schätzung als eine perfekte Rechnung, die nie gemacht wird. Wir suchen nicht die meisten Maßnahmen – sondern die richtigen.</p>
           </li>
         </ul>
       </div>
@@ -1108,44 +1170,44 @@ def gen_ueber_uns() -> None:
     <section class="brt-section" aria-labelledby="radar-teaser">
       <div class="brt-container brt-split">
         <div class="brt-split__text brt-fade-up">
-          <p class="brt-tag">MORE THAN CONSULTING</p>
-          <h2 id="radar-teaser" class="brt-h2">From insight to action</h2>
-          <p class="brt-body">Risk Radar grew out of our work: a community where business owners and experts talk openly about risk, share experience, and learn from each other. Risks are easier to understand when you are not thinking about them alone. And when insight becomes concrete action, teams build workspaces where they develop and implement solutions together.</p>
-          <a class="brt-btn brt-btn--ghost" href="../risk-radar/">Discover Risk Radar →</a>
+          <p class="brt-tag">MEHR ALS BERATUNG</p>
+          <h2 id="radar-teaser" class="brt-h2">Aus Erkenntnissen werden Schritte</h2>
+          <p class="brt-body">Im Gegensatz zu Facebook-Gruppen, offenen Foren oder LinkedIn ist RisikoRadar ein geschlossener Club: Zugang nur über Empfehlung oder Bewerbung. Kein stilles Mitlesen, kein Network-Marketing — sondern geprüfte Experten, die wirklich beitragen. Ein einzelner Berater deckt vielleicht 80&nbsp;% ab; Risiken hängen aber zusammen — IT, Arbeitsschutz, Führung, DSGVO. In RisikoRadar arbeiten mehrere Experten an einer Lösung. Kunden erhalten einen kostenfreien Jahreszugang.</p>
+          <a class="brt-btn brt-btn--ghost" href="../risikoradar/">RisikoRadar entdecken →</a>
         </div>
 {radar_media}
       </div>
     </section>
-    <section class="brt-quote-band brt-quote-band--accent" aria-label="Quote">
+    <section class="brt-quote-band brt-quote-band--accent" aria-label="Zitat">
       <div class="brt-container brt-fade-up">
-        <p class="brt-quote-band__text">&ldquo;Beraterium is a thinking space for business owners, where risks become visible and better decisions follow.&rdquo;</p>
+        <p class="brt-quote-band__text">„Beraterium ist ein Denkraum für Unternehmer, in dem Risiken sichtbar werden und bessere Entscheidungen entstehen."</p>
       </div>
     </section>
 """
         + about_team_section_html(1)
     )
     main = main.replace("{radar_media}", radar_media)
-    about_faq = [
-        ("What is Beraterium?", "Beraterium makes professional risk management accessible to SMEs, startups, and solo self-employed professionals — understandable, practical, and without corporate bureaucracy."),
-        ("Who is Beraterium for?", "For managing directors, founders, and solo self-employed professionals who want to know which risks could really hit their business — before they become expensive."),
-        ("What sets Beraterium apart from classic consulting?", "We do not deliver PowerPoint to file away: structured risk analysis in euros, facilitated with your team, with clear implementation — yourself, with partners, or via Risk Radar."),
+    ueber_uns_faq = [
+        ("Was ist Beraterium?", "Beraterium macht professionelles Risikomanagement für KMU, Startups und Solo-Selbstständige zugänglich — verständlich, praxisnah und ohne Konzern-Bürokratie."),
+        ("Für wen ist Beraterium gedacht?", "Für Geschäftsführer, Gründer und Solo-Selbstständige, die wissen wollen, welche Risiken ihr Unternehmen wirklich treffen könnten — bevor sie teuer werden."),
+        ("Was unterscheidet Beraterium von klassischer Beratung?", "Wir liefern kein PowerPoint zum Ablegen: strukturierte Risikoanalyse in Euro, moderiert mit Ihrem Team, mit klarer Umsetzung — selbst, mit Partnern oder über RisikoRadar."),
     ]
-    main += faq_section_html(about_faq, title="Frequently asked questions about Beraterium", section_id="faq", alt=True)
+    main += faq_section_html(ueber_uns_faq, title="Häufige Fragen zu Beraterium", section_id="faq", alt=True)
     main += cta_band(
         pre,
-        "Let's get to know each other.",
-        "In a free intro call, we will show you how to make your biggest risks visible – 30 minutes, no obligation.",
+        "Lernen wir uns kennen.",
+        "Im kostenlosen Erstgespräch zeigen wir Ihnen, wie Sie Ihre größten Risiken sichtbar machen – in 30 Minuten, ohne Verpflichtung.",
     )
     write(
-        "about/index.html",
+        "ueber-uns/index.html",
         shell(
             depth=1,
-            title="About Beraterium – Why we exist | Beraterium",
-            description="Beraterium was born from a gap: corporate risk management does not fit SMEs, startups, or solo self-employed professionals. We make it understandable, practical, and bureaucracy-free.",
-            canonical="/about/",
-            active_nav="about",
+            title="Über Beraterium – Warum es uns gibt | Beraterium",
+            description="Beraterium macht Konzern-Risikomanagement für KMU, Startups und Solo zugänglich — verständlich, praxisnah, ohne Bürokratie.",
+            canonical="/ueber-uns/",
+            active_nav="ueber-uns",
             main=main,
-            json_ld=page_schema(faq_page_schema(about_faq)),
+            json_ld=page_schema(faq_page_schema(ueber_uns_faq)),
         ),
     )
 
@@ -1161,9 +1223,9 @@ def gen_team() -> None:
     main = (
         hero(
             pre,
-            "OUR TEAM",
-            "One team, many perspectives, one goal: your peace of mind",
-            "Behind Beraterium are people with decades of industry expertise and fresh entrepreneurial spirit – practical, solution-focused, and always on equal footing with you.",
+            "UNSER TEAM",
+            "Ein Team mit vielen Perspektiven, ein Ziel: Ihre Sicherheit",
+            "Hinter Beraterium stehen Menschen mit jahrzehntelanger Industriekompetenz und frischem Unternehmergeist – praxisorientiert, lösungsorientiert und immer auf Augenhöhe.",
             compact=True,
         )
         + profiles
@@ -1171,25 +1233,25 @@ def gen_team() -> None:
     <section class="brt-section" aria-labelledby="shared-values">
       <div class="brt-container brt-fade-up">
         <ul class="brt-values-inline">
-          <li>On equal footing</li>
-          <li>Practice over theory</li>
-          <li>People before systems</li>
+          <li>Auf Augenhöhe</li>
+          <li>Praxis statt Theorie</li>
+          <li>Mensch vor System</li>
         </ul>
       </div>
     </section>
     <section class="brt-section brt-section--dark" aria-labelledby="network-title">
       <div class="brt-container brt-split brt-split--text-only">
         <div class="brt-split__text brt-fade-up">
-          <h2 id="network-title" class="brt-h2 brt-h2--on-dark">And a whole network behind you</h2>
-          <p class="brt-body brt-body--on-dark">For implementation, we draw on Risk Radar – a protected network of vetted experts, accessible only by referral or application. When you need them, you get exactly the specialists who fit your topic.</p>
-          <a class="brt-btn brt-btn--on-dark" href="../risk-radar/">Risk Radar →</a>
+          <h2 id="network-title" class="brt-h2 brt-h2--on-dark">Und ein ganzes Netzwerk im Rücken</h2>
+          <p class="brt-body brt-body--on-dark">Für die Umsetzung greifen wir auf RisikoRadar zurück – ein geschütztes Netzwerk geprüfter Experten, deren Zugang nur über Empfehlung oder Bewerbung möglich ist. So bekommen Sie bei Bedarf genau die Spezialisten, die zu Ihrem Thema passen.</p>
+          <a class="brt-btn brt-btn--on-dark" href="../risikoradar/">RisikoRadar →</a>
         </div>
       </div>
     </section>"""
         + cta_band(
             pre,
-            "Speak with us directly",
-            "Every analysis is personally led by Till and Peter. Book your free intro call.",
+            "Sprechen Sie direkt mit uns",
+            "Jede Analyse wird von Till und Peter persönlich begleitet. Buchen Sie Ihr kostenloses Erstgespräch.",
         )
     )
     json_ld = json.dumps(
@@ -1201,8 +1263,8 @@ def gen_team() -> None:
         "team/index.html",
         shell(
             depth=1,
-            title="Our team – Beraterium",
-            description="Meet the team behind Beraterium: founders, risk management, marketing, financial advice, and industry expertise – united for SMEs, startups, and solo self-employed professionals.",
+            title="Unser Team – Beraterium",
+            description="Team hinter Beraterium: Gründer, Risikomanagement und Branchenexpertise für KMU, Startups und Solo-Selbstständige.",
             canonical="/team/",
             active_nav="team",
             main=main,
@@ -1217,61 +1279,61 @@ def gen_mission_vision() -> None:
         hero(
             pre,
             "MISSION & VISION",
-            "Understand risk. Secure your future. Together.",
-            "We believe every business – regardless of size – has the right to know its biggest risks and face them with confidence.",
+            "Risiken verstehen. Zukunft sichern. Gemeinsam.",
+            "Wir glauben, dass jedes Unternehmen – unabhängig von seiner Größe – das Recht hat, seine größten Risiken zu kennen und ihnen souverän zu begegnen.",
             compact=True,
         )
         + """
     <section class="brt-section brt-section--narrow" aria-labelledby="mission-title">
       <div class="brt-container brt-centered-cta brt-fade-up">
-        <p class="brt-tag">OUR MISSION</p>
-        <h2 id="mission-title" class="brt-h2">Making corporate-grade tools accessible to mid-market businesses</h2>
-        <p class="brt-lead">We support startups, SMEs, and solo self-employed professionals with risk and HR management solutions that are usually reserved for large organisations. Understandable, affordable, and ready to implement. We combine 20 years of German industry expertise with start-up spirit – from gut feeling to clarity – from clarity to decisive action.</p>
+        <p class="brt-tag">UNSERE MISSION</p>
+        <h2 id="mission-title" class="brt-h2">Konzern-Werkzeuge für den Mittelstand zugänglich machen</h2>
+        <p class="brt-lead">Wir unterstützen Startups, KMU und Solo-Selbstständige mit Risiko- und HR-Management-Lösungen, die sonst nur großen Organisationen zur Verfügung stehen. Verständlich, erschwinglich und sofort umsetzbar. Wir verbinden 20 Jahre deutsche Industriekompetenz mit Start-up-Spirit – damit aus Bauchgefühl Klarheit wird und aus Klarheit Handlungsfähigkeit.</p>
       </div>
     </section>
     <section class="brt-section brt-section--dark" aria-labelledby="vision-title">
       <div class="brt-container brt-centered-cta brt-fade-up">
-        <p class="brt-tag">OUR VISION</p>
-        <h2 id="vision-title" class="brt-h2 brt-h2--on-dark">Businesses where people enjoy working</h2>
-        <p class="brt-body brt-body--on-dark">We want risk management to be understood not as a source of fear, but as a chance for lasting success. Our vision is businesses that spot risks early, share responsibility, and grow together – places where security, trust, and collaboration are simply how things work.</p>
+        <p class="brt-tag">UNSERE VISION</p>
+        <h2 id="vision-title" class="brt-h2 brt-h2--on-dark">Unternehmen, in denen Menschen gerne arbeiten</h2>
+        <p class="brt-body brt-body--on-dark">Wir wollen, dass Risikomanagement nicht als Quelle der Angst, sondern als Chance für nachhaltigen Erfolg verstanden wird. Unsere Vision sind Unternehmen, die Risiken früh erkennen, Verantwortung teilen und gemeinsam wachsen – Orte, an denen Sicherheit, Vertrauen und Zusammenarbeit selbstverständlich sind.</p>
       </div>
     </section>
     <section class="brt-section" aria-labelledby="principles-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">WHAT GUIDES US</p>
-          <h2 id="principles-title" class="brt-h2">Six principles that shape our work</h2>
+          <p class="brt-tag">WAS UNS LEITET</p>
+          <h2 id="principles-title" class="brt-h2">Sechs Prinzipien, die unsere Arbeit prägen</h2>
         </header>
         <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">On equal footing</h3><p class="brt-body">Fair, honest, and always on your side. We will not blow your budget – we help you build lasting success.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">People before systems</h3><p class="brt-body">Your people often know processes and weak spots better than any manual. We work with the people involved, not over their heads.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Clarity over complexity</h3><p class="brt-body">We make complex topics simple, understandable, and immediately applicable. So you see results quickly.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Impact before perfection</h3><p class="brt-body">Direction over absolute precision. A good estimate beats a perfect calculation that never gets done.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Tailored, not off-the-shelf</h3><p class="brt-body">We combine theory and practice: together with you and your team, we develop solutions that fit your business.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Responsibility &amp; partnership</h3><p class="brt-body">We stay your single point of contact – whichever implementation path you choose.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Auf Augenhöhe</h3><p class="brt-body">Fair, ehrlich und immer an Ihrer Seite. Wir sprengen nicht Ihr Budget – wir verhelfen Ihnen zu nachhaltigem Erfolg.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Mensch vor System</h3><p class="brt-body">Der Mitarbeiter kennt die Abläufe und Schwachstellen oft besser als jedes Handbuch. Wir arbeiten mit den Menschen, nicht über ihre Köpfe hinweg.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Klarheit statt Komplexität</h3><p class="brt-body">Komplexe Themen machen wir einfach, verständlich und sofort anwendbar. So erzielen Sie schnell Ergebnisse.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Wirkung vor Perfektion</h3><p class="brt-body">Tendenz vor absoluter Genauigkeit. Lieber eine gute Schätzung als eine perfekte Rechnung, die nie gemacht wird.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Individuell statt Standard</h3><p class="brt-body">Theorie und Praxis verbinden: gemeinsam mit Ihnen und Ihrem Team entwickeln wir Lösungen, die zu Ihrem Unternehmen passen.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Verantwortung &amp; Partnerschaft</h3><p class="brt-body">Wir bleiben die Klammer – unabhängig davon, welchen Weg der Umsetzung Sie wählen.</p></li>
         </ul>
       </div>
     </section>"""
         + faq_section_html([
-            ("What is Beraterium's mission?", "To make corporate risk management accessible to SMEs, startups, and solo self-employed professionals — understandable, affordable, and ready to implement."),
-            ("What is Beraterium's vision?", "Businesses where people enjoy working, spot risks early, and grow together."),
-        ], title="Frequently asked questions about mission & vision", section_id="faq", alt=True)
+            ("Was ist die Mission von Beraterium?", "Konzern-Risikomanagement für KMU, Startups und Solo zugänglich machen — verständlich, erschwinglich und sofort umsetzbar."),
+            ("Was ist die Vision von Beraterium?", "Unternehmen, in denen Menschen gerne arbeiten, Risiken früh erkennen und gemeinsam wachsen."),
+        ], title="Häufige Fragen zu Mission & Vision", section_id="faq", alt=True)
         + cta_band(
             pre,
-            "Share our approach?",
-            "Then let&rsquo;s talk. 30 minutes, free, no obligation.",
+            "Teilen Sie unsere Haltung?",
+            "Dann lassen Sie uns sprechen. 30 Minuten, kostenlos, unverbindlich.",
         )
     )
     mission_faq = [
-        ("What is Beraterium's mission?", "To make corporate risk management accessible to SMEs, startups, and solo self-employed professionals — understandable, affordable, and ready to implement."),
-        ("What is Beraterium's vision?", "Businesses where people enjoy working, spot risks early, and grow together."),
+        ("Was ist die Mission von Beraterium?", "Konzern-Risikomanagement für KMU, Startups und Solo zugänglich machen — verständlich, erschwinglich und sofort umsetzbar."),
+        ("Was ist die Vision von Beraterium?", "Unternehmen, in denen Menschen gerne arbeiten, Risiken früh erkennen und gemeinsam wachsen."),
     ]
     write(
         "mission-vision/index.html",
         shell(
             depth=1,
-            title="Mission & Vision – Risk management for everyone | Beraterium",
-            description="Our mission: make corporate risk management accessible to SMEs, startups, and solo self-employed professionals. Our vision: businesses where people enjoy working and grow together.",
+            title="Mission & Vision – Risikomanagement für alle | Beraterium",
+            description="Mission: Risikomanagement für alle zugänglich. Vision: Unternehmen, in denen Menschen gerne arbeiten und Risiken früh erkannt werden.",
             canonical="/mission-vision/",
             active_nav=None,
             main=main,
@@ -1280,7 +1342,7 @@ def gen_mission_vision() -> None:
     )
 
 
-def pricing_cards(pre: str, options: list[dict]) -> str:
+def pricing_cards(pre: str, options: list[dict], *, du: bool = False, price_note: str | None = None) -> str:
     cards = []
     for opt in options:
         feat = "".join(f"<li>{f}</li>" for f in opt.get("features", []))
@@ -1294,20 +1356,20 @@ def pricing_cards(pre: str, options: list[dict]) -> str:
             <p class="brt-pricing__claim">{opt["claim"]}</p>
             {extra}
             <ul>{feat}</ul>
-            <a class="brt-btn brt-btn--outline" href="{pre}contact/">Book a free intro call</a>
+            <a class="brt-btn brt-btn--outline" href="{pre}kontakt/">Erstgespräch buchen</a>
           </li>"""
         )
     return f"""
     <section id="optionen" class="brt-section brt-section--alt" aria-labelledby="options-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">THREE PATHS</p>
-          <h2 id="options-title" class="brt-h2">Choose how far we go together</h2>
+          <p class="brt-tag">DREI WEGE</p>
+          <h2 id="options-title" class="brt-h2">{"Wähle, wie weit wir gemeinsam gehen" if du else "Wählen Sie, wie weit wir gemeinsam gehen"}</h2>
         </header>
         <ul class="brt-pricing brt-stagger">
 {chr(10).join(cards)}
         </ul>
-        <p class="brt-meta brt-centered-cta brt-fade-up" style="margin-top: var(--space-8);">We discuss pricing individually in the intro call – matched to your phase and scope.</p>
+        <p class="brt-meta brt-centered-cta brt-fade-up" style="margin-top: var(--space-8);">{price_note if price_note else ("Preise besprechen wir individuell im Erstgespräch – passend zu deiner Phase und deinem Umfang." if du else "Preise besprechen wir individuell im Erstgespräch – passend zu Phase und Umfang.")}</p>
       </div>
     </section>"""
 
@@ -1315,159 +1377,158 @@ def pricing_cards(pre: str, options: list[dict]) -> str:
 def gen_methode() -> None:
     pre = "../"
     faq = [
-        ("What is a hazard catalog in risk management?", "A hazard catalog is a structured, judgment-free list of everything that could harm a business. Beraterium's 3-level hazard catalog keeps the number manageable. Only when the catalog is complete does assessment begin."),
-        ("What is the difference between a hazard and a risk?", "A hazard is anything that can cause harm – collected neutrally. It becomes a risk only when we assess how likely it is and what financial damage it would cause in euros."),
-        ("Why does Beraterium assess risks in euros instead of traffic-light colours?", "Traffic-light colours are subjective. Damage in euros is concrete, negotiable, and enables objective prioritisation — biggest damage first, regardless of gut feeling or hierarchy."),
-        ("What is a risk management process and how does Beraterium's work?", "Three phases: (1) collect hazards in the 3-level catalog, (2) assess risks — damage in euros × likelihood, minus existing measures, (3) implement the few measures with the greatest impact."),
-        ("How long does a risk analysis take?", "Depending on audience, typically 2 weeks (solo) to 6 weeks (SME). We agree the exact timeline at kick-off."),
-        ("Do I need prior knowledge or preparation?", "No. You bring your knowledge of your business – we bring the structure and the method."),
-        ("What if I work alone?", "Two facilitators and an AI sparring partner replace the missing team so the assessment stays balanced."),
-        ("Do you implement the measures too?", "You choose the path: yourself, with your own suppliers, or through our coordination via the Risk Radar network. Beraterium stays your single point of contact."),
+        ("Was ist ein Gefahrenkatalog im Risikomanagement?", "Ein Gefahrenkatalog ist eine strukturierte, bewertungsfreie Liste aller Ereignisse, die einem Unternehmen schaden könnten. Der 3-Ebenen-Gefahrenkatalog von Beraterium hält die Anzahl handhabbar. Erst wenn der Katalog vollständig ist, beginnt die Bewertung."),
+        ("Was ist der Unterschied zwischen Gefahr und Risiko?", "Eine Gefahr ist alles, was schaden kann – neutral gesammelt. Zum Risiko wird sie erst, wenn wir einschätzen, wie wahrscheinlich das Eintreten ist und welchen Schaden es in Euro verursachen würde."),
+        ("Warum bewertet Beraterium Risiken in Euro statt mit Ampelfarben?", "Ampelfarben sind subjektiv. Ein Schaden in Euro ist konkret verhandelbar und ermöglicht objektive Priorisierung — größter Schaden zuerst, unabhängig von Bauchgefühl oder Hierarchie."),
+        ("Was ist ein Risikomanagement-Prozess und wie sieht er bei Beraterium aus?", "Drei Phasen: (1) Gefahren sammeln im 3-Ebenen-Gefahrenkatalog, (2) Risiken bewerten — Schaden in Euro × Eintrittswahrscheinlichkeit, abzüglich vorhandener Maßnahmen, (3) die wenigen Maßnahmen mit dem größten Wirkungsgrad umsetzen."),
+        ("Wie lange dauert eine Risikoanalyse?", "Je nach Zielgruppe typischerweise 2 Wochen (Solo) bis 6 Wochen (KMU). Den genauen Rahmen legen wir im Kick-off fest."),
+        ("Brauche ich Vorwissen oder Vorbereitung?", "Nein. Sie bringen Ihr Wissen über Ihr Unternehmen mit – die Struktur und die Methode bringen wir mit."),
+        ("Was, wenn ich allein arbeite?", "Dann ersetzen zwei Moderatoren und ein KI-Impulsgeber das fehlende Team, damit die Bewertung trotzdem ausgewogen ist."),
+        ("Setzt ihr die Maßnahmen auch um?", "Sie entscheiden über den Weg: selbst, mit Ihren Dienstleistern oder durch unsere Koordination über das RisikoRadar-Netzwerk. Beraterium bleibt die Klammer."),
     ]
-    method_title = "Risk management method: 3-level catalog | Beraterium"
-    method_desc = "How does risk management work without corporate bureaucracy? 3-level hazard catalog, assessment in euros, measure prioritisation. Learn more for free."
-    method_ld = page_schema(
+    methode_title = "Risikomanagement-Methode: 3-Ebenen-Katalog | Beraterium"
+    methode_desc = "Wie funktioniert Risikomanagement ohne Konzern-Bürokratie? 3-Ebenen-Gefahrenkatalog, Bewertung in Euro, Maßnahmen-Priorisierung. Kostenlos kennenlernen."
+    methode_ld = page_schema(
         service_schema(
-            name="Beraterium risk management method",
-            description=method_desc,
-            url="/method/",
-            audience="SMEs, startups and solo self-employed professionals",
+            name="Beraterium Risikomanagement-Methode",
+            description=methode_desc,
+            url="/methode/",
+            audience="KMU, Startups und Solo-Selbstständige",
         ),
         faq_page_schema(faq),
-        speakable_webpage_schema("/method/"),
+        speakable_webpage_schema("/methode/"),
     )
     main = (
         hero(
             pre,
-            "HOW WE WORK",
-            "From gut feeling to clarity – in clear steps",
-            "Our method deliberately separates three questions: What happens in the worst case? How often does that happen? And what have you already done about it today? Step by step, a clear picture emerges.",
-            actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a>',
+            "WIE WIR ARBEITEN",
+            "Von Bauchgefühl zu Klarheit – in nachvollziehbaren Schritten",
+            "Unsere Methode trennt bewusst drei Fragen: Was passiert im schlimmsten Fall? Wie oft passiert das? Und was haben Sie heute schon dagegen getan? So entsteht Schritt für Schritt ein klares Bild.",
+            actions=f'<a class="brt-btn" href="{pre}kontakt/">Erstgespräch buchen</a>',
         )
         + f"""
-    <nav class="brt-anchor-nav" aria-label="On this page" data-anchor-nav>
+    <nav class="brt-anchor-nav" aria-label="Sprungnavigation auf dieser Seite" data-anchor-nav>
       <div class="brt-container brt-anchor-nav__inner">
-        <p class="brt-anchor-nav__label">On this page</p>
+        <p class="brt-anchor-nav__label">Auf dieser Seite</p>
         <div class="brt-anchor-nav__track">
           <ul class="brt-anchor-nav__list">
-            <li><a class="brt-anchor-nav__link" href="#hazard-catalog">Hazard catalog</a></li>
-            <li><a class="brt-anchor-nav__link" href="#assessment">Assessment</a></li>
-            <li><a class="brt-anchor-nav__link" href="#inventory">Inventory</a></li>
-            <li><a class="brt-anchor-nav__link" href="#implementation">Implementation</a></li>
+            <li><a class="brt-anchor-nav__link" href="#gefahrenkatalog">Gefahrenkatalog</a></li>
+            <li><a class="brt-anchor-nav__link" href="#bewertung">Bewertung</a></li>
+            <li><a class="brt-anchor-nav__link" href="#inventar">Inventar</a></li>
+            <li><a class="brt-anchor-nav__link" href="#umsetzung">Umsetzung</a></li>
             <li><a class="brt-anchor-nav__link" href="#faq">FAQ</a></li>
           </ul>
         </div>
       </div>
     </nav>
-    <section id="hazard-catalog" class="brt-section" aria-labelledby="s3-title">
+    <section id="gefahrenkatalog" class="brt-section" aria-labelledby="s3-title">
       <div class="brt-container brt-split">
         <div class="brt-split__text brt-fade-up">
-          <h2 id="s3-title" class="brt-h2">What is the hazard catalog – and why 3 levels?</h2>
-          <p class="brt-body">The hazard catalog first collects neutrally and completely what can harm a business – without judging how likely or severe something is. To keep the number of possible hazards manageable, the catalog is limited to three clear levels.</p>
-          <p class="brt-body">We deliberately work with hazards because they form a neutral starting point. Only in the second step do they become risks – when we assess how relevant a hazard is for your business.</p>
+          <h2 id="s3-title" class="brt-h2">Was ist der Gefahrenkatalog – und warum 3 Ebenen?</h2>
+          <p class="brt-body">Der Gefahrenkatalog sammelt zunächst neutral und vollständig, was einem Unternehmen schaden kann – ohne zu bewerten, wie wahrscheinlich oder schlimm etwas ist. Damit die Zahl möglicher Gefahren handhabbar bleibt, ist der Katalog auf drei klare Ebenen begrenzt.</p>
+          <p class="brt-body">Wir arbeiten bewusst mit Gefahren, weil sie eine neutrale Ausgangsbasis bilden. Erst im zweiten Schritt werden daraus Risiken – wenn wir bewerten, wie relevant eine Gefahr konkret für Ihr Unternehmen ist.</p>
         </div>
-        {split_media_html(IMG_METHODE_GEFAHRENKATALOG, "Beraterium hazard catalog with three levels", 1, contain=True, hover_zoom=True)}
+        {split_media_html(IMG_METHODE_GEFAHRENKATALOG, "Der Gefahrenkatalog von Beraterium mit drei Ebenen", 1, contain=True, hover_zoom=True)}
       </div>
     </section>
-    <section id="assessment" class="brt-section brt-section--alt" aria-labelledby="s4-title">
+    <section id="bewertung" class="brt-section brt-section--alt" aria-labelledby="s4-title">
       <div class="brt-container brt-fade-up">
-        <h2 id="s4-title" class="brt-h2">How do we assess how big a risk really is?</h2>
-        <p class="brt-body">We move from gut feeling to a concrete scenario. Instead of asking &lsquo;How likely is that?&rsquo;, we say: &lsquo;Imagine it has already happened.&rsquo; Then we estimate what that event means for your business – and translate the damage into euros.</p>
+        <h2 id="s4-title" class="brt-h2">Wie bewerten wir, wie groß ein Risiko wirklich ist?</h2>
+        <p class="brt-body">Wir gehen vom Gefühl zum konkreten Szenario. Statt zu fragen ‚Wie wahrscheinlich ist das?', sagen wir: ‚Stell dir vor, es ist bereits passiert.' Dann schätzen wir, was dieses Ereignis konkret für Ihr Unternehmen bedeutet – und übersetzen den Schaden in Euro.</p>
         <div class="brt-highlight-box" style="margin-top: var(--space-8);">
-          <h3 class="brt-h3">Example</h3>
-          <p class="brt-body"><strong>Hazard:</strong> Loss of the business owner (key person). <strong>Guiding question:</strong> What happens if you cannot work tomorrow? <strong>Scenario:</strong> Absence for 4 weeks. → On that basis, the extent of damage is estimated in euros.</p>
+          <h3 class="brt-h3">Beispiel</h3>
+          <p class="brt-body"><strong>Gefahr:</strong> Ausfall der Unternehmerperson (Schlüsselperson). <strong>Leitfrage:</strong> Was passiert, wenn Sie morgen nicht arbeiten können? <strong>Szenario:</strong> Ausfall für 4 Wochen. → Auf dieser Basis wird das Schadensausmaß in Euro eingeschätzt.</p>
         </div>
-        <p class="brt-quote" style="margin-top: var(--space-8);">&ldquo;Direction over absolute precision.&rdquo;</p>
-        <p class="brt-body">A good estimate beats a perfect calculation that never gets done.</p>
+        <p class="brt-quote" style="margin-top: var(--space-8);">„Tendenz vor absoluter Genauigkeit."</p>
+        <p class="brt-body">Lieber eine gute Schätzung als eine perfekte Rechnung, die nie gemacht wird.</p>
       </div>
     </section>
-    <section id="inventory" class="brt-section" aria-labelledby="s5-title">
+    <section id="inventar" class="brt-section" aria-labelledby="s5-title">
       <div class="brt-container brt-two-col brt-fade-up">
         <div>
-          <h2 id="s5-title" class="brt-h2">Do we count what you already do?</h2>
-          <p class="brt-body">Yes. Alongside damage, we assess likelihood – in understandable timeframes such as weeks, months or years. And we factor in your &lsquo;inventory&rsquo;: existing measures that already reduce the risk today.</p>
+          <h2 id="s5-title" class="brt-h2">Wird angerechnet, was wir schon tun?</h2>
+          <p class="brt-body">Ja. Parallel zur Schadenshöhe bewerten wir die Eintrittswahrscheinlichkeit – in verständlichen Zeiträumen wie Wochen, Monaten oder Jahren. Und wir berücksichtigen Ihr ‚Inventar': vorhandene Maßnahmen, die das Risiko heute schon reduzieren.</p>
         </div>
         <div>
-          <p class="brt-body">For example, cover that can take on around 50&nbsp;% at short notice. The damage would be higher in principle – but measures like this reduce it significantly.</p>
+          <p class="brt-body">Etwa eine Vertretung, die kurzfristig rund 50&nbsp;% übernehmen kann. Der Schaden wäre grundsätzlich höher – wird durch solche Maßnahmen aber deutlich gemindert.</p>
         </div>
       </div>
     </section>
     <section class="brt-section brt-section--alt" aria-labelledby="s6-title">
       <div class="brt-container brt-fade-up">
-        <h2 id="s6-title" class="brt-h2">Why do several people assess instead of one?</h2>
-        <p class="brt-body">Because multiple perspectives lead to a more realistic assessment than a single opinion. In a business, that ideally happens with different managers and team members – with people at the centre, not the system.</p>
+        <h2 id="s6-title" class="brt-h2">Warum bewerten mehrere Personen statt einer?</h2>
+        <p class="brt-body">Weil mehrere Blickwinkel zu einer realistischeren Einschätzung führen als eine Einzelmeinung. Im Unternehmen geschieht das idealerweise mit verschiedenen Verantwortlichen und Mitarbeitenden – im Mittelpunkt steht dabei immer der Mitarbeiter, nicht das System.</p>
         <div class="brt-highlight-box" style="margin-top: var(--space-8);">
-          <h3 class="brt-h3">What if I work alone?</h3>
-          <p class="brt-body">For solo self-employed people and micro-businesses, we deliberately replace the missing team: two facilitators who structure and challenge, plus an AI sparring partner for statistical estimates and experience-based input.</p>
+          <h3 class="brt-h3">Und wenn ich allein bin?</h3>
+          <p class="brt-body">Bei Solo-Selbstständigen und Kleinstunternehmen ersetzen wir das fehlende Team gezielt: zwei Moderatoren, die strukturieren und hinterfragen, plus einen KI-gestützten Impulsgeber für statistische Einschätzungen und Erfahrungswerte.</p>
         </div>
       </div>
     </section>
-    <section id="implementation" class="brt-section brt-section--dark" aria-labelledby="s7-title">
+    <section id="umsetzung" class="brt-section brt-section--dark" aria-labelledby="s7-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <h2 id="s7-title" class="brt-h2 brt-h2--on-dark">What happens after the analysis?</h2>
-          <p class="brt-body brt-body--on-dark">The analysis creates clarity – the real value comes in implementation. Three paths are open. You choose which one. Beraterium stays your single point of contact.</p>
+          <h2 id="s7-title" class="brt-h2 brt-h2--on-dark">Was passiert nach der Analyse?</h2>
+          <p class="brt-body brt-body--on-dark">Die Analyse schafft Klarheit – der eigentliche Mehrwert entsteht in der Umsetzung. Dafür stehen drei Wege offen. Welchen Sie wählen, entscheiden Sie. Beraterium bleibt die Klammer.</p>
         </header>
         <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Implement yourself</h3><p class="brt-body">With your own team. Suited to organisational or simple measures and existing capability.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">With your suppliers</h3><p class="brt-body">Continue with trusted partners. Suited to established relationships and structures.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">We coordinate</h3><p class="brt-body">One fixed contact, one face to the customer. We bring the right people together and make sure measures fit together.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Selbst umsetzen</h3><p class="brt-body">Mit Ihrer eigenen Mannschaft. Geeignet für organisatorische oder einfache Maßnahmen und vorhandene Kompetenzen.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Mit Ihren Dienstleistern</h3><p class="brt-body">Mit vertrauten Partnern weiterarbeiten. Geeignet für gewachsene Geschäftsbeziehungen und etablierte Strukturen.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Wir koordinieren</h3><p class="brt-body">Ein fester Ansprechpartner, ‚one face to the customer'. Wir bringen die richtigen Menschen zusammen und sorgen, dass Maßnahmen ineinandergreifen.</p></li>
         </ul>
-        <p class="brt-quote" style="margin-top: var(--space-8); color: #fff; text-align: center;">&ldquo;Not analysis to file away – solutions to act on.&rdquo;</p>
+        <p class="brt-quote" style="margin-top: var(--space-8); color: #fff; text-align: center;">„Wir liefern keine Analyse zum Ablegen – sondern Lösungen zum Umsetzen."</p>
       </div>
     </section>
     <section class="brt-section" aria-labelledby="s8-title">
       <div class="brt-container brt-fade-up">
-        <h2 id="s8-title" class="brt-h2">How do we choose which measures actually help?</h2>
-        <p class="brt-body">We tackle the biggest risks first. Each measure has one purpose: reduce damage and/or reduce likelihood.</p>
+        <h2 id="s8-title" class="brt-h2">Wie wählen wir aus, welche Maßnahmen wirklich helfen?</h2>
+        <p class="brt-body">Wir kümmern uns zuerst um die größten Risiken. Jede Maßnahme verfolgt genau einen Zweck: die Schadenshöhe senken und/oder die Eintrittswahrscheinlichkeit reduzieren.</p>
         <div class="brt-criteria-inline">
-          <span>effective</span><span>cost-effective</span><span>feasible</span><span>sustainable</span>
+          <span>wirksam</span><span>wirtschaftlich</span><span>umsetzbar</span><span>nachhaltig</span>
         </div>
-        <p class="brt-quote" style="margin-top: var(--space-8);">&ldquo;We look for not the most measures – but the right ones.&rdquo;</p>
+        <p class="brt-quote" style="margin-top: var(--space-8);">„Wir suchen nicht die meisten Maßnahmen – sondern die richtigen."</p>
       </div>
     </section>"""
         + f"""
     <section class="brt-section brt-section--alt" aria-labelledby="methoden-title">
       <div class="brt-container brt-fade-up">
-        <h2 id="methoden-title" class="brt-h2">Which methods and processes does Beraterium use?</h2>
-        <p class="brt-body">Our risk management process follows three clear phases: collect hazards, assess risks in euros, prioritise measures. No corporate framework — but a repeatable flow that SMEs, startups, and solo operators complete in 2–6 weeks.</p>
-        <p class="brt-body">The methods are deliberately lean: structured workshops, guiding questions instead of spreadsheet monsters, assessment through multiple perspectives. The result is a risk picture you can act on — not a folder for the drawer.</p>
+        <h2 id="methoden-title" class="brt-h2">Welche Methoden und Prozesse nutzt Beraterium?</h2>
+        <p class="brt-body">Unser Risikomanagement-Prozess folgt drei klaren Phasen: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren. Kein Konzern-Framework — sondern ein wiederholbarer Ablauf, den KMU, Startups und Solo in 2–6 Wochen durchlaufen.</p>
+        <p class="brt-body">Die Methoden sind bewusst schlank: strukturierte Workshops, Leitfragen statt Excel-Monster, Bewertung durch mehrere Blickwinkel. So entsteht ein Risiko-Lagebild, das Sie umsetzen können — nicht eine Mappe für die Schublade.</p>
       </div>
     </section>
     <section class="brt-section" aria-labelledby="iso-title">
       <div class="brt-container brt-fade-up">
-        <h2 id="iso-title" class="brt-h2">ISO 31000 and the Beraterium method</h2>
-        <p class="brt-body">ISO 31000 describes the framework for risk management — context, identification, analysis, treatment. Beraterium is not an ISO certifier, but follows the same principles: collect systematically, assess transparently, prioritise measures by impact.</p>
-        <p class="brt-body">The difference: we translate the standard into euros, timeframes, and concrete steps for businesses without their own risk office — understandable, practical, without bureaucracy.</p>
+        <h2 id="iso-title" class="brt-h2">ISO 31000 und die Beraterium-Methode</h2>
+        <p class="brt-body">ISO 31000 beschreibt den Rahmen für Risikomanagement — Kontext, Identifikation, Analyse, Behandlung. Beraterium ist kein ISO-Zertifizierer, orientiert sich aber an denselben Prinzipien: systematisch sammeln, transparent bewerten, Maßnahmen nach Wirkung priorisieren.</p>
+        <p class="brt-body">Der Unterschied: Wir übersetzen den Standard in Euro, Zeiträume und konkrete Schritte für Unternehmen ohne eigenes Risk-Office — verständlich, praxisnah, ohne Bürokratie.</p>
       </div>
     </section>
     <section class="brt-section brt-section--alt" aria-labelledby="matrix-title">
       <div class="brt-container brt-fade-up">
-        <h2 id="matrix-title" class="brt-h2">Risks and opportunities in the matrix</h2>
-        <p class="brt-body">Classic risk-opportunity matrices sort by likelihood and impact — often as traffic lights. Beraterium replaces colours with euros: damage × likelihood, minus existing measures. You immediately see which three risks would really become expensive.</p>
-        <p class="brt-body">We do not treat opportunities as the opposite pole, but as measures with a positive effect — for example diversification that reduces concentration risk. Prioritisation stays the same: biggest lever first.</p>
+        <h2 id="matrix-title" class="brt-h2">Risiken und Chancen in der Matrix</h2>
+        <p class="brt-body">Klassische Risiko-Chancen-Matrizen sortieren nach Wahrscheinlichkeit und Auswirkung — oft als Ampel. Beraterium ersetzt die Farben durch Euro: Schadenshöhe × Eintrittswahrscheinlichkeit, abzüglich vorhandener Maßnahmen. So sehen Sie sofort, welche drei Risiken wirklich teuer werden.</p>
+        <p class="brt-body">Chancen behandeln wir nicht als Gegenpol, sondern als Maßnahmen mit positivem Effekt — etwa Diversifikation, die ein Klumpenrisiko senkt. Die Priorisierung bleibt dieselbe: größter Hebel zuerst.</p>
       </div>
     </section>
-    <section class="brt-section" aria-labelledby="services-link-title">
+    <section class="brt-section" aria-labelledby="angebote-link-title">
       <div class="brt-container brt-fade-up">
-        <h2 id="services-link-title" class="brt-h2">Matching services by audience</h2>
-        <p class="brt-body">The method is the same everywhere — scope adapts to your situation:</p>
+        <h2 id="angebote-link-title" class="brt-h2">Passende Angebote nach Zielgruppe</h2>
+        <p class="brt-body">Die Methode ist überall dieselbe — der Umfang passt sich Ihrer Situation an:</p>
         <ul class="brt-list-check">
-          <li><a href="{pre}services/smb/">Risk management for SMEs →</a> — 6-week roadmap for mid-market businesses</li>
-          <li><a href="{pre}services/startups/">Risk management for startups →</a> — 4-week check, investor-ready</li>
-          <li><a href="{pre}services/solo/">Risk management for solo self-employed →</a> — 2-week compass with AI sparring partner</li>
+          <li><a href="{pre}angebote/kmu/">Risikomanagement Mittelstand →</a> — 6-Wochen-Fahrplan für KMU</li>
+          <li><a href="{pre}angebote/startups/">Risikomanagement für Startups →</a> — 4-Wochen-Check, investor-ready</li>
+          <li><a href="{pre}angebote/solo/">Risikomanagement für Selbstständige →</a> — 2-Wochen-Kompass mit KI-Impulsgeber</li>
         </ul>
       </div>
     </section>"""
-        + faq_section_html(faq, title="Frequently asked questions about the method", section_id="faq", alt=True)
-        + cta_band(pre, "Make your risks visible now", "In a free intro call, we show you what the method looks like for your business.", "Book a free intro call")
+        + faq_section_html(faq, title="Häufige Fragen zur Methode", section_id="faq", alt=True)
+        + cta_band(pre, "Machen Sie Ihre Risiken sichtbar", "Im kostenlosen Erstgespräch zeigen wir Ihnen, wie die Methode konkret für Ihr Unternehmen aussieht.", "Kostenloses Erstgespräch buchen")
     )
     write(
-        "method/index.html",
-        shell(depth=1, title=method_title, description=method_desc,
-              canonical="/method/", active_nav="method", main=main, json_ld=method_ld),
+        "methode/index.html",
+        shell(depth=1, title=methode_title, description=methode_desc,
+              canonical="/methode/", active_nav="methode", main=main, json_ld=methode_ld),
     )
-
 
 
 def gen_nutzen_garantie() -> None:
@@ -1480,17 +1541,17 @@ def gen_nutzen_garantie() -> None:
         ("Gilt die Garantie auch für Workshops oder Einzelberatung?", "Nur, wenn das ausdrücklich vereinbart wurde. Standardmäßig gilt sie für unsere Risikoanalyse-Pakete."),
         ("Was passiert, wenn ich als Kunde nicht mitwirke?", "Dann kann die Garantie entfallen. Sie setzt voraus, dass Sie Informationen liefern und an vereinbarten Terminen teilnehmen."),
     ]
-    title = "Value guarantee: no value, no fee | Beraterium"
+    title = "Nutzen-Garantie: Kein Nutzen, kein Geld | Beraterium"
     desc = "Unsere Nutzen-Garantie: Drei vorab vereinbarte Kriterien entscheiden. Erfüllen wir auch nur eines nicht, erhalten Sie 100 % zurück."
     json_ld = page_schema(
         faq_page_schema(faq),
-        speakable_webpage_schema("/benefit-guarantee/"),
+        speakable_webpage_schema("/nutzen-garantie/"),
     )
     main = (
         hero(pre, "IHR RISIKO LIEGT BEI UNS", "Kein Nutzen aus unserer Arbeit? Sie zahlen nichts.",
              "Bevor wir starten, legen wir gemeinsam fest, woran Sie den Erfolg unserer Arbeit erkennen. Erfüllen wir das am Ende nicht, erhalten Sie den vollen Betrag zurück, ohne Diskussion.",
              compact=True,
-             actions=f'<a class="brt-btn" href="{pre}contact/">Kostenloses Erstgespräch buchen</a>')
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a>')
         + guarantee_stat_row(
             [
                 ("3 Kriterien", "Zwei harte, ein weiches – vorab gemeinsam festgelegt"),
@@ -1521,7 +1582,7 @@ def gen_nutzen_garantie() -> None:
           <p class="brt-body">Wenn Sie keinen Nutzen aus unserer Arbeit ziehen, zahlen Sie nichts. Im Vorgespräch legen wir gemeinsam mit Ihnen Zielgrößen fest, an denen wir klar messen können, ob unsere Arbeit etwas gebracht hat oder nicht.</p>
           <p class="brt-body">Das ist kein pauschales Versprechen, sondern eine Prüfung anhand konkreter, vorher vereinbarter Punkte. Diese Kriterien werden bereits vor Beginn der Arbeit vertraglich festgehalten, damit für beide Seiten transparent ist, welche Ergebnisse erzielt werden sollen.</p>
         </div>
-        {split_media_html(IMG_NUTZEN_KRITERIEN, "Consultant and business owner agreeing the three success criteria for the value guarantee in a kick-off workshop", 1, contain=True)}
+        {split_media_html(IMG_NUTZEN_KRITERIEN, "Berater und Unternehmer legen im Kick-off die drei Erfolgskriterien der Nutzen-Garantie fest", 1, contain=True)}
       </div>
     </section>"""
         + guarantee_rule_band(
@@ -1585,23 +1646,23 @@ def gen_nutzen_garantie() -> None:
         <ul class="brt-step-cards brt-stagger">
           <li class="brt-step-card"><span class="brt-step-card__num">Schritt 1</span><h3 class="brt-h3">Gemeinsame Abschluss-Reflexion</h3><p class="brt-body">Zum vereinbarten Endergebnis prüfen wir mit Ihnen alle drei Kriterien anhand der schriftlich festgehaltenen Formulierung.</p></li>
           <li class="brt-step-card"><span class="brt-step-card__num">Schritt 2</span><h3 class="brt-h3">Klare Bewertung</h3><p class="brt-body">Ist auch nur eines nicht erfüllt, greift die Garantie. Keine Grauzonen, keine nachträgliche Auslegung.</p></li>
-          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 3</span><h3 class="brt-h3">Volle Erstattung</h3><p class="brt-body">Sie erhalten den vollen Betrag innerhalb von 14 Tagen zurück. Die rechtlichen Details stehen in unseren <a href="{pre}terms/">AGB, Abschnitt 7</a>.</p></li>
+          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 3</span><h3 class="brt-h3">Volle Erstattung</h3><p class="brt-body">Sie erhalten den vollen Betrag innerhalb von 14 Tagen zurück. Die rechtlichen Details stehen in unseren <a href="{pre}agb/">AGB, Abschnitt 7</a>.</p></li>
         </ul>
       </div>
     </section>"""
         + guarantee_pair_section(pre, current="nutzen")
         + guarantee_rich_cta(
             pre,
-            "Let’s define your criteria together",
-            "In the free intro call, we discuss how you’ll recognise whether our collaboration succeeded.",
-            "Book your intro call →",
+            "Lassen Sie uns gemeinsam Ihre Kriterien festlegen",
+            "Im kostenlosen Erstgespräch besprechen wir, woran Sie den Erfolg unserer Zusammenarbeit erkennen.",
+            "Jetzt Termin vereinbaren →",
         )
-        + faq_section_html(faq, title="Frequently asked questions about the value guarantee", section_id="faq", alt=True)
+        + faq_section_html(faq, title="Häufige Fragen zur Nutzen-Garantie", section_id="faq", alt=True)
     )
     write(
-        "benefit-guarantee/index.html",
+        "nutzen-garantie/index.html",
         shell(depth=1, title=title, description=desc,
-              canonical="/benefit-guarantee/", active_nav=None, main=main, json_ld=json_ld),
+              canonical="/nutzen-garantie/", active_nav=None, main=main, json_ld=json_ld),
     )
 
 
@@ -1627,7 +1688,7 @@ def gen_relevanz_garantie() -> None:
         hero(pre, "IHR RISIKO LIEGT BEI UNS", "Kein relevantes Risiko gefunden? Sie zahlen nichts.",
              "Wir suchen nicht, um etwas abzurechnen. Finden wir kein Risiko über der gemeinsam vereinbarten Schwelle, erstatten wir den vollen Betrag, ohne Wenn und Aber.",
              compact=True,
-             actions=f'<a class="brt-btn" href="{pre}contact/">Kostenloses Erstgespräch buchen</a>')
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a>')
         + guarantee_stat_row(
             [
                 ("Individuell", "Schadensschwelle im Kick-off gemeinsam festgelegt"),
@@ -1653,11 +1714,11 @@ def gen_relevanz_garantie() -> None:
     <section id="bedeutet" class="brt-section" aria-labelledby="bedeutet-title">
       <div class="brt-container brt-split">
         <div class="brt-split__text brt-fade-up">
-          <h2 id="bedeutet-title" class="brt-h2">What &ldquo;relevant&rdquo; means</h2>
-          <p class="brt-body">A risk is relevant if its potential damage reaches or exceeds the threshold we agree on together in the kick-off, for example a damage potential of more than EUR 10,000.</p>
-          <p class="brt-body">We set this threshold individually with you, not as a blanket figure for every company. If the agreed analysis doesn&rsquo;t identify a single risk that meets this threshold, we refund you the full agreed project price.</p>
+          <h2 id="bedeutet-title" class="brt-h2">Was „relevant“ bedeutet</h2>
+          <p class="brt-body">Ein Risiko ist relevant, wenn sein möglicher Schaden die im Kick-off gemeinsam festgelegte Schwelle erreicht oder überschreitet, zum Beispiel ein Schadenspotenzial von mehr als 10.000 Euro.</p>
+          <p class="brt-body">Diese Schwelle legen wir individuell mit Ihnen fest, nicht pauschal für alle Unternehmen gleich. Finden wir im Ergebnis der vereinbarten Analyse kein einziges Risiko, das diese Schwelle erfüllt, erstatten wir Ihnen den vollen vereinbarten Projektpreis zurück.</p>
         </div>
-        {split_media_html(IMG_RELEVANZ_SCHWELLE, "Consultant and business owner agreeing the damage threshold for relevant risks in a kick-off workshop", 1, contain=True)}
+        {split_media_html(IMG_RELEVANZ_SCHWELLE, "Berater und Unternehmer legen im Kick-off die Schadensschwelle für relevante Risiken fest", 1, contain=True)}
       </div>
     </section>"""
         + guarantee_rule_band(
@@ -1665,24 +1726,24 @@ def gen_relevanz_garantie() -> None:
             aria="Kernaussage Relevanz-Garantie",
         )
         + guarantee_contrast_duo(
-            left_tag="NO SMALL CHANGE",
-            left_title="What we don’t do",
-            left_id="not",
+            left_tag="KEIN KLEINKLEIN",
+            left_title="Was wir nicht tun",
+            left_id="nicht",
             left_paras=[
-                "We’re not looking for any random, irrelevant risk just so our work gets paid. Findings below the agreed threshold don’t count as relevant under this guarantee.",
-                "That matters so you lose the fear that we only search in order to bill you.",
+                "Es geht uns nicht darum, irgendein x-beliebiges, unrelevantes Risiko zu finden, nur damit unsere Arbeit bezahlt wird. Kleinigkeiten unterhalb der vereinbarten Schwelle z\u00e4hlen nicht als relevantes Risiko im Sinne dieser Garantie.",
+                "Das ist uns wichtig, damit Sie die Sorge verlieren, wir w\u00fcrden nur suchen, um etwas abzurechnen.",
             ],
-            left_note_label="Outcome",
-            left_note="If we find nothing relevant, the entire analysis costs you nothing.",
-            right_tag="BLIND SPOTS",
-            right_title="What we specifically look for",
-            right_id="search",
+            left_note_label="Ergebnis",
+            left_note="Finden wir nichts Relevantes, kostet Sie die gesamte Analyse nichts.",
+            right_tag="BLINDE FLECKEN",
+            right_title="Was wir gezielt suchen",
+            right_id="suchen",
             right_paras=[
-                "We focus on risks that weren’t on your radar before, or that were internally dismissed as insignificant but turn out to be highly relevant.",
+                "Im Fokus stehen Risiken, die vorher nicht in Ihrem Blick waren oder die intern bereits als nicht relevant abgestempelt wurden, sich am Ende aber doch als sehr relevant herausstellen.",
             ],
-            right_note_label="Example",
-            right_note="A risk internally treated as “long known and under control” turns out in the assessment to have damage potential well above the agreed threshold.",
-            section_id="not",
+            right_note_label="Beispiel",
+            right_note="Ein Risiko, das intern als \u201eschon lange bekannt und unter Kontrolle\u201c galt, entpuppt sich in der Bewertung als Risiko mit einem Schadenpotenzial deutlich \u00fcber der vereinbarten Schwelle.",
+            section_id="nicht",
         )
         + f"""
     <section id="vertrag" class="brt-section" aria-labelledby="vertrag-title">
@@ -1691,23 +1752,23 @@ def gen_relevanz_garantie() -> None:
         <p class="brt-body">Die Schadensschwelle und die Garantie selbst werden im Kick-off vereinbart und im Angebot bzw. Vertrag schriftlich festgehalten. Sie haben damit von Anfang an die Sicherheit, dass Sie nichts zahlen müssen, wenn wir kein relevantes Risiko finden.</p>
         <div class="brt-highlight-box" style="margin-top: var(--space-8);">
           <h3 class="brt-h3">Das Risiko liegt bei uns</h3>
-          <p class="brt-body">Wir suchen nicht, um abzurechnen. Finden wir nichts Relevantes, tragen wir das finanzielle Risiko, nicht Sie. Die vollständigen Bedingungen stehen in unseren <a href="{pre}terms/">AGB, Abschnitt 7</a>.</p>
+          <p class="brt-body">Wir suchen nicht, um abzurechnen. Finden wir nichts Relevantes, tragen wir das finanzielle Risiko, nicht Sie. Die vollständigen Bedingungen stehen in unseren <a href="{pre}agb/">AGB, Abschnitt 7</a>.</p>
         </div>
       </div>
     </section>"""
         + guarantee_pair_section(pre, current="relevanz")
         + guarantee_rich_cta(
             pre,
-            "Find out which risks you may be overlooking",
-            "In the free intro call, you’ll learn how we set the damage threshold together with you.",
-            "Book your intro call →",
+            "Finden Sie heraus, welche Risiken Sie übersehen",
+            "Im kostenlosen Erstgespräch erfahren Sie, wie wir die Schadensschwelle gemeinsam mit Ihnen festlegen.",
+            "Jetzt Termin vereinbaren →",
         )
-        + faq_section_html(faq, title="Frequently asked questions about the relevance guarantee", section_id="faq", alt=True)
+        + faq_section_html(faq, title="Häufige Fragen zur Relevanz-Garantie", section_id="faq", alt=True)
     )
     write(
-        "relevance-guarantee/index.html",
+        "relevanz-garantie/index.html",
         shell(depth=1, title=title, description=desc,
-              canonical="/relevance-guarantee/", active_nav=None, main=main, json_ld=json_ld),
+              canonical="/relevanz-garantie/", active_nav=None, main=main, json_ld=json_ld),
     )
 
 
@@ -1715,42 +1776,43 @@ def gen_relevanz_garantie() -> None:
 
 def gen_angebote() -> None:
     pre = "../"
-    services_faq = [
-        ("Which service fits me – startup, SME or solo?", "Startups (4 weeks) for founding teams, SMEs (6 weeks) for a full picture from around 10 employees, solo (2 weeks) for sole traders. We clarify what fits in the intro call."),
-        ("What does risk management consulting cost at Beraterium?", "Scope depends on business size and chosen option. We discuss pricing transparently in the free intro call — before any proposal."),
-        ("Is there a guarantee?", "Yes: double guarantee — relevance and value. No relevant risk found or no measurable value? Money back."),
-        ("Do I need ISO certification or corporate methodology?", "No. Beraterium translates corporate methodology into practical steps for SMEs, startups, and solo operators — without bureaucracy overhead."),
+    angebote_faq = [
+        ("Welches Angebot passt zu mir – Startup, KMU oder Solo?", "Startups (4 Wochen) für Gründerteams, KMU (6 Wochen) für vollständiges Lagebild ab ca. 10 Mitarbeitenden, Solo (2 Wochen) für Einzelunternehmer. Im Erstgespräch klären wir, was passt."),
+        ("Was ist der Unterschied zwischen Risikobewertung und Risikomanagement-Beratung?", "Risikobewertung bewertet Schadenshöhe und Eintrittswahrscheinlichkeit in Euro — die Grundlage für Prioritäten. Risikomanagement-Beratung umfasst Analyse, Maßnahmen und Umsetzung mit unserem 3-Ebenen-Gefahrenkatalog. Details zur Methode finden Sie auf der Methode-Seite."),
+        ("Was kostet Risikomanagement-Beratung bei Beraterium?", "Das Kernpaket Risiko-Analyse 360° kostet 3.475 € (Bundle aus Analyse, Strategie und Budgetplanung). Einzelmodule: Analyse 1.725 €, Strategie-Sitzung 2.175 €, Budgetplanung 1.250 €. Workshops ab 57 € pro Person, der Erst-Check für Startups ist kostenlos. Alle Preise transparent auf der Preisseite."),
+        ("Gibt es eine Garantie?", "Ja: Doppelte Garantie — Relevanz und Nutzen. Kein relevantes Risiko gefunden oder kein Mehrwert? Geld zurück."),
+        ("Brauche ich ISO-Zertifizierung oder Konzern-Methodik?", "Nein. Beraterium übersetzt Konzern-Methodik in praxisnahe Schritte für KMU, Startups und Solo — ohne Bürokratie-Overhead."),
     ]
     main = (
-        hero(pre, "OUR SERVICES", "The right risk check for your situation",
-             "Whether you are a founding team, mid-market business or solo self-employed: you get enterprise methodology, translated to your reality – with a clear outcome and double guarantee.",
+        hero(pre, "UNSERE ANGEBOTE", "Risikomanagement-Beratung: Der passende Check für Ihre Situation",
+             "Ob Gründerteam, Mittelständler oder Solo-Selbstständige: strukturierte Risikobewertung in Euro und Risikomanagement-Beratung mit Konzern-Methodik — übersetzt auf Ihre Realität, mit doppelter Garantie.",
              compact=True,
-             actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a>')
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a>')
         + """
     <section class="brt-section" aria-labelledby="paths-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">WHO IT&rsquo;S FOR</p>
-          <h2 id="paths-title" class="brt-h2">Choose your starting point</h2>
+          <p class="brt-tag">FÜR WEN</p>
+          <h2 id="paths-title" class="brt-h2">Wählen Sie Ihren Einstieg</h2>
         </header>
         <ul class="brt-cards-3col brt-stagger">
           <li class="brt-card brt-card--target brt-hover-lift">
             <h3 class="brt-h3">Startups</h3>
-            <p class="brt-meta brt-meta--accent">The 4-week risk check</p>
-            <p class="brt-body">For founding teams up to 10 people. Spot early which risks could slow your growth – before they get expensive.</p>
-            <a class="brt-btn brt-btn--ghost" href="../services/startups/">View startup service →</a>
+            <p class="brt-meta brt-meta--accent">Der 4-Wochen Risiko-Check</p>
+            <p class="brt-body">Für Gründerteams bis 10 Mitarbeitende. Sie erkennen früh, welche Risiken Ihr Wachstum bremsen könnten – bevor sie teuer werden.</p>
+            <a class="brt-btn brt-btn--ghost" href="../angebote/startups/">Zum Startup-Angebot →</a>
           </li>
           <li class="brt-card brt-card--target brt-card--featured brt-hover-lift">
-            <h3 class="brt-h3">SME &amp; mid-market</h3>
-            <p class="brt-meta brt-meta--accent">The 6-week clarity roadmap</p>
-            <p class="brt-body">For businesses with 10–100+ employees. A complete risk picture, prioritised and valued in euros – plus HR analysis for culture and leadership.</p>
-            <a class="brt-btn brt-btn--ghost" href="../services/smb/">View SME service →</a>
+            <h3 class="brt-h3">KMU &amp; Mittelstand</h3>
+            <p class="brt-meta brt-meta--accent">Der 6-Wochen Klarheits-Fahrplan</p>
+            <p class="brt-body">Für Unternehmen mit 10–100+ Mitarbeitenden. Vollständiges Risiko-Lagebild, priorisiert und in Euro bewertet – plus HR-Analyse für Kultur und Führung.</p>
+            <a class="brt-btn brt-btn--ghost" href="../angebote/kmu/">Zum KMU-Angebot →</a>
           </li>
           <li class="brt-card brt-card--target brt-hover-lift">
-            <h3 class="brt-h3">Solo self-employed</h3>
-            <p class="brt-meta brt-meta--accent">The 2-week risk compass</p>
-            <p class="brt-body">For freelancers and sole traders. In two weeks you know where you are truly vulnerable – facilitated, with an AI sparring partner.</p>
-            <a class="brt-btn brt-btn--ghost" href="../services/solo/">View solo service →</a>
+            <h3 class="brt-h3">Solo-Selbstständige</h3>
+            <p class="brt-meta brt-meta--accent">Der 2-Wochen Risiko-Kompass</p>
+            <p class="brt-body">Für Freiberufler und Einzelunternehmer. In zwei Wochen wissen Sie, wo Sie wirklich verletzlich sind – moderiert, mit KI-Impulsgeber.</p>
+            <a class="brt-btn brt-btn--ghost" href="../angebote/solo/">Zum Solo-Angebot →</a>
           </li>
         </ul>
       </div>
@@ -1758,36 +1820,36 @@ def gen_angebote() -> None:
     <section class="brt-section brt-section--alt" aria-labelledby="compare-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">AT A GLANCE</p>
-          <h2 id="compare-title" class="brt-h2">What fits you?</h2>
-          <p class="brt-body">Three audiences, one method — different scope and pace.</p>
+          <p class="brt-tag">AUF EINEN BLICK</p>
+          <h2 id="compare-title" class="brt-h2">Was passt zu Ihnen?</h2>
+          <p class="brt-body">Drei Zielgruppen, eine Methode — unterschiedlicher Umfang und Tempo.</p>
         </header>
         <div class="brt-compare brt-fade-up">
           <div class="brt-compare__scroll">
             <table class="brt-compare__table">
-              <caption class="brt-sr-only">Comparison of risk checks for startups, SMEs and solo self-employed</caption>
+              <caption class="brt-sr-only">Vergleich der Risiko-Checks für Startups, KMU und Solo-Selbstständige</caption>
               <thead>
                 <tr>
                   <th class="brt-compare__corner" scope="col"></th>
-                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-icon" aria-hidden="true"><svg class="brt-compare__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span><span class="brt-compare__head-title">Startups</span><span class="brt-compare__head-meta">4-week check</span></th>
-                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-icon" aria-hidden="true"><svg class="brt-compare__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></span><span class="brt-compare__head-title">SME</span><span class="brt-compare__head-meta">6-week roadmap</span></th>
-                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-icon" aria-hidden="true"><svg class="brt-compare__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="brt-compare__head-title">Solo</span><span class="brt-compare__head-meta">2-week compass</span></th>
+                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-icon" aria-hidden="true"><svg class="brt-compare__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span><span class="brt-compare__head-title">Startups</span><span class="brt-compare__head-meta">4-Wochen-Check</span></th>
+                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-icon" aria-hidden="true"><svg class="brt-compare__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></span><span class="brt-compare__head-title">KMU</span><span class="brt-compare__head-meta">6-Wochen-Fahrplan</span></th>
+                  <th class="brt-compare__head" scope="col"><span class="brt-compare__head-icon" aria-hidden="true"><svg class="brt-compare__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="brt-compare__head-title">Solo</span><span class="brt-compare__head-meta">2-Wochen-Kompass</span></th>
                 </tr>
               </thead>
               <tbody>
-                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="brt-compare__row-text">For whom</span></span></th><td>Founding teams up to 10</td><td>10–100+ employees</td><td>Solo entrepreneur</td></tr>
-                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="brt-compare__row-text">Duration</span></span></th><td><strong>approx. 4</strong> weeks</td><td><strong>approx. 6</strong> weeks</td><td><strong>approx. 2</strong> weeks</td></tr>
-                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></span><span class="brt-compare__row-text">Sessions</span></span></th><td>1–2 <span class="brt-compare__muted">(2h each)</span></td><td>2–3 <span class="brt-compare__muted">(2–3h each)</span></td><td>1 <span class="brt-compare__muted">(2–3h)</span></td></tr>
-                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span class="brt-compare__row-text">Outcome</span></span></th><td>prioritised risk picture</td><td>full risk portfolio + roadmap</td><td>personal risk picture</td></tr>
-                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.65-8.58 3.91a2 2 0 0 1-1.66 0L3.18 12.65"/><path d="m22 17.65-8.58 3.91a2 2 0 0 1-1.66 0L3.18 17.65"/></svg></span><span class="brt-compare__row-text">Steps</span></span></th><td><span class="brt-compare__pill">1 / 2 / 3</span></td><td><span class="brt-compare__pill">1 / 2 / 3</span></td><td><span class="brt-compare__pill">1 / 2 / 3</span></td></tr>
-                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="brt-compare__row-text">Guarantee</span></span></th><td><span class="brt-compare__check">Double</span></td><td><span class="brt-compare__check">Double</span></td><td><span class="brt-compare__check">Double</span></td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="brt-compare__row-text">Für wen</span></span></th><td>Gründerteams bis 10 MA</td><td>10–100+ MA</td><td>Einzelunternehmer</td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="brt-compare__row-text">Dauer</span></span></th><td><strong>ca. 4</strong> Wochen</td><td><strong>ca. 6</strong> Wochen</td><td><strong>ca. 2</strong> Wochen</td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></span><span class="brt-compare__row-text">Sessions</span></span></th><td>1–2 <span class="brt-compare__muted">(je 2h)</span></td><td>2–3 <span class="brt-compare__muted">(je 2–3h)</span></td><td>1 <span class="brt-compare__muted">(2–3h)</span></td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span class="brt-compare__row-text">Ergebnis</span></span></th><td>priorisiertes Risiko-Lagebild</td><td>vollständiges Risiko-Portfolio + Fahrplan</td><td>persönliches Risiko-Lagebild</td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.65-8.58 3.91a2 2 0 0 1-1.66 0L3.18 12.65"/><path d="m22 17.65-8.58 3.91a2 2 0 0 1-1.66 0L3.18 17.65"/></svg></span><span class="brt-compare__row-text">Schritte</span></span></th><td><span class="brt-compare__pill">1 / 2 / 3</span></td><td><span class="brt-compare__pill">1 / 2 / 3</span></td><td><span class="brt-compare__pill">1 / 2 / 3</span></td></tr>
+                <tr><th class="brt-compare__row-label" scope="row"><span class="brt-compare__row-label-inner"><span class="brt-compare__row-icon" aria-hidden="true"><svg class="brt-compare__svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="brt-compare__row-text">Garantie</span></span></th><td><span class="brt-compare__check">Doppelt</span></td><td><span class="brt-compare__check">Doppelt</span></td><td><span class="brt-compare__check">Doppelt</span></td></tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td class="brt-compare__corner"></td>
-                  <td><a class="brt-btn brt-btn--ghost" href="../services/startups/">View service →</a></td>
-                  <td><a class="brt-btn brt-btn--ghost" href="../services/smb/">View service →</a></td>
-                  <td><a class="brt-btn brt-btn--ghost" href="../services/solo/">View service →</a></td>
+                  <td><a class="brt-btn brt-btn--ghost" href="../angebote/startups/">Zum Angebot →</a></td>
+                  <td><a class="brt-btn brt-btn--ghost" href="../angebote/kmu/">Zum Angebot →</a></td>
+                  <td><a class="brt-btn brt-btn--ghost" href="../angebote/solo/">Zum Angebot →</a></td>
                 </tr>
               </tfoot>
             </table>
@@ -1795,1390 +1857,52 @@ def gen_angebote() -> None:
         </div>
       </div>
     </section>"""
-        + steps_flow_section(en=True)
+        + steps_flow_section()
         + """
     <section class="brt-section brt-section--alt" aria-labelledby="hr-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">ADD-ON</p>
-          <h2 id="hr-title" class="brt-h2">HR, culture &amp; leadership</h2>
-          <p class="brt-body">Risks often sit in the team. Our HR modules make morale, leadership quality and culture visible – data-led, not gut feel.</p>
+          <p class="brt-tag">ERGÄNZEND</p>
+          <h2 id="hr-title" class="brt-h2">HR, Kultur &amp; Führung</h2>
+          <p class="brt-body">Risiken stecken oft im Team. Mit unseren HR-Modulen machen Sie Stimmung, Führungsqualität und Kultur sichtbar – datenbasiert statt aus dem Bauch.</p>
         </header>
         <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">HR analysis via questionnaire</h3><p class="brt-body">Anonymous culture health check: satisfaction, communication, leadership, workload.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Leadership interviews</h3><p class="brt-body">In-depth 1:1 conversations with your leaders, transcribed and analysed for patterns.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Analysis &amp; recommendations</h3><p class="brt-body">From the data, concrete measures with priorities, sequence and timeline.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">HR-Analyse per Fragebogen</h3><p class="brt-body">Anonymer Kultur-Health-Check: Zufriedenheit, Kommunikation, Führung, Belastung.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Führungskräfte-Interviews</h3><p class="brt-body">Tiefe 1:1-Gespräche mit Ihren Führungskräften, transkribiert und in Mustern ausgewertet.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Auswertung &amp; Handlungsempfehlungen</h3><p class="brt-body">Aus den Daten werden konkrete Maßnahmen mit Prioritäten, Reihenfolge und Timeline.</p></li>
         </ul>
-        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Pricing and scope depend on team size – we clarify what fits in the intro call.</p>
+        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Preise und Umfang je nach Teamgröße – alle Preise transparent auf der <a href="../preise/">Preisseite</a>.</p>
       </div>
     </section>"""
-        + case_studies_section(pre, en=True)
+        + case_studies_section(pre)
         + guarantee(pre)
-        + faq_section_html(services_faq, title="Frequently asked questions about our services", section_id="faq", alt=True)
-        + cta_band(pre, "Not sure what fits?", "We clarify that in a free intro call – including a DIY guide you can use without us.")
+        + faq_section_html(angebote_faq, title="Häufige Fragen zu unseren Angeboten", section_id="faq", alt=True)
+        + cta_band(pre, "Unsicher, was zu Ihnen passt?", "Das klären wir im kostenlosen Erstgespräch – inklusive einer DIY-Anleitung, die Sie auch ohne uns nutzen können.")
     )
-    write("services/index.html", shell(depth=1, title="Services – risk analysis for startups, SMEs & solo | Beraterium",
-          description="Choose the right risk check: 4 weeks for startups, 6 weeks for SMEs, 2 weeks for solo self-employed. Plus HR analysis. With double guarantee.",
-          canonical="/services/", active_nav="services", main=main,
-          json_ld=page_schema(faq_page_schema(services_faq))))
+    angebote_title = "Risikomanagement-Beratung KMU, Startups & Solo | Beraterium"
+    angebote_desc = "Risikomanagement-Beratung für KMU, Startups und Solo: 2–6 Wochen zum klaren Risiko-Lagebild in Euro — mit doppelter Garantie."
+    write("angebote/index.html", shell(depth=1, title=angebote_title, description=angebote_desc,
+          canonical="/angebote/", active_nav="angebote", main=main,
+          json_ld=page_schema(faq_page_schema(angebote_faq))))
 
-
-def lp_shell(depth: int, slug: str, title: str, desc: str, du: bool, main: str) -> None:
-    write(f"services/{slug}/index.html", shell(depth=depth, title=title, description=desc,
-          canonical=f"/services/{slug}/", active_nav=f"services/{slug}", main=main))
-
-
-def gen_lp_startups() -> None:
-    pre = "../../"
-    opts = [
-        {"title": "Option A — Risk snapshot", "claim": "In 4 weeks you know where you stand.", "features": [
-            "Kick-off (scope, value criteria)", "Facilitated risk analysis with team (1–2 sessions, 2h each)",
-            "Hazard catalog startup edition (3 levels)", "Assessment: damage in euros + likelihood",
-            "Inventory check + risk report (one-pager)"]},
-        {"title": "Option B — Snapshot + measures sprint", "claim": "You know what&rsquo;s going on – and what to do.", "badge": "Popular", "featured": True,
-         "extra": "Everything in A, plus:", "features": [
-            "Measures sprint: top risks → concrete actions", "Assessment: impact, effort, feasibility per measure",
-            "Quick-win list for this week", "Roadmap with owners &amp; timeline", "Founder wrap-up call"]},
-        {"title": "Option C — Snapshot + measures + founder sparring", "claim": "We stay with you until the first measures take hold.",
-         "extra": "Everything in B, plus:", "features": [
-            "2 months founder sparring (2× monthly, 30 min.)", "Access to the Risk Radar community",
-            "Expert introductions when needed", "Risk update after 2 months"]},
-    ]
-    main = (
-        hero(pre, "RISK CHECK FOR STARTUPS", "Structured startup risk management in 4 weeks",
-             "For founders and startup CEOs with 2–10 people: facilitated startup risk management with hazards valued in euros — before investor due diligence or a costly blind spot.",
-             split=True, media_label="Founding team during a risk check with Beraterium",
-             media_src=IMG_ANGEBOT_STARTUPS_HERO,
-             actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a><a class="brt-btn brt-btn--outline" href="#optionen">See the 3 options →</a>')
-        + """
-    <section class="brt-section" aria-labelledby="problem-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">SOUND FAMILIAR?</p>
-          <h2 id="problem-title" class="brt-h2">Risks? &ldquo;Yeah, sure – someday.&rdquo; But someday is usually too late.</h2>
-          <p class="brt-body">You have a thousand things in your head at once: product, customers, hiring, cash. Startup risk management sounds like enterprise bureaucracy — spreadsheet monsters and checklists — so you put off a structured risk assessment.</p>
-        </header>
-        <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The external problem</h3><p class="brt-body">You have no structured picture of your risks. What could cost you €30,000 tomorrow, you do not know today.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The internal problem</h3><p class="brt-body">Deep down you know: there are things you overlook. Key-person risk, cashflow gaps, legal pitfalls, technical debt.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The belief</h3><p class="brt-body">A founder who carries responsibility for their team should not guess where the biggest hazards lie. They should know.</p></li>
-        </ul>
-      </div>
-    </section>
-    <section class="brt-section brt-section--alt" aria-labelledby="erstgespraech-title">
-      <div class="brt-container brt-fade-up">
-        <p class="brt-tag">GIVE FIRST, THEN OFFER</p>
-        <h2 id="erstgespraech-title" class="brt-h2">Your free intro call: the method to do it yourself</h2>
-        <p class="brt-body">In the intro call (approx. 30–45 min.) we show you how to run a risk analysis for your startup yourself. No sales pitch – real knowledge:</p>
-        <ul class="brt-list-check">
-          <li>The 3-level method: collect hazards → assess risks → prioritise measures</li>
-          <li>Assessment logic for startups: estimate damage, even without history</li>
-          <li>The 5 typical startup hazard areas: key person, cash, legal, tech debt, market</li>
-          <li>Concrete guiding questions to bring in your co-founder team</li>
-        </ul>
-        <p class="brt-meta brt-meta--italic" style="margin-top: var(--space-6);">What you do not get: our full hazard catalog and facilitated delivery with analysis.</p>
-      </div>
-    </section>"""
-        + pricing_cards(pre, opts)
-        + guarantee(pre, "Your risk is on us")
-        + faq_section([
-            ("What is startup risk management?", "Startup risk management means identifying hazards that could slow growth or stop the company, assessing them in euros and likelihood, and prioritising measures — without enterprise overhead. Beraterium uses a 3-level hazard catalogue tailored to founding teams."),
-            ("How much time does it cost me?", "About 2 hours per session, 1–2 sessions plus kick-off in total. We handle the rest."),
-            ("Is it worth it this early?", "Especially early: a key-person or cash risk can stop a young startup completely."),
-            ("What if there are only two of us?", "No problem. We facilitate so even a small founding team reaches a realistic assessment."),
-            ("Do I get something to show investors?", "You get a prioritised risk report as a one-pager. Honest, not polished."),
-        ], alt=True)
-        + cta_band(pre, "Ready to know your biggest risks?",
-                   "Book an intro call – free, no sales pitch. You leave with a DIY guide, however you decide.")
-    )
-    lp_shell(2, "startups", "Startup Risk Management: 4-Week Risk Check | Beraterium",
-             "Structured startup risk management in 4 weeks: key-person, cash, legal and tech risks valued in euros. Free intro call — no sales pitch. Double guarantee.", True, main)
-
-
-def gen_lp_kmu() -> None:
-    pre = "../../"
-    opts = [
-        {"title": "Option A — Analysis only", "claim": "You get clarity. We deliver the picture.", "features": [
-            "Kick-off with leadership (goals, scope, value criteria)", "Facilitated risk analysis with team (2–3 sessions, 2–3h each)",
-            "Full hazard catalog (3 levels, industry-tailored)", "Assessment: damage in euros + likelihood",
-            "Inventory capture + risk portfolio report (prioritised)"]},
-        {"title": "Option B — Analysis + roadmap", "claim": "Clarity AND a concrete plan.", "badge": "Popular", "featured": True,
-         "extra": "Everything in A, plus:", "features": [
-            "Measures workshop for top risks", "Assessment per measure: impact, cost-effectiveness, feasibility",
-            "Implementation roadmap with timeline &amp; owners", "Leadership wrap-up session"]},
-        {"title": "Option C — Analysis + roadmap + implementation support", "claim": "We stay involved until measures take hold.",
-         "extra": "Everything in B, plus:", "features": [
-            "3 months implementation support (monthly check-ins)", "Access to the Risk Radar community (vetted experts)",
-            "Coordination of specialists for complex measures", "Quarterly review (risk update + progress)"]},
-    ]
-    main = (
-        hero(pre, "RISK ANALYSIS FOR SME", "Risk management for mid-market businesses — which risks actually cost you money?",
-             "For managing directors and owners of SMEs with 10 to 100+ employees. In around 6 weeks you receive a complete risk picture, valued in euros – plus a concrete roadmap.",
-             split=True, media_label="Leadership of a mid-market business during risk analysis",
-             media_src=IMG_ANGEBOT_KMU_HERO,
-             actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a><a class="brt-btn brt-btn--outline" href="#optionen">See the 3 options →</a>')
-        + """
-    <section class="brt-section" aria-labelledby="problem-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">THE COSTLY UNCERTAINTY</p>
-          <h2 id="problem-title" class="brt-h2">You know risks are lurking somewhere. But which ones are expensive?</h2>
-          <p class="brt-body">Which risk could cost you €50,000, €200,000 or more next year? You run a business with employees, customers, processes and responsibility – and you sense: there is something you are overlooking.</p>
-        </header>
-        <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The external problem</h3><p class="brt-body">You do not have a complete picture of your risks. Classic methods are built for enterprises – complex, theoretical, bureaucratic.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The internal problem</h3><p class="brt-body">Gut feel says &lsquo;something is there&rsquo; – but you cannot name it, prioritise it or put a number on it.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The belief</h3><p class="brt-body">Anyone who carries responsibility for employees and customers should know where the biggest risks lie. Not someday. Now.</p></li>
-        </ul>
-      </div>
-    </section>
-    <section class="brt-section brt-section--alt" aria-labelledby="erstgespraech-title">
-      <div class="brt-container brt-fade-up">
-        <p class="brt-tag">GIVE FIRST, THEN OFFER</p>
-        <h2 id="erstgespraech-title" class="brt-h2">Your free intro call: the full method, explained openly</h2>
-        <p class="brt-body">In approx. 45–60 minutes we show you how to run a structured risk analysis yourself. You receive:</p>
-        <ul class="brt-list-check">
-          <li>The 3-level approach explained (hazards → risks → measures)</li>
-          <li>The assessment logic (scenario, damage in euros, likelihood, inventory)</li>
-          <li>The questioning technique to bring in your team</li>
-          <li>A concrete starting point: the 5 hazard areas to work through first</li>
-        </ul>
-      </div>
-    </section>"""
-        + pricing_cards(pre, opts)
-        + guarantee(pre, "Your risk is zero")
-        + faq_section([
-            ("How much time does it tie up in the team?", "2–3 hours per session, 2–3 sessions plus kick-off in total. We facilitate efficiently."),
-            ("Is this suitable for family businesses too?", "Especially so. Topics such as succession or key people become visible in a structured way."),
-            ("How are you different from an audit?", "We do not check past numbers – we make your future risks tangible."),
-            ("Do we get a document we can present?", "Yes, a risk portfolio report you can share with your board, bank or team."),
-            (
-                "Which providers offer professional risk analyses for mid-market companies?",
-                "Four types: Big Four/ISO consultancies, specialised mid-market advisors, insurance brokers and DIY. "
-                "For actionable results without certification pressure, a specialist with euro-based assessment and implementation support fits best. "
-                "See our provider comparison blog article; the Beraterium offer is at /services/smb/.",
-            ),
-            (
-                "Which risk management consulting approaches work best for mid-market businesses?",
-                "The most effective approach is pragmatic: a complete hazard catalog, euro-based assessment, and prioritisation of a few high-impact measures — without ISO bureaucracy. "
-                "That is how the Beraterium method works in around 6 weeks with your team.",
-            ),
-        ], alt=True)
-        + cta_band(pre, "Get clarity – before a risk hits",
-                   "Book an intro call – free, no obligation. You leave with a DIY guide, however you decide.")
-    )
-    lp_shell(2, "smb", "Risk management consulting SME & mid-market | Beraterium",
-             "Risk management consulting for mid-market businesses: complete risk picture in euros, from €3,475 fixed price. Free intro call. Double guarantee.", False, main)
-
-
-def gen_lp_solo() -> None:
-    pre = "../../"
-    opts = [
-        {"title": "Option A — Solo risk check", "claim": "In 2 weeks you know where you are vulnerable.", "features": [
-            "Kick-off (situation, scope, value criteria)", "Facilitated risk analysis (1 session, 2–3h) with 2 facilitators + AI sparring partner",
-            "Hazard catalog solo edition (3 levels)", "Assessment: damage in euros + likelihood",
-            "Inventory check + risk report (1–2 pages)"]},
-        {"title": "Option B — Risk check + action plan", "claim": "You know what&rsquo;s going on – and what you can do.", "badge": "Popular", "featured": True,
-         "extra": "Everything in A, plus:", "features": [
-            "Measures session (top risks → concrete steps)", "Quick-win list for this week",
-            "Prioritised roadmap: what first, what can wait?", "Resource check: what can you handle alone, where do you need help?"]},
-        {"title": "Option C — Risk check + measures + implementation sparring", "claim": "We stay with you until you are set up securely.",
-         "extra": "Everything in B, plus:", "features": [
-            "6 weeks sparring (3× 30 min., every 2 weeks)", "Access to the Risk Radar community",
-            "Expert introductions for specific needs", "Risk update after 6 weeks"]},
-    ]
-    main = (
-        hero(pre, "RISK COMPASS FOR SOLO SELF-EMPLOYED", "You are your business. Do you know where you are vulnerable?",
-             "For freelancers, sole traders and solo self-employed. In 2 weeks you know which risks would hit you hardest – not to create fear, but so you can decide freely.",
-             split=True, media_label="Solo self-employed person during a risk compass with Beraterium",
-             media_src=IMG_ANGEBOT_SOLO_HERO,
-             actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a><a class="brt-btn brt-btn--outline" href="#optionen">See the 3 options →</a>')
-        + """
-    <section class="brt-section" aria-labelledby="problem-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">KNOW THAT FEELING?</p>
-          <h2 id="problem-title" class="brt-h2">If you go down, everything stops. If a client leaves, your livelihood wobbles.</h2>
-          <p class="brt-body">There is no colleague to catch you. And &lsquo;risk management&rsquo; has been on your &lsquo;should really do that&rsquo; list forever.</p>
-        </header>
-        <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The external problem</h3><p class="brt-body">You have no overview of which risks truly threaten your business. Classic risk analysis feels like it is for enterprises with 500 people.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The internal problem</h3><p class="brt-body">You worry – about absence, dependencies, things you overlook. But as a solo, you are alone with those thoughts.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">The belief</h3><p class="brt-body">Anyone who carries their own business has the right to know where the biggest hazards lie. So they can decide freely.</p></li>
-        </ul>
-      </div>
-    </section>
-    <section class="brt-section brt-section--alt" aria-labelledby="moderatoren-title">
-      <div class="brt-container brt-highlight-box brt-fade-up">
-        <h3 id="moderatoren-title" class="brt-h3">Why two facilitators and an AI sparring partner?</h3>
-        <p class="brt-body">As a solo you have no team bringing different perspectives. We replace that: two facilitators who structure and challenge, plus an AI sparring partner for statistical experience-based input.</p>
-      </div>
-    </section>"""
-        + pricing_cards(pre, opts)
-        + guarantee(pre, "Zero risk for you")
-        + faq_section([
-            ("Is it worth it when it is just me?", "Especially then. If you go down, there is no buffer."),
-            ("How much time does it cost me?", "One session of 2–3 hours plus a short kick-off. That is it."),
-            ("I find risk topics uncomfortable – will this be a fear session?", "No. It is about clarity and decisive action, not fear."),
-            ("What does the AI sparring partner do for me?", "It provides statistical estimates and experience-based input so your assessment does not rely only on gut feel."),
-        ], alt=True)
-        + cta_band(pre, "Get clarity on your risks",
-                   "Book an intro call – 30 minutes, free, no pressure. We explain our DIY method and you decide afterwards in your own time.")
-    )
-    lp_shell(2, "solo", "Risk management for self-employed – 2-week risk compass | Beraterium",
-             "You are your business. In 2 weeks you know which risks would hit you hardest – facilitated, with AI sparring partner and double guarantee.", True, main)
-
-
-def gen_risikoradar() -> None:
-    pre = "../"
-    main = (
-        hero(pre, "OUR NETWORK", "Risk Radar – solutions are not built in isolation",
-             "A protected space of vetted, trusted experts. Not a loose contact pool, but a working network where disciplines work together – so your analysis turns into real implementation.")
-        + """
-    <section class="brt-section brt-section--narrow" aria-labelledby="umsetzung-title">
-      <div class="brt-container brt-fade-up">
-        <h2 id="umsetzung-title" class="brt-h2">Not analysis to file away – solutions to act on</h2>
-        <p class="brt-body">The analysis creates clarity. The real value comes in implementation. That is exactly where Risk Radar comes in: we bring the right people together and make sure measures work together sensibly. Beraterium remains your single point of contact throughout.</p>
-      </div>
-    </section>
-    <section class="brt-section brt-section--alt" aria-labelledby="ways-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">YOU DECIDE</p>
-          <h2 id="ways-title" class="brt-h2">How should implementation work?</h2>
-        </header>
-        <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Implement yourself</h3><p class="brt-body">With your own team – for organisational or straightforward measures.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">With your service providers</h3><p class="brt-body">Continue with trusted partners – for established business relationships.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">We coordinate</h3><p class="brt-body">One dedicated contact, one face to the customer. We bring the right experts together.</p></li>
-        </ul>
-      </div>
-    </section>
-    <section class="brt-section" aria-labelledby="special-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">NOT A LOOSE CONTACT POOL</p>
-          <h2 id="special-title" class="brt-h2">Trust, quality, collaboration</h2>
-        </header>
-        <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Access by referral or application only</h3><p class="brt-body">Not everyone gets in. That protects the quality.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Vetted experts</h3><p class="brt-body">Trusted specialists in organisation, processes, technology &amp; security, IT &amp; systems, and people &amp; behaviour.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">One point of contact</h3><p class="brt-body">No coordination overhead, no debates about responsibilities – results instead of administration.</p></li>
-        </ul>
-      </div>
-    </section>
-    <section class="brt-section brt-section--alt" aria-labelledby="dual-cta">
-      <div class="brt-container brt-two-col brt-two-col--cta brt-fade-up">
-        <div>
-          <h3 class="brt-h3">Looking for implementation support?</h3>
-          <p class="brt-body">After your risk analysis, we can assemble exactly the experts that fit your top risks – already vetted, no Google roulette.</p>
-          <p class="brt-section__cta">
-            <a class="brt-btn brt-btn--outline" href="../contact/">Book a free intro call →</a>
-          </p>
-        </div>
-        <div>
-          <h3 class="brt-h3">Are you an expert and want to contribute?</h3>
-          <p class="brt-body">Risk Radar grows through referral and application. If you value quality, trust and genuine collaboration, we would love to hear from you.</p>
-          <p class="brt-section__cta">
-            <a class="brt-btn brt-btn--outline" href="../contact/">Apply as an expert →</a>
-          </p>
-        </div>
-      </div>
-    </section>"""
-        + faq_section_html([
-            ("What is Risk Radar?", "Risk Radar is the protected expert network behind Beraterium — vetted specialists who implement measures from your risk analysis."),
-            ("How do I get access to Risk Radar?", "As a Beraterium client, you receive access. Experts join through referral or application — not an open forum."),
-        ], title="Frequently asked questions about Risk Radar", section_id="faq", alt=True)
-        + cta_band(pre, "From clarity to decisive action", "You decide how implementation runs – we make sure it works.")
-    )
-    risk_radar_faq = [
-        ("What is Risk Radar?", "Risk Radar is the protected expert network behind Beraterium — vetted specialists who implement measures from your risk analysis."),
-        ("How do I get access to Risk Radar?", "As a Beraterium client, you receive access. Experts join through referral or application — not an open forum."),
-    ]
-    write("risk-radar/index.html", shell(depth=1, title="Risk Radar – The expert network behind Beraterium | Beraterium",
-          description="Risk Radar is a protected network of vetted experts. Implement measures with one point of contact instead of coordination chaos.",
-          canonical="/risk-radar/", active_nav="risk-radar", main=main,
-          json_ld=page_schema(faq_page_schema(risk_radar_faq))))
-
-
-BLINDSPOT_FAQ = [
-    ("What is the Blindspot Quick Check?",
-     "The Blindspot Quick Check is a free online self-assessment by Beraterium. In 10 to 15 questions you check where your business is vulnerable — around key people, technology and day-to-day operations. You get your results immediately, no sign-up required."),
-    ("What is the difference from Stage 1 of the risk analysis?",
-     "The Quick Check on this page is a simplified self-assessment: 15 selected hazard areas, traffic-light rating, no conversation. Stage 1 of the risk analysis is a moderated process with an industry-specific questionnaire, damage scenarios in euros, likelihood, inventory and a prioritised risk portfolio — typically in a joint session."),
-    ("How long does the Blindspot Quick Check take?",
-     "About 10 minutes. Depending on your audience choice you answer 10 to 15 short 'What happens if …' questions and see your results right afterwards."),
-    ("Is the Blindspot Quick Check free?",
-     "Yes, the check is completely free and can be used without registration. Optionally, you can have the results sent to you as a PDF report by email."),
-    ("Does the Quick Check replace a full risk analysis?",
-     "No. The Quick Check covers a selection from more than 100 hazard areas of our 3-level hazard catalog. A good result does not mean all risks are ruled out — that is what Beraterium's Stage 1 and Stage 2 risk analysis is for."),
-    ("Who is the Blindspot Quick Check for?",
-     "For solo self-employed professionals, founders and startups, and small and medium-sized enterprises (SMEs). The questions adapt to your choice: solo self-employed answer 10 questions, founders and SMEs 15 each."),
-    ("What happens to my answers?",
-     "The evaluation runs directly in your browser. You only provide personal data if you request the optional PDF report — in that case our privacy policy applies. We do not store IP addresses."),
-]
-
-
-def gen_tools_index() -> None:
-    pre = "../"
-    main = (
-        hero(
-            pre,
-            "FREE TOOLS",
-            "Tools: check your risks yourself — in minutes, not weeks",
-            "Compact self-assessments drawn from the Beraterium method. No substitute for a full risk analysis, but an honest first look at your blind spots.",
-            compact=True,
-        )
-        + f"""
-    <section class="brt-section" aria-labelledby="tools-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">TEST YOURSELF</p>
-          <h2 id="tools-title" class="brt-h2">Which tools are available?</h2>
-          <p class="brt-body">One tool right now — more are in the works. All tools are based on our 3-level hazard catalog with more than 100 hazard areas.</p>
-        </header>
-        <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift">
-            <h3 class="brt-h3">Blindspot Check</h3>
-            <p class="brt-body">The free quick check: 10–15 'What happens if …' questions about key people, technology and day-to-day operations. Immediate results with traffic-light status and concrete first steps.</p>
-            <p class="brt-section__cta"><a class="brt-btn" href="{pre}tools/blindspot-check/">Start the Blindspot Check →</a></p>
-          </li>
-          <li class="brt-card brt-hover-lift">
-            <h3 class="brt-h3">Risk Radar</h3>
-            <p class="brt-body">Not a self-assessment, but the next step: our protected expert network for implementing the measures from your risk analysis.</p>
-            <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}risk-radar/">Discover Risk Radar →</a></p>
-          </li>
-        </ul>
-      </div>
-    </section>"""
-        + cta_band(pre, "Prefer to talk to an expert directly?", "In a free intro call we clarify which risks really matter for your business.")
-    )
-    breadcrumb_ld = json.dumps(
-        {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{SITE_URL}/"},
-                {"@type": "ListItem", "position": 2, "name": "Tools", "item": f"{SITE_URL}/tools/"},
-            ],
-        },
-        ensure_ascii=False,
-        indent=2,
-    )
-    write("tools/index.html", shell(
-        depth=1,
-        title="Tools – Free risk checks | Beraterium",
-        description="Free tools by Beraterium: use the Blindspot Check to spot blind spots and business risks in 10 minutes – no sign-up, immediate results.",
-        canonical="/tools/",
-        active_nav="tools",
-        main=main,
-        json_ld=page_schema(breadcrumb_ld),
-    ))
-
-
-def gen_blindspot_check() -> None:
-    pre = "../../"
-    canonical = "/tools/blindspot-check/"
-    config_json = blindspot_config_json(
-        locale="en",
-        submit_url="https://script.google.com/macros/s/AKfycbyPc0XZXUu9ok3-5rkXJNlAYbj5WsmzVq9vyuquKJmtjPKhgSfqXPDQMM63lC2OreIVIQ/exec",
-        report_url="https://script.google.com/macros/s/AKfycbyPc0XZXUu9ok3-5rkXJNlAYbj5WsmzVq9vyuquKJmtjPKhgSfqXPDQMM63lC2OreIVIQ/exec",
-        booking_url=f"{pre}contact/",
-        privacy_url=f"{pre}privacy/",
-    )
-    main = (
-        hero(
-            pre,
-            "FREE SELF-ASSESSMENT",
-            "Blindspot Quick Check: where is your business vulnerable?",
-            "Answer 10–15 short 'What happens if …' questions and get immediate results: traffic-light status, a risk profile by category and concrete first steps for your most critical points. The Quick Check is the simplified online version — Stage 1 of the risk analysis goes much deeper.",
-            compact=True,
-            actions='<a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-blindspot">Start the check now</a>',
-        )
-        + f"""
-    <section class="brt-section" aria-labelledby="why-title">
-      <div class="brt-container brt-split">
-        <div class="brt-split__text brt-fade-up">
-          <h2 id="why-title" class="brt-h2">Why a Blindspot Quick Check?</h2>
-          <p class="brt-body">Most businesses don't fail because of the risks they know — they fail because of the ones they never looked at. The Blindspot Quick Check makes these blind spots visible: it examines 15 of the more than 100 hazard areas from our 3-level hazard catalog, spread across <strong>People</strong>, <strong>Technology</strong> and <strong>Operations</strong>.</p>
-          <p class="brt-body">Each question describes a concrete scenario. You rate how critical it would be for you — and whether you have already prepared measures. The result is your personal risk profile with a traffic-light status per question.</p>
-        </div>
-        {split_media_html(IMG_BLINDSPOT_WARUM, "Blindspot Check reveals overlooked business risks in people, technology and operations", 2, contain=True)}
-      </div>
-    </section>
-    <section id="check" class="brt-section brt-section--alt" aria-labelledby="check-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">INTERACTIVE CHECK</p>
-          <h2 id="check-title" class="brt-h2">The Blindspot Quick Check</h2>
-          <p class="brt-body brt-section__lede">Start the simplified self-test here — online, in about 10 minutes, no appointment. It does not replace Stage 1 of the risk analysis, but gives you an honest first look at typical blind spots.</p>
-        </header>
-        <div id="brt-blindspot" class="bqc-widget brt-fade-up" aria-live="polite"></div>
-      </div>
-    </section>
-    <section class="brt-section" aria-labelledby="compare-title">
-      <div class="brt-container brt-fade-up">
-        <header class="brt-section__header">
-          <p class="brt-tag">TWO FORMATS</p>
-          <h2 id="compare-title" class="brt-h2">Quick Check vs. Stage&nbsp;1 risk analysis</h2>
-        </header>
-        <ul class="brt-guarantee-duo brt-stagger">
-          <li class="brt-card">
-            <h3 class="brt-h3">Blindspot Quick Check (this page)</h3>
-            <ul class="brt-list">
-              <li>Online self-test, start immediately</li>
-              <li>10–15 selected questions from the hazard catalog</li>
-              <li>Traffic-light rating and category profile</li>
-              <li>No conversation, no detailed industry tailoring</li>
-              <li>Free and no sign-up</li>
-            </ul>
-          </li>
-          <li class="brt-card">
-            <h3 class="brt-h3">Stage&nbsp;1 risk analysis (moderated process)</h3>
-            <ul class="brt-list">
-              <li>Joint session with Beraterium</li>
-              <li>Industry-specific questionnaire (15–16 hazard fields)</li>
-              <li>Damage scenarios in euros, likelihood, inventory</li>
-              <li>Prioritised risk portfolio instead of isolated topics</li>
-              <li>Foundation for Stage&nbsp;2 with action plan</li>
-            </ul>
-            <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}services/">Services &amp; stages →</a></p>
-          </li>
-        </ul>
-      </div>
-    </section>
-    <section class="brt-section brt-section--alt" aria-labelledby="method-title">
-      <div class="brt-container brt-fade-up">
-        <header class="brt-section__header">
-          <p class="brt-tag">CORE IDEA</p>
-          <h2 id="method-title" class="brt-h2">How the risk analysis works — and what the Quick Check takes from it</h2>
-        </header>
-        <p class="brt-body">The Beraterium method uses a structured hazard catalog: for each relevant field we clarify the guiding question, damage scenario, possible damage in euros, likelihood and <em>inventory</em> — what you already have to mitigate the risk. The result is not a collection of isolated topics, but a comparable risk portfolio with clear priorities.</p>
-        <p class="brt-body">The Blindspot Quick Check uses the same logic in a strongly simplified form: concrete 'What happens if …' scenarios, your assessment of criticality and whether preparation exists. It shows direction and blind spots — Stages 1 and 2 of the risk analysis deepen and prioritise systematically across the full catalog. More on the method: <a href="{pre}method/">Beraterium method</a>.</p>
-      </div>
-    </section>
-    <section class="brt-section brt-section--narrow" aria-labelledby="limits-title">
-      <div class="brt-container brt-fade-up">
-        <h2 id="limits-title" class="brt-h2">What the Quick Check does — and what it doesn't</h2>
-        <p class="brt-body">The Blindspot Quick Check is a quick test, not a full risk analysis. It looks at selected, particularly common blind spots. An unremarkable result does not mean the remaining hazard areas hold no risks. If you want certainty, take the next step: <a href="{pre}services/">Stage 1 of the risk analysis</a> examines all relevant fields of the hazard catalog — including prioritisation; Stage 2 delivers the action plan.</p>
-      </div>
-    </section>""".replace("{pre}", pre)
-        + faq_section_html(
-            BLINDSPOT_FAQ,
-            title="Frequently asked questions about the Blindspot Quick Check",
-            section_id="faq",
-            alt=True,
-        )
-        + cta_band(pre, "Red points in your results?", "In a free intro call we discuss your most critical blind spots and what to tackle first.")
-    )
-    webapp_ld = json.dumps(
-        {
-            "@context": "https://schema.org",
-            "@type": "WebApplication",
-            "name": "Blindspot Check",
-            "url": f"{SITE_URL}{canonical}",
-            "description": "Free online self-assessment: in 10–15 questions, solo self-employed professionals, founders and SMEs check where their business is vulnerable. Immediate results with traffic-light status and first steps.",
-            "applicationCategory": "BusinessApplication",
-            "operatingSystem": "Web",
-            "browserRequirements": "Requires JavaScript",
-            "inLanguage": "en",
-            "isAccessibleForFree": True,
-            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
-            "provider": {"@id": f"{SITE_URL}/#organization"},
-        },
-        ensure_ascii=False,
-        indent=2,
-    )
-    breadcrumb_ld = json.dumps(
-        {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{SITE_URL}/"},
-                {"@type": "ListItem", "position": 2, "name": "Tools", "item": f"{SITE_URL}/tools/"},
-                {"@type": "ListItem", "position": 3, "name": "Blindspot Check", "item": f"{SITE_URL}{canonical}"},
-            ],
-        },
-        ensure_ascii=False,
-        indent=2,
-    )
-    extra_css = f'\n  <link rel="stylesheet" href="{pre}css/brt-blindspot.css?v={BRT_ASSET_VERSION}">'
-    extra_scripts = (
-        f'\n<script type="application/json" id="brt-blindspot-config">{config_json}</script>'
-        f'\n<script src="{pre}js/brt-blindspot.js?v={BRT_ASSET_VERSION}"></script>'
-    )
-    write("tools/blindspot-check/index.html", shell(
-        depth=2,
-        title="Blindspot Check – Free business risk self-test | Beraterium",
-        description="Blindspot Check: find out in 10 minutes, for free, where your business is vulnerable. 10–15 questions, immediate results, concrete first steps.",
-        canonical=canonical,
-        active_nav="tools/blindspot-check",
-        main=main,
-        json_ld=page_schema(faq_page_schema(BLINDSPOT_FAQ), webapp_ld, breadcrumb_ld),
-        extra_css=extra_css,
-        extra_scripts=extra_scripts,
-    ))
-
-
-RA_PREP_SUBMIT_URL = "https://script.google.com/macros/s/AKfycbzJDCClA9HKNK99xIjsvt9S9hCYDPtFd9nF4OlV3YPxqqzK9uOXyRz9AdLlXsEfy9gq/exec"
-
-
-def gen_ra_prep() -> None:
-    pre = "../../"
-    canonical = "/tools/ra-preparation/"
-    config_json = ra_prep_config_json(
-        locale="en",
-        submit_url=RA_PREP_SUBMIT_URL,
-        privacy_url=f"{pre}privacy/",
-        terms_url=f"{pre}terms/",
-    )
-    main = (
-        hero(
-            pre,
-            "RISK ANALYSIS",
-            "Prepare for your risk analysis",
-            "Use this questionnaire to prepare for your workshop with Beraterium. Your answers help us plan the session effectively — about 15–20 minutes.",
-            compact=True,
-            actions='<a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-ra-prep">Start questionnaire</a>',
-        )
-        + f"""
-    <section class="brt-section" aria-labelledby="rap-warum-title">
-      <div class="brt-container brt-split">
-        <div class="brt-split__text brt-fade-up">
-          <h2 id="rap-warum-title" class="brt-h2">Why this questionnaire?</h2>
-          <p class="brt-body">A strong risk analysis does not start in the meeting — it starts with the right context. Your answers help us set priorities, prepare relevant examples, and tailor the workshop to your industry, size, and current situation.</p>
-          <p class="brt-body">The more specific your input, the less time we spend on generic questions — and the more we focus on what actually matters for your business.</p>
-          <ul class="rap-intro__meta" aria-label="Questionnaire notes">
-            <li><span class="rap-intro__meta-label">Duration</span> 15–20&nbsp;minutes</li>
-            <li><span class="rap-intro__meta-label">Required</span> contact, privacy, terms</li>
-            <li><span class="rap-intro__meta-label">Fields</span> only what applies to you</li>
-          </ul>
-        </div>
-        {split_media_html(IMG_RA_PREP_VORBEREITUNG, "Advisor and business owner preparing a risk analysis together at a workshop table", 2, contain=True)}
-      </div>
-    </section>
-    <section id="questionnaire" class="brt-section brt-section--alt" aria-labelledby="rap-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">QUESTIONNAIRE</p>
-          <h2 id="rap-title" class="brt-h2">Complete online</h2>
-          <p class="brt-body brt-section__lede">The form walks you through five topic areas step by step. You can go back at any time and review everything before submitting.</p>
-        </header>
-        <ul class="rap-topics brt-stagger" aria-label="Questionnaire topic areas">
-          <li class="rap-topic brt-card">
-            <p class="rap-topic__num" aria-hidden="true">01</p>
-            <h3 class="rap-topic__title brt-h3">Business &amp; organisation</h3>
-            <p class="rap-topic__desc">Offering, legal form, headcount, locations</p>
-          </li>
-          <li class="rap-topic brt-card">
-            <p class="rap-topic__num" aria-hidden="true">02</p>
-            <h3 class="rap-topic__title brt-h3">Operations &amp; presence</h3>
-            <p class="rap-topic__desc">Premises, geographic reach, website, social media</p>
-          </li>
-          <li class="rap-topic brt-card">
-            <p class="rap-topic__num" aria-hidden="true">03</p>
-            <h3 class="rap-topic__title brt-h3">Goals &amp; focus</h3>
-            <p class="rap-topic__desc">Expectations, current concerns, critical areas</p>
-          </li>
-          <li class="rap-topic brt-card">
-            <p class="rap-topic__num" aria-hidden="true">04</p>
-            <h3 class="rap-topic__title brt-h3">Experience &amp; safeguards</h3>
-            <p class="rap-topic__desc">Disruptions, protective measures, scenarios</p>
-          </li>
-          <li class="rap-topic brt-card">
-            <p class="rap-topic__num" aria-hidden="true">05</p>
-            <h3 class="rap-topic__title brt-h3">Workshop</h3>
-            <p class="rap-topic__desc">Participants, key contact, special circumstances</p>
-          </li>
-        </ul>
-        <div id="brt-ra-prep" class="rap-widget brt-fade-up" aria-live="polite"></div>
-      </div>
-    </section>"""
-    )
-    extra_css = f'\n  <link rel="stylesheet" href="{pre}css/brt-ra-prep.css?v={BRT_ASSET_VERSION}">'
-    extra_scripts = (
-        f'\n<script type="application/json" id="brt-ra-prep-config">{config_json}</script>'
-        f'\n<script src="{pre}js/brt-ra-prep.js?v={BRT_ASSET_VERSION}"></script>'
-    )
-    write("tools/ra-preparation/index.html", shell(
-        depth=2,
-        title="RA preparation – questionnaire | Beraterium",
-        description="Preparation questionnaire for your Beraterium risk analysis: company details, goals and workshop preparation in 15–20 minutes.",
-        canonical=canonical,
-        active_nav=None,
-        main=main,
-        noindex=True,
-        extra_css=extra_css,
-        extra_scripts=extra_scripts,
-    ))
-
-
-def gen_blog() -> None:
-    pre = "../"
-    posts = load_blog_posts()
-    cards = []
-    for i, p in enumerate(posts):
-        card = blog_card_html(p, 1, featured=(i == 0))
-        cards.append(card)
-    if not cards:
-        cards = [
-            """        <li class="brt-card brt-card--blog">
-          <div class="brt-card__body">
-            <p class="brt-body">No published articles yet. Please check back soon.</p>
-          </div>
-        </li>"""
-        ]
-    main = (
-        hero(
-            pre,
-            "BERATERIUM BLOG",
-            "Risk, made understandable",
-            "Practical insights on risk management, business risks, HR and leadership – without consultant jargon. For people who want to lead their business safely into the future.",
-            compact=True,
-        )
-        + f"""
-    <section class="brt-section" aria-labelledby="blog-grid">
-      <div class="brt-container">
-        <header class="brt-section__header brt-section__header--row brt-fade-up">
-          <div>
-            <h2 id="blog-grid" class="brt-h2">All articles</h2>
-            <p class="brt-body">{len(posts)} articles on risk management, leadership and business practice.</p>
-          </div>
-        </header>
-        <nav class="brt-blog-filters" aria-label="Categories">
-          {blog_filters_html()}
-        </nav>
-        <ul class="brt-blog-grid brt-stagger" id="blog-grid-list">
-{chr(10).join(cards)}
-        </ul>
-      </div>
-    </section>
-    <section class="brt-section brt-section--alt" aria-labelledby="newsletter-title">
-      <div class="brt-container brt-centered-cta brt-fade-up">
-        <h2 id="newsletter-title" class="brt-h3">Don't miss risk insights</h2>
-        <p class="brt-body">One concise update per month – practical, free, unsubscribe any time.</p>
-        <form class="brt-form" action="#" method="post" style="max-width: 28rem; margin-inline: auto;">
-          <label>Email
-            <input type="email" name="email" required placeholder="you@email.com" autocomplete="email">
-          </label>
-          <button class="brt-btn" type="submit">Subscribe</button>
-          <p class="brt-meta">By subscribing, you agree to processing in accordance with our <a href="{pre}privacy/">privacy policy</a>.</p>
-        </form>
-      </div>
-    </section>"""
-    )
-    write(
-        "blog/index.html",
-        shell(
-            depth=1,
-            title="Blog – Risk management, HR & mid-market explained clearly | Beraterium",
-            description="Practical insights on risk management, business risks, HR and leadership – for startups, SMEs and solo self-employed. Clear, honest, immediately applicable.",
-            canonical="/blog/",
-            active_nav="blog",
-            main=main,
-        ),
-    )
-
-
-def gen_blog_singles() -> None:
-    posts = load_blog_posts()
-    all_by_slug = {p.slug: p for p in posts}
-    team = team_by_slug(load_team_members())
-    for post in posts:
-        pre = "../../"
-        author = team.get(post.author)
-        author_name = author.name if author else "Beraterium"
-        author_img = ""
-        if author:
-            img = img_html(author.image, author.image_alt, 2, css_class="brt-article__author-img", aspect="1/1")
-            if "brt-image-placeholder" not in img:
-                author_img = img
-        hero_img = img_html(post.hero_image, post.hero_alt, 2, hero=True, css_class="brt-article__hero-img", aspect="16/9")
-        hero_media = (
-            f'<figure class="brt-article__hero-media">{hero_img}{ki_image_label_html()}</figure>'
-            if "brt-image-placeholder" not in hero_img
-            else f'<div class="brt-article__hero-media">{hero_img}</div>'
-        )
-        sticky_title = post.title if len(post.title) <= 72 else post.title[:69].rsplit(" ", 1)[0] + "…"
-        progress_block = """
-        <div class="brt-article__progress" aria-hidden="true" data-article-progress>
-          <span class="brt-article__progress-bar"></span>
-        </div>"""
-        sticky_bar_block = f"""
-      <div class="brt-article__sticky-bar" data-article-sticky-bar hidden>
-        <div class="brt-container brt-article__sticky-inner">
-          <span class="brt-tag brt-tag--small">{escape(post.category)}</span>
-          <p class="brt-article__sticky-title">{escape(sticky_title)}</p>
-        </div>
-{progress_block}
-      </div>"""
-        youtube_block = article_youtube_embed_html(
-            post.youtube_id,
-            post.title,
-            f"{EN_SITE_URL}/blog/{post.slug}/",
-        )
-        author_col = article_author_sidebar_html(author, author_name, post.author, 2, pre)
-        author_meta = author_name_link_html(post.author, author_name, pre)
-        aside_block = article_sidebar_html(post.toc, post.category, 2, pre)
-        lead_block = (
-            f'          <p class="brt-lead brt-article__lead">{escape(post.lead)}</p>\n'
-            if post.lead
-            else ""
-        )
-        back_top_block = """
-    <button type="button" class="brt-article__back-top" aria-label="Scroll back to top" data-article-back-top hidden>
-      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M10 4l-6 6h4v6h4v-6h4L10 4z" fill="currentColor"/></svg>
-    </button>"""
-        faq_block = article_faq_section_html(post.faq)
-        related_cards = []
-        for slug in post.related_slugs:
-            rel_post = all_by_slug.get(slug)
-            if rel_post:
-                related_cards.append(blog_card_html(rel_post, 2))
-        if not related_cards:
-            for rel_post in posts:
-                if rel_post.slug != post.slug and rel_post.category == post.category:
-                    related_cards.append(blog_card_html(rel_post, 2))
-                if len(related_cards) >= 3:
-                    break
-        related_block = ""
-        if related_cards:
-            related_block = f"""
-    <section class="brt-section" aria-labelledby="related-posts">
-      <div class="brt-container">
-        <h2 id="related-posts" class="brt-h2">More articles</h2>
-        <ul class="brt-blog-grid brt-stagger">
-{chr(10).join(related_cards[:3])}
-        </ul>
-      </div>
-    </section>"""
-        author_box = f"""
-    <section class="brt-section brt-section--alt" aria-labelledby="author-box">
-      <div class="brt-container brt-article__author brt-fade-up">
-        {author_img}
-        <div>
-          <h2 id="author-box" class="brt-h3">{author_name_link_html(post.author, author_name, pre, css_class="brt-article__author-link brt-article__author-link--heading")}</h2>
-          <p class="brt-body">{escape(author.teaser_bio if author else "")}</p>
-          <a class="brt-btn brt-btn--ghost" href="{pre}team/">Our team →</a>
-        </div>
-      </div>
-    </section>"""
-        main = f"""
-    <article class="brt-article" data-article>
-{sticky_bar_block}
-      <div class="brt-container brt-article__hero-split brt-fade-up" data-article-hero>
-        <div class="brt-article__hero-copy">
-          <a class="brt-skip-link brt-skip-link--article" href="#article-body">Skip to article text</a>
-          <h1 class="brt-h1 brt-article__title">{escape(post.title)}</h1>
-          <p class="brt-article__meta brt-meta">
-            <span class="brt-article__category">{escape(post.category)}</span> · {author_meta} · <time datetime="{post.date.isoformat()}">{format_date_en(post.date)}</time> · approx. {post.reading_time_min} min read
-          </p>
-        </div>
-        {hero_media}
-      </div>
-      <div class="brt-container brt-article__layout brt-fade-up">
-{author_col}
-        <div class="brt-article__main">
-{lead_block}          <div class="brt-article__body" id="article-body" tabindex="-1">
-{post.body_html}
-          </div>
-        </div>
-{aside_block}
-      </div>
-{youtube_block}
-    </article>
-{back_top_block}
-{faq_block}
-{author_box}
-    <section class="brt-cta-band brt-cta-band--dark brt-section" aria-labelledby="article-cta">
-      <div class="brt-container brt-cta-band__inner brt-fade-up">
-        <h2 id="article-cta" class="brt-h2 brt-h2--on-dark">Clarify risks in your business?</h2>
-        <p class="brt-body brt-body--on-dark">Book a free intro call – 30 minutes, no obligation.</p>
-        <a class="brt-btn brt-btn--on-dark" href="{pre}contact/">Book a free intro call</a>
-      </div>
-    </section>
-{related_block}"""
-        json_ld = blog_posting_schema(post, author)
-        write(
-            f"blog/{post.slug}/index.html",
-            shell(
-                depth=2,
-                title=f"{post.title} | Beraterium Blog",
-                description=post.excerpt,
-                canonical=f"/blog/{post.slug}/",
-                active_nav="blog",
-                main=main,
-                json_ld=json_ld,
-            ),
-        )
-
-
-def gen_home_analyse() -> None:
-    path = SITE / "index.html"
-    if not path.exists():
-        return
-    html = path.read_text(encoding="utf-8")
-    media = img_html(
-        IMG_HOME_ANALYSE,
-        "Unternehmer verschafft sich Klarheit über die größten Risiken",
-        0,
-        aspect="4/3",
-    )
-    old = """      <div class="brt-split__media brt-fade-up" style="--fade-delay: 120ms">
-        <div
-          class="brt-image-placeholder"
-          role="img"
-          aria-label="Unternehmer verschafft sich Klarheit über die größten Risiken">
-          <span class="brt-image-placeholder__label">Analyse-Situation</span>
-        </div>
-      </div>"""
-    new = f"""      <div class="brt-split__media brt-fade-up" style="--fade-delay: 120ms">
-        {media}
-      </div>"""
-    if old not in html:
-        print("  skip index.html home analyse (pattern not found)")
-        return
-    path.write_text(html.replace(old, new), encoding="utf-8")
-    print("  updated index.html home analyse")
-
-
-def gen_home_team() -> None:
-    path = SITE / "index.html"
-    if not path.exists():
-        return
-    html = path.read_text(encoding="utf-8")
-    start = "  <!-- HOME_TEAM_START -->"
-    end = "  <!-- HOME_TEAM_END -->"
-    section = home_team_section_html(0)
-    if start in html and end in html:
-        before = html.split(start)[0]
-        after = html.split(end)[1]
-        path.write_text(before + section + after, encoding="utf-8")
-    else:
-        legacy_start = "  <!-- S7 — Die Köpfe -->"
-        legacy_end = '        <a class="brt-btn brt-btn--outline" href="team/">More about the team →</a>\n      </p>\n    </div>\n  </section>'
-        if legacy_start not in html or legacy_end not in html:
-            return
-        before = html.split(legacy_start)[0]
-        rest = html.split(legacy_start)[1]
-        after = rest.split(legacy_end, 1)[1]
-        path.write_text(before + section + after, encoding="utf-8")
-    print("  updated index.html home team")
-
-
-def gen_home_blog_teaser() -> None:
-    path = SITE / "index.html"
-    if not path.exists():
-        return
-    posts = load_blog_posts()[:3]
-    if not posts:
-        return
-    cards = "\n".join(blog_card_html(p, 0) for p in posts)
-    html = path.read_text(encoding="utf-8")
-    start = "  <!-- BLOG_TEASER_START -->"
-    end = "  <!-- BLOG_TEASER_END -->"
-    if start not in html or end not in html:
-        return
-    section = f"""  <!-- BLOG_TEASER_START -->
-  <section class="brt-section" aria-labelledby="blog-title">
-    <div class="brt-container">
-      <header class="brt-section__header brt-section__header--row brt-fade-up">
-        <div>
-          <p class="brt-tag">Insights</p>
-          <h2 id="blog-title" class="brt-h2">Expert insights from Beraterium</h2>
-          <p class="brt-body">Short, practical articles on risk, leadership, and decisions — from our team, for founders, SMEs, and solo operators.</p>
-        </div>
-        <a class="brt-btn brt-btn--outline" href="blog/">All articles →</a>
-      </header>
-      <ul class="brt-blog-grid brt-stagger">
-{cards}
-      </ul>
-    </div>
-  </section>
-  <!-- BLOG_TEASER_END -->"""
-    before = html.split(start)[0]
-    after = html.split(end)[1]
-    path.write_text(before + section + after, encoding="utf-8")
-    print("  updated index.html blog teaser")
-
-
-def gen_home_analytics() -> None:
-    """Home index.html: sync GA4 snippet after CookieYes."""
-    path = SITE / "index.html"
-    if not path.exists():
-        return
-    html = path.read_text(encoding="utf-8")
-    start = "  <!-- GA4_START -->"
-    end = "  <!-- GA4_END -->\n"
-    block = f"{start}\n{GA4_ANALYTICS_HEAD}\n{end}"
-    if start in html:
-        i = html.find(start)
-        j = html.find(end, i)
-        if j < 0:
-            print("  skip index.html home analytics (end marker not found)")
-            return
-        path.write_text(html[:i] + block + html[j + len(end) :], encoding="utf-8")
-    else:
-        anchor = "  <!-- End cookieyes banner -->\n"
-        pos = html.find(anchor)
-        if pos < 0:
-            print("  skip index.html home analytics (cookieyes anchor not found)")
-            return
-        pos += len(anchor)
-        path.write_text(html[:pos] + block + html[pos:], encoding="utf-8")
-    print("  updated index.html home analytics")
-
-
-def gen_home_seo() -> None:
-    """Home index.html: replace legacy en.beraterium.de URLs with EN_SITE_URL."""
-    path = SITE / "index.html"
-    if not path.exists():
-        return
-    html = path.read_text(encoding="utf-8")
-    legacy = "https://en.beraterium.de"
-    if legacy not in html:
-        print("  skip index.html home seo (already on EN_SITE_URL)")
-        return
-    html = html.replace(legacy, EN_SITE_URL)
-    path.write_text(html, encoding="utf-8")
-    print("  updated index.html home seo (canonical/hreflang/json-ld)")
-
-
-def gen_home_scripts() -> None:
-    """Home index.html: sync Analytics + Site + Hero JS."""
-    path = SITE / "index.html"
-    if not path.exists():
-        return
-    html = path.read_text(encoding="utf-8")
-    block = (
-        f'<script src="js/brt-analytics.js?v={BRT_ASSET_VERSION}"></script>\n'
-        f'<script src="js/brt-site.js?v={BRT_ASSET_VERSION}"></script>\n'
-        f'<script src="js/brt-hero.js?v={BRT_ASSET_VERSION}"></script>\n'
-    )
-    start = '<script src="js/brt-site.js?v='
-    i = html.find(start)
-    if i < 0:
-        print("  skip index.html home scripts (anchor not found)")
-        return
-    body = html.find("</body>", i)
-    if body < 0:
-        print("  skip index.html home scripts (body end not found)")
-        return
-    path.write_text(html[:i] + block + html[body:], encoding="utf-8")
-    print("  updated index.html home scripts")
-
-
-def gen_home_nav() -> None:
-    """Home index.html: sync the main navigation from nav_html()."""
-    path = SITE / "index.html"
-    if not path.exists():
-        return
-    html = path.read_text(encoding="utf-8")
-    start = '<nav id="site-nav" class="site-header__nav" aria-label="Primary navigation">\n      <ul>\n'
-    end = "\n      </ul>"
-    i = html.find(start)
-    j = html.find(end, i)
-    if i < 0 or j < 0:
-        print("  skip index.html home nav (pattern not found)")
-        return
-    i += len(start)
-    path.write_text(html[:i] + nav_html(0, None) + html[j:], encoding="utf-8")
-    print("  updated index.html home nav")
-
-
-def gen_home_tools_teaser() -> None:
-    """Home index.html: teaser for the Blindspot Check before the blog teaser."""
-    path = SITE / "index.html"
-    if not path.exists():
-        return
-    html = path.read_text(encoding="utf-8")
-    start = "  <!-- TOOLS_TEASER_START -->"
-    end = "  <!-- TOOLS_TEASER_END -->\n"
-    section = f"""{start}
-  <section class="brt-section brt-section--alt" aria-labelledby="tools-teaser-title">
-    <div class="brt-container brt-split brt-split--text-only">
-      <div class="brt-split__text brt-fade-up">
-        <p class="brt-tag">Free self-assessment</p>
-        <h2 id="tools-teaser-title" class="brt-h2">Where is your business vulnerable? The Blindspot Check shows you in 10 minutes.</h2>
-        <p class="brt-body">10 to 15 short 'What happens if …' questions about key people, technology and day-to-day operations. Immediate results with traffic-light status and first steps, no sign-up required.</p>
-        <a class="brt-btn" href="tools/blindspot-check/">Start the Blindspot Check →</a>
-      </div>
-    </div>
-  </section>
-{end}"""
-    if start in html and end in html:
-        before = html.split(start)[0]
-        after = html.split(end)[1]
-        path.write_text(before + section + after, encoding="utf-8")
-    else:
-        anchor = "  <!-- BLOG_TEASER_START -->"
-        if anchor not in html:
-            print("  skip index.html tools teaser (pattern not found)")
-            return
-        path.write_text(html.replace(anchor, section + "\n" + anchor, 1), encoding="utf-8")
-    print("  updated index.html tools teaser")
-
-
-def gen_kontakt() -> None:
-    pre = "../"
-    main = (
-        hero(pre, "CONTACT", "Let's talk about your risks",
-             "30 minutes, free, no obligation. You leave with genuine insight – however you decide to proceed.",
-             compact=True)
-        + f"""
-    <section class="brt-section brt-section--booking" aria-labelledby="contact-title">
-      <div class="brt-container brt-contact-booking brt-fade-up">
-        <div class="brt-contact-booking__head">
-          <div class="brt-contact-booking__intro">
-            <div class="brt-contact-booking__lead">
-              <p class="brt-tag">30 minutes · free · no obligation</p>
-              <h2 id="contact-title" class="brt-h2">Your free intro call</h2>
-              <p class="brt-body">Choose a slot directly – we take time for your situation, not for sales pitches.</p>
-            </div>
-            <div class="brt-contact-expect">
-              <h3 class="brt-contact-expect__title">What to expect</h3>
-              <ul class="brt-contact-expect__points">
-                <li class="brt-contact-expect__point">
-                  <strong>No sales pitch</strong>
-                  <span>No hard sell – we explain what we do and how our method works.</span>
-                </li>
-                <li class="brt-contact-expect__point">
-                  <strong>Practical tips included</strong>
-                  <span>Concrete pointers so you can start with your own research and groundwork straight away.</span>
-                </li>
-                <li class="brt-contact-expect__point">
-                  <strong>Do it yourself</strong>
-                  <span>You leave with enough clarity to take first steps on your own.</span>
-                </li>
-                <li class="brt-contact-expect__point">
-                  <strong>Support optional</strong>
-                  <span>If you want guidance, we discuss next steps together – as outlined below.</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <aside class="brt-contact-aside">
-            <p class="brt-contact-aside__label">Alternatively</p>
-            <h3 class="brt-h3">Direct contact</h3>
-            <p class="brt-body">Prefer to write? Use our contact form – we usually reply within one working day.</p>
-            <a class="brt-btn brt-btn--outline" href="{pre}contact-form/">Go to contact form</a>
-            <ul class="brt-contact-aside__links">
-              <li><a href="mailto:info@beraterium.de">info@beraterium.de</a></li>
-              <li><a href="https://www.linkedin.com/company/beraterium">LinkedIn</a></li>
-            </ul>
-          </aside>
-        </div>
-        <div class="brt-calendly" data-calendly-embed>
-          <div id="beraterium-calendly" class="calendly-inline-widget" data-url="https://calendly.com/beraterium/30min"></div>
-        </div>
-      </div>
-    </section>
-    <section class="brt-section brt-section--alt" aria-labelledby="steps-title">
-      <div class="brt-container">
-        <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">HOW IT WORKS</p>
-          <h2 id="steps-title" class="brt-h2">Three steps to clarity</h2>
-        </header>
-        <ul class="brt-step-cards brt-stagger">
-          <li class="brt-step-card"><span class="brt-step-card__num">Step 1</span><h3 class="brt-h3">Choose a slot</h3><p class="brt-body">Book a 30-minute slot that suits you.</p></li>
-          <li class="brt-step-card"><span class="brt-step-card__num">Step 2</span><h3 class="brt-h3">The conversation</h3><p class="brt-body">We show you the method and discuss your situation. No sales pressure.</p></li>
-          <li class="brt-step-card"><span class="brt-step-card__num">Step 3</span><h3 class="brt-h3">You decide</h3><p class="brt-body">With a DIY guide in hand, you decide in your own time whether and how we work together.</p></li>
-        </ul>
-      </div>
-    </section>
-    <section class="brt-section" aria-label="Trust">
-      <div class="brt-container brt-centered-cta brt-fade-up">
-        <p class="brt-body">No sales pitch. Free. And if we work together later: with our double guarantee – relevance and value, or your money back.</p>
-      </div>
-    </section>"""
-        + faq_section_html([
-            ("What does the intro call cost?", "Nothing. 30 minutes, free and no obligation — not a sales pitch."),
-            ("How long is the intro call?", "About 30 minutes. You get the method explained and leave with concrete first steps."),
-            ("Do I have to decide afterwards?", "No. You decide in your own time — with a DIY guide in hand, however you choose to proceed."),
-        ], title="Frequently asked questions about the intro call", section_id="faq", alt=True)
-    )
-    contact_faq = [
-        ("What does the intro call cost?", "Nothing. 30 minutes, free and no obligation — not a sales pitch."),
-        ("How long is the intro call?", "About 30 minutes. You get the method explained and leave with concrete first steps."),
-        ("Do I have to decide afterwards?", "No. You decide in your own time — with a DIY guide in hand, however you choose to proceed."),
-    ]
-    write(
-        "contact/index.html",
-        shell(
-            depth=1,
-            title="Book a free intro call | Beraterium",
-            description="30 minutes, free, no sales pitch: book your intro call with Till and Peter and make your biggest risks visible.",
-            canonical="/contact/",
-            active_nav=None,
-            main=main,
-            json_ld=page_schema(faq_page_schema(contact_faq)),
-        ).replace(
-            f'<script src="{pre}js/brt-analytics.js?v={BRT_ASSET_VERSION}"></script>\n<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
-            f'<script src="{pre}js/brt-analytics.js?v={BRT_ASSET_VERSION}"></script>\n<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>\n<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
-        ),
-    )
-
-
-def gen_kontaktformular() -> None:
-    pre = "../"
-    main = f"""
-    <section class="brt-page-hero brt-page-hero--dark brt-page-hero--compact" aria-labelledby="page-hero-title">
-      <div class="brt-container">
-        <div class="brt-fade-up">
-          <p class="brt-tag">CONTACT</p>
-          <h1 id="page-hero-title" class="brt-h1">Contact form</h1>
-          <p class="brt-lead brt-lead--on-dark">Write to us – we usually reply within one working day.</p>
-        </div>
-      </div>
-    </section>
-    <section class="brt-section" aria-labelledby="form-title">
-      <div class="brt-container brt-contact-form-wrap brt-fade-up">
-        <header class="brt-section__header">
-          <h2 id="form-title" class="brt-h2">Contact us directly</h2>
-          <p class="brt-body">Use our contact form below. For a free intro call, you can also book a slot directly.</p>
-          <p class="brt-meta"><a href="{pre}contact/">Book a slot →</a></p>
-        </header>
-        <form class="brt-form brt-form--contact" action="https://formsubmit.co/till.blania@beraterium.de" method="POST" novalidate>
-          <input type="hidden" name="_subject" value="New contact request – Beraterium">
-          <input type="hidden" name="_next" value="{EN_SITE_URL}/thank-you/">
-          <input type="hidden" name="_template" value="table">
-          <input type="text" name="_honey" class="brt-form__honey" tabindex="-1" autocomplete="off" aria-hidden="true">
-          <label>Name *
-            <input type="text" name="name" required autocomplete="name">
-          </label>
-          <label>Email *
-            <input type="email" name="email" required autocomplete="email">
-          </label>
-          <label>Company
-            <input type="text" name="company" autocomplete="organization">
-          </label>
-          <label>I am …
-            <select name="type">
-              <option value="">Please select</option>
-              <option>Startup</option>
-              <option>SME</option>
-              <option>Solo self-employed</option>
-              <option>Other</option>
-            </select>
-          </label>
-          <label>Your message *
-            <textarea name="message" required placeholder="What is this about?"></textarea>
-          </label>
-          <fieldset class="brt-form__legal">
-            <legend class="brt-form__legal-legend">Confirmations</legend>
-            <div class="brt-form__check-group">
-              <label class="brt-form__check" for="agb_accepted">
-                <input type="checkbox" id="agb_accepted" name="agb_accepted" value="Yes">
-                <span>I have read and accept the <a href="{pre}terms/">terms and conditions</a>.</span>
-              </label>
-              <p class="brt-form__error" id="agb-error" role="alert" hidden>Please confirm the terms and conditions.</p>
-            </div>
-            <div class="brt-form__check-group">
-              <label class="brt-form__check" for="privacy_accepted">
-                <input type="checkbox" id="privacy_accepted" name="privacy_accepted" value="Yes">
-                <span>I have read the <a href="{pre}privacy/">privacy policy</a> and agree to the processing of my data.</span>
-              </label>
-              <p class="brt-form__error" id="privacy-error" role="alert" hidden>Please confirm the privacy policy.</p>
-            </div>
-          </fieldset>
-          <button class="brt-btn" type="submit">Send message</button>
-          <p class="brt-meta">We usually reply within one working day.</p>
-        </form>
-      </div>
-    </section>"""
-    write(
-        "contact-form/index.html",
-        shell(
-            depth=1,
-            title="Contact form | Beraterium",
-            description="Contact Beraterium directly via our contact form. We usually reply within one working day.",
-            canonical="/contact-form/",
-            active_nav=None,
-            main=main,
-        ),
-    )
-
-
-def gen_impressum() -> None:
-    sections = (SITE / "_content" / "impressum_sections.html").read_text()
-    main = f"""
-    <section class="brt-section" aria-labelledby="legal-title">
-      <div class="brt-container brt-legal">
-        <h1 id="legal-title" class="brt-h2">Legal notice</h1>
-{sections}
-      </div>
-    </section>"""
-    write(
-        "legal-notice/index.html",
-        shell(
-            depth=1,
-            title="Legal notice | Beraterium",
-            description="Legal notice and provider information for Beraterium GbR — contact, VAT ID and legal details.",
-            canonical="/legal-notice/",
-            active_nav=None,
-            main=main,
-        ),
-    )
-
-
-def gen_datenschutz() -> None:
-    sections = (SITE / "_content" / "datenschutz_sections.html").read_text()
-    main = f"""
-    <section class="brt-section" aria-labelledby="legal-title">
-      <div class="brt-container brt-legal">
-        <h1 id="legal-title" class="brt-h2">Privacy policy</h1>
-{sections}
-      </div>
-    </section>"""
-    write(
-        "privacy/index.html",
-        shell(
-            depth=1,
-            title="Privacy policy | Beraterium",
-            description="Information on the processing of personal data on www.beraterium.com — GDPR-compliant, updated 2026.",
-            canonical="/privacy/",
-            active_nav=None,
-            main=main,
-        ),
-    )
-
-
-def gen_agb() -> None:
-    sections = (SITE / "_content" / "agb_sections.html").read_text()
-    main = f"""
-    <section class="brt-section" aria-labelledby="legal-title">
-      <div class="brt-container brt-legal">
-        <h1 id="legal-title" class="brt-h2">Terms and conditions</h1>
-{sections}
-      </div>
-    </section>"""
-    write(
-        "terms/index.html",
-        shell(
-            depth=1,
-            title="Terms and conditions | Beraterium",
-            description="Terms and conditions of Beraterium GbR for consulting services in risk management, HR, management and process optimisation.",
-            canonical="/terms/",
-            active_nav=None,
-            main=main,
-        ),
-    )
-
-
-def gen_accessibility() -> None:
-    main = """
-    <section class="brt-section" aria-labelledby="a11y-title">
-      <div class="brt-container brt-legal">
-        <h1 id="a11y-title" class="brt-h2">Accessibility statement</h1>
-        <p>We continuously work to make content and features on www.beraterium.com accessible and align implementation with WCAG 2.1 Level AA requirements.</p>
-        <h2 class="brt-h3">Compliance status</h2>
-        <p>This website is partially compliant with WCAG 2.1 AA. Some barriers still exist and are being resolved step by step.</p>
-        <h2 class="brt-h3">Assessment approach</h2>
-        <p>Our assessment combines automated checks (own Playwright + axe-core audit pipeline) with manual keyboard, focus-order and semantic-structure reviews across representative page types.</p>
-        <h2 class="brt-h3">Known limitations</h2>
-        <ul>
-          <li>Some legacy content blocks may still contain incomplete semantics or contrast-sensitive details.</li>
-          <li>Embedded third-party content (for example external widgets) is only partly under our direct control.</li>
-        </ul>
-        <h2 class="brt-h3">Feedback and contact</h2>
-        <p>If you encounter accessibility barriers or have improvement suggestions, contact us at <a href="mailto:info@beraterium.de">info@beraterium.de</a> or use our <a href="../contact-form/">contact form</a>.</p>
-        <p>We review your message and respond as quickly as possible.</p>
-        <h2 class="brt-h3">Statement date</h2>
-        <p>This statement was created on 2026-06-26 and is reviewed regularly.</p>
-      </div>
-    </section>"""
-    write(
-        "accessibility/index.html",
-        shell(
-            depth=1,
-            title="Accessibility statement | Beraterium",
-            description="Information about digital accessibility on www.beraterium.com, our audit approach and contact options for accessibility feedback.",
-            canonical="/accessibility/",
-            active_nav=None,
-            main=main,
-        ),
-    )
-
-
-def gen_legal(slug: str, title: str, h1: str, sections: str, noindex: bool = False) -> None:
-    pre = "../"
-    main = f"""
-    <section class="brt-section" aria-labelledby="legal-title">
-      <div class="brt-container brt-legal">
-        <h1 id="legal-title" class="brt-h2">{h1}</h1>
-{sections}
-      </div>
-    </section>"""
-    write(f"{slug}/index.html", shell(depth=1, title=title, description=title,
-          canonical=f"/{slug}/", active_nav=None, main=main, noindex=noindex))
-
-
-def gen_404() -> None:
-    pre = ""
-    main = """
-    <section class="brt-page-hero brt-page-hero--dark brt-page-hero--compact" aria-labelledby="not-found-title">
-      <div class="brt-container brt-centered-cta brt-fade-up">
-        <p class="brt-tag">404</p>
-        <h1 id="not-found-title" class="brt-h1">This page doesn't exist</h1>
-        <p class="brt-lead brt-lead--on-dark">The address may have changed or there might be a typo. Here are some useful links:</p>
-        <div class="brt-page-hero__actions" style="justify-content: center;">
-          <a class="brt-btn brt-btn--on-dark" href="./">Home</a>
-          <a class="brt-btn brt-btn--outline" href="services/" style="color:#fff;border-color:rgba(255,255,255,.5);">Services</a>
-          <a class="brt-btn brt-btn--outline" href="method/" style="color:#fff;border-color:rgba(255,255,255,.5);">Method</a>
-          <a class="brt-btn brt-btn--outline" href="contact/" style="color:#fff;border-color:rgba(255,255,255,.5);">Contact</a>
-        </div>
-      </div>
-    </section>"""
-    write("404.html", shell(depth=0, title="Page not found | Beraterium", description="The requested page does not exist.",
-          canonical="/404", active_nav=None, main=main, noindex=True))
-
-
-def gen_danke() -> None:
-    pre = "../"
-    main = f"""
-    <section class="brt-section" aria-labelledby="danke-title">
-      <div class="brt-container brt-centered-cta brt-fade-up">
-        <p class="brt-tag">THANK YOU</p>
-        <h1 id="danke-title" class="brt-h2">Thank you – we look forward to speaking with you!</h1>
-        <p class="brt-body">Your message has been received. Till or Peter will usually get back to you within one working day.</p>
-        <ul class="brt-step-cards" style="margin-top: var(--space-8); text-align: left;">
-          <li class="brt-step-card"><p class="brt-body">In the meantime, take a look at our <a href="{pre}method/">method</a>.</p></li>
-        </ul>
-        <p class="brt-section__cta">
-          <a class="brt-btn brt-btn--outline" href="{pre}">Back to homepage</a>
-        </p>
-      </div>
-    </section>"""
-    write("thank-you/index.html", shell(depth=1, title="Thank you – we'll be in touch | Beraterium",
-          description="Thank you for your enquiry. We will get back to you shortly.", canonical="/thank-you/",
-          active_nav=None, main=main, noindex=True))
-
-# --- EN parity generators (from DE site) ---
-def _int_parent_nr(nr: str) -> str:
-    if nr == "INT-00":
-        return "INT-00"
-    import re
-    m = re.match(r"(INT-\d{2})", nr)
-    return m.group(1) if m else nr
 
 
 def _offer_details_block(o: dict) -> str:
-    """Expandable detail teaser; links to training or international-services page."""
+    """Ausklappbarer Detail-Teaser; verlinkt auf Schulungs- oder Internationale-Angebote-Seite."""
     if not o.get("details_html"):
         return ""
     link = ""
     if o.get("slug"):
         if o["nr"].startswith("INT-"):
-            if o["nr"] == "INT-00":
-                path = "../international-services/"
+            if o.get("sub") and o.get("parent_slug"):
+                path = f'../internationale-angebote/{o["parent_slug"]}/#{o["nr"].lower()}'
+            elif o["nr"] == "INT-00":
+                path = "../internationale-angebote/"
             else:
-                slug = EN_SLUG_MAP[_int_parent_nr(o["nr"])]
-                path = f'../international-services/{slug}/'
-                if o.get("sub"):
-                    path = f"{path}#{o['nr'].lower()}"
-            link = f'<p class="brt-meta"><a href="{path}">View offer page for details \u2192</a></p>'
+                path = f'../internationale-angebote/{o["slug"]}/'
+            link = f'<p class="brt-meta"><a href="{path}">Zur Angebotsseite mit allen Details \u2192</a></p>'
         elif o["nr"].startswith("SCH-"):
-            link = f'<p class="brt-meta"><a href="../training/{o["slug"]}/">View training page for details \u2192</a></p>'
+            link = f'<p class="brt-meta"><a href="../schulungen/{o["slug"]}/">Zur Schulungsseite mit allen Details \u2192</a></p>'
     return (
         '<details class="brt-faq__item brt-price-details">'
         '<summary class="brt-faq__summary">'
@@ -3226,7 +1950,7 @@ def price_table_html(cat: dict) -> str:
     </section>"""
 
 
-def gen_pricing() -> None:
+def gen_preise() -> None:
     pre = "../"
     preise_faq = [
         ("Was kostet eine Risikoanalyse bei Beraterium?", "Die Risiko-Analyse 360° ist das Komplettpaket für 3.475 € (Analyse + Strategie + Budgetplanung). Einzeln kosten die drei Module 1.725 €, 2.175 € und 1.250 € — zusammen 5.150 €. Das Gesamtpaket XL mit kompletter Begleitung kostet 9.675 €."),
@@ -3242,7 +1966,7 @@ def gen_pricing() -> None:
         hero(pre, "PREISE & LEISTUNGEN", "Was kostet Risikomanagement-Beratung bei Beraterium?",
              "Alle Preise transparent: vom kostenlosen Startup-Erst-Check über Team-Workshops ab 57 € pro Person und Ausbildung zum Risikoexperten ab 9.875 €, Einzelschulungen Intensivformat ab 3.475 € bis zum Kernpaket Risiko-Analyse 360° für 3.475 € (Einzelmodule ab 1.250 €) und Gesamtpaket XL für 9.675 €. Alle Preise netto zzgl. USt.",
              compact=True,
-             actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a>')
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a>')
         + pricing_compare_section(pre=pre)
         + tables
         + f"""
@@ -3255,29 +1979,29 @@ def gen_pricing() -> None:
         <ul class="brt-cards-3col brt-stagger">
           <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Festpreis-Pakete</h3><p class="brt-body">Analyse- und Strategiepakete haben einen Festpreis (1.250–9.675 €). Das Kernpaket Risiko-Analyse 360° bündelt Analyse, Strategie und Budgetplanung für 3.475 € — abgesichert durch die doppelte Garantie.</p></li>
           <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Pro-Kopf-Staffeln</h3><p class="brt-body">Workshops und HR-Module werden pro Person bzw. pro Interview berechnet — je größer die Gruppe, desto günstiger pro Kopf. Schulungen kombinieren Basispreis, Aufpreis je weiterem Teilnehmer und eine gedeckelte Team-Pauschale: ab der Deckel-Gruppengröße kostet das ganze Team nicht mehr.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Doppelte Garantie</h3><p class="brt-body">Analysepakete sind durch Relevanz- und Nutzen-Garantie abgesichert: kein relevantes Risiko oder kein vereinbarter Nutzen — volle Erstattung. Details auf den <a href="{pre}benefit-guarantee/">Garantie-Seiten</a>.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Doppelte Garantie</h3><p class="brt-body">Analysepakete sind durch Relevanz- und Nutzen-Garantie abgesichert: kein relevantes Risiko oder kein vereinbarter Nutzen — volle Erstattung. Details auf den <a href="{pre}nutzen-garantie/">Garantie-Seiten</a>.</p></li>
         </ul>
-        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Welches Paket zu Ihrer Situation passt, klären wir im <a href="{pre}contact/">kostenlosen Erstgespräch</a> — Übersicht nach Zielgruppe: <a href="{pre}services/">Angebote für Startups, KMU &amp; Solo</a>.</p>
+        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Welches Paket zu Ihrer Situation passt, klären wir im <a href="{pre}kontakt/">kostenlosen Erstgespräch</a> — Übersicht nach Zielgruppe: <a href="{pre}angebote/">Angebote für Startups, KMU &amp; Solo</a>.</p>
       </div>
     </section>"""
         + guarantee(pre)
-        + faq_section_html(preise_faq, title="Frequently asked questions zu Preisen", section_id="faq", alt=True)
+        + faq_section_html(preise_faq, title="Häufige Fragen zu Preisen", section_id="faq", alt=True)
         + cta_band(pre, "Unsicher, welches Paket passt?", "Im kostenlosen Erstgespräch klären wir Umfang, Förderung und den besten Einstieg für Ihre Situation.")
     )
     preise_title = "Preise – Risikomanagement-Beratung | Beraterium"
     preise_desc = "Preise transparent: Risiko-Analyse 360° 3.475 € (Festpreis), Workshops ab 57 €/Person, Schulungen ab 3.475 €. Marktvergleich: unter Konzernberatern, mit doppelter Garantie."
-    write("pricing/index.html", shell(depth=1, title=preise_title, description=preise_desc,
-          canonical="/pricing/", active_nav="pricing", main=main,
+    write("preise/index.html", shell(depth=1, title=preise_title, description=preise_desc,
+          canonical="/preise/", active_nav="preise", main=main,
           json_ld=page_schema(
               offer_catalog_schema(
                   name="Preise & Leistungen — Risikomanagement-Beratung",
                   description=preise_desc,
-                  url="/pricing/",
+                  url="/preise/",
                   categories=PRICE_CATEGORIES,
               ),
               faq_page_schema(preise_faq),
               speakable_webpage_schema(
-                  "/pricing/",
+                  "/preise/",
                   selectors=[".brt-highlight-box", ".brt-faq__answer", "#preisvergleich .brt-body"],
               ),
               json.dumps(
@@ -3285,14 +2009,23 @@ def gen_pricing() -> None:
                       "@context": "https://schema.org",
                       "@type": "BreadcrumbList",
                       "itemListElement": [
-                          {"@type": "ListItem", "position": 1, "name": "Start", "item": f"{EN_SITE_URL}/"},
-                          {"@type": "ListItem", "position": 2, "name": "Preise & Leistungen", "item": f"{EN_SITE_URL}/pricing/"},
+                          {"@type": "ListItem", "position": 1, "name": "Start", "item": f"{DE_SITE_URL}/"},
+                          {"@type": "ListItem", "position": 2, "name": "Preise & Leistungen", "item": f"{DE_SITE_URL}/preise/"},
                       ],
                   },
                   ensure_ascii=False,
                   indent=2,
               ),
           )))
+
+
+_SCH_PRICING: dict[str, dict] = {
+    o["nr"]: o
+    for cat in PRICE_CATEGORIES
+    for o in cat["offers"]
+    if o["nr"].startswith("SCH-")
+}
+
 
 _INT_PRICING: dict[str, dict] = {
     o["nr"]: o
@@ -3308,74 +2041,199 @@ def _international_offer_main(cfg: dict, *, locale: str, pre: str) -> str:
     cta_btn = {"de": "Erstgespräch buchen", "ru": "Записаться", "en": "Book intro call"}[locale]
     legal = {"de": LEGAL_NOTICE_DE, "ru": LEGAL_NOTICE_RU, "en": LEGAL_NOTICE_EN}[locale]
     contact_href = f"{pre}{'kontakt' if locale != 'en' else 'contact'}/"
-    fuer_wen = "".join(f"<li>{x}</li>" for x in cfg["fuer_wen"])
-    ergebnis = "".join(f"<li>{x}</li>" for x in cfg["ergebnis"])
     nr = cfg["nr"]
-    has_stages = nr in INT_STAGES
-
-    if has_stages:
-        ablauf_h2 = {"de": "Typischer Ablauf", "en": "Typical process", "ru": "Типичный процесс"}[locale]
-        steps = "".join(
-            f'<li class="brt-card brt-hover-lift"><h3 class="brt-h3">{t}</h3><p class="brt-body">{b}</p></li>'
-            for t, b in cfg["steps"]
+    is_project = int_is_project_offer(nr)
+    has_stages = nr in INT_STAGES and not is_project
+    if is_project:
+        middle = international_project_section(
+            parent_nr=nr, locale=locale, contact_href=contact_href
+        ) + international_process_section(cfg["steps"], locale=locale)
+        price_block = international_project_price_banner(
+            parent_nr=nr, locale=locale, pre=pre, contact_href=contact_href
         )
+    elif has_stages:
         middle = (
             international_stages_section(parent_nr=nr, locale=locale, contact_href=contact_href)
-            + international_packages_section(parent_nr=nr, locale=locale, contact_href=contact_href)
+            + international_packages_section(parent_nr=nr, locale=locale, contact_href=contact_href, pre=pre)
             + international_excluded_section(parent_nr=nr, locale=locale)
-            + f"""
-    <section class="brt-section" id="ablauf"><div class="brt-container">
-      <h2 class="brt-h2">{ablauf_h2}</h2>
-      <ul class="brt-cards-3col brt-stagger">{steps}</ul>
-    </div></section>"""
+            + international_process_section(cfg["steps"], locale=locale)
         )
         price_block = international_stages_price_banner(
             offer=offer, parent_nr=nr, locale=locale, pre=pre
         )
     else:
         leistungen = "".join(f"<li>{x}</li>" for x in cfg["leistungen"])
-        steps = "".join(
-            f'<li class="brt-card brt-hover-lift"><h3 class="brt-h3">{t}</h3><p class="brt-body">{b}</p></li>'
-            for t, b in cfg["steps"]
-        )
         middle = f"""
     <section class="brt-section brt-section--alt" id="leistungen"><div class="brt-container">
       <ul class="brt-list-check brt-fade-up">{leistungen}</ul>
-    </div></section>
-    <section class="brt-section" id="ablauf"><div class="brt-container">
-      <ul class="brt-cards-3col brt-stagger">{steps}</ul>
     </div></section>"""
+        middle += international_process_section(cfg["steps"], locale=locale)
         price_block = international_price_section(offer, pre=pre, locale=locale)
 
-    scroll_anchor = "stufen" if has_stages else "preis"
     return (
         hero(
             pre, cfg["tag"], cfg["h1"], cfg["lead"],
-            actions=(
-                f'<a class="brt-btn" href="{contact_href}">{cta_btn}</a>'
-                f'<a class="brt-btn brt-btn--outline" href="#{scroll_anchor}">→</a>'
-            ),
+            actions=f'<a class="brt-btn" href="{contact_href}">{cta_btn}</a>',
         )
-        + f"""
-    <section class="brt-section" id="fuer-wen"><div class="brt-container brt-highlight-box brt-fade-up">
-      <h2 class="brt-h2">{cfg["fuer_wen_intro"]}</h2>
-      <ul class="brt-list-check">{fuer_wen}</ul>
-    </div></section>"""
+        + international_audience_section(
+            intro=cfg["fuer_wen_intro"],
+            items=cfg["fuer_wen"],
+            locale=locale,
+            depth=len(pre) // 3 if pre else 0,
+            offer_nr=nr,
+            lead=cfg.get("fuer_wen_lead", ""),
+        )
         + middle
-        + f"""
-    <section class="brt-section brt-section--alt" id="ergebnis"><div class="brt-container brt-highlight-box">
-      <h2 class="brt-h2">{"Ergebnis" if locale == "de" else "Outcome" if locale == "en" else "Результат"}</h2>
-      <ul class="brt-list-check">{ergebnis}</ul>
-    </div></section>"""
-        + international_team_section(pre=pre, team_slugs=cfg["team_slugs"], title=team_title, locale=locale)
+        + international_outcome_section(items=cfg["ergebnis"], locale=locale)
+        + international_team_section(
+            pre=pre,
+            team_slugs=cfg["team_slugs"],
+            title=team_title,
+            locale=locale,
+            member_intros=int_team_member_intros(locale),
+        )
         + price_block
         + international_legal_section(legal)
-        + faq_section(cfg["faq"])
+        + faq_section(cfg["faq"], title=int_faq_title(locale))
         + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], cta_btn)
     )
 
 
-def gen_international_offer(cfg: dict, *, locale: str = "en") -> None:
+def _international_stage_main(
+    stage: dict,
+    *,
+    parent_cfg: dict | None,
+    locale: str,
+    pre: str,
+) -> str:
+    def _t(m, loc: str) -> str:
+        if isinstance(m, str):
+            return m
+        return m.get(loc, m.get("de", ""))
+
+    contact_href = f"{pre}{'kontakt' if locale != 'en' else 'contact'}/"
+    cta_btn = {"de": "Erstgespräch buchen", "ru": "Записаться", "en": "Book intro call"}[locale]
+    legal = {"de": LEGAL_NOTICE_DE, "ru": LEGAL_NOTICE_RU, "en": LEGAL_NOTICE_EN}[locale]
+    team_title = {"de": "Ihr deutsch-russisches Beratungsteam", "ru": "Ваша команда", "en": "Your German-Russian advisory team"}[locale]
+    index_href = {
+        "de": f"{pre}internationale-angebote/",
+        "en": f"{pre}international-services/",
+        "ru": f"{pre}ru/internationale-angebote/",
+    }[locale]
+    if parent_cfg:
+        tag = parent_cfg.get("tag", "")
+        team_slugs = parent_cfg["team_slugs"]
+        cta_h2 = parent_cfg.get("cta_h2", "")
+        cta_body = parent_cfg.get("cta_body", "")
+        pslug = parent_slug(stage["nr"], locale)
+        base = {"de": "internationale-angebote", "en": "international-services", "ru": "ru/internationale-angebote"}[locale]
+        parent_href = f"{pre}{base}/{pslug}/"
+        back_l = {"de": "Zur Rubrik", "en": "Back to offer", "ru": "К разделу"}[locale]
+        breadcrumb = f'<p class="brt-meta brt-fade-up"><a href="{parent_href}">{back_l}</a></p>'
+        offer_nr = parent_cfg["nr"]
+    else:
+        tag = _t(stage.get("tag", ""), locale)
+        team_slugs = stage.get("team_slugs", ["veronika-berdnikova", "aleksandra-polosukhina", "till-blania"])
+        cta_h2 = {"de": "Passende Stufe finden?", "en": "Find the right stage?", "ru": "Найти подходящий этап?"}[locale]
+        cta_body = {"de": "Erstberatung buchen — 50 €, 30 Min.", "en": "Book intro call — €50, 30 min.", "ru": "Консультация 50 €, 30 мин."}[locale]
+        index_l = {"de": "Internationale Angebote", "en": "International services", "ru": "Международные услуги"}[locale]
+        breadcrumb = f'<p class="brt-meta brt-fade-up"><a href="{index_href}">{index_l}</a></p>'
+        offer_nr = "INT-00"
+    return (
+        breadcrumb
+        + hero(
+            pre,
+            tag,
+            _t(stage["name"], locale),
+            _t(stage.get("teaser", ""), locale),
+            actions=f'<a class="brt-btn" href="{contact_href}">{cta_btn}</a>',
+        )
+        + international_audience_section(
+            intro=stage["fuer_wen_intro"],
+            items=stage["fuer_wen"],
+            locale=locale,
+            depth=len(pre) // 3 if pre else 0,
+            offer_nr=offer_nr,
+            lead=stage.get("fuer_wen_lead", ""),
+        )
+        + international_stage_scope_section(
+            leistungen=stage["leistungen"],
+            excluded=stage.get("excluded", []),
+            locale=locale,
+        )
+        + international_process_section(stage["steps"], locale=locale)
+        + international_outcome_section(items=stage["ergebnis"], locale=locale)
+        + international_next_stages_section(stage=stage, locale=locale, pre=pre)
+        + international_team_section(
+            pre=pre,
+            team_slugs=team_slugs,
+            title=team_title,
+            locale=locale,
+            section_alt=True,
+            member_intros=int_team_member_intros(locale),
+        )
+        + international_single_stage_price_banner(
+            stage=stage, locale=locale, pre=pre, contact_href=contact_href
+        )
+        + international_legal_section(legal)
+        + faq_section(stage["faq"], title=int_faq_title(locale))
+        + cta_band(pre, cta_h2, cta_body, cta_btn)
+    )
+
+
+def gen_international_stage(stage: dict, *, parent_cfg: dict | None, locale: str = "de") -> None:
+    stage_nr = stage["nr"]
+    pslug = parent_slug(stage_nr, locale) if parent_cfg else stage_slug(stage_nr, locale)
+    sslug = stage_slug(stage_nr, locale)
+    canonical, depth, pre = locale_paths(
+        locale,
+        pslug if parent_cfg else sslug,
+        stage_slug_key=sslug if parent_cfg else None,
+    )
+    stage = apply_stage_locale(stage, locale)
+    main = _international_stage_main(stage, parent_cfg=parent_cfg, locale=locale, pre=pre)
+    name = stage["name"].get(locale, stage["name"].get("de", "")) if isinstance(stage["name"], dict) else stage["name"]
+    teaser = stage.get("teaser", {})
+    desc = teaser.get(locale, teaser.get("de", "")) if isinstance(teaser, dict) else str(teaser)
+    title = f"{name} | Beraterium"
+    audience = parent_cfg["audience"] if parent_cfg else "Internationale Gründer und Unternehmer"
+    ld = page_schema(
+        service_schema(name=name, description=desc, url=canonical, audience=audience),
+        faq_page_schema(stage["faq"]),
+        speakable_webpage_schema(canonical),
+    )
+    rel = stage_rel_path(stage_nr, locale)
+    active_nav = "international-services" if locale == "en" else "internationale-angebote"
+    write(
+        rel,
+        shell(
+            depth=depth,
+            title=title,
+            description=desc,
+            canonical=canonical,
+            active_nav=active_nav,
+            main=main,
+            json_ld=ld,
+            html_lang={"de": "de", "ru": "ru", "en": "en"}[locale],
+            current_locale=locale,
+        ),
+    )
+
+
+def gen_all_international_stages(*, locale: str) -> None:
+    parent_by_nr = {c["nr"]: c for c in INT_OFFER_CONFIGS_DE}
+    if locale == "en":
+        parent_by_nr = {c["nr"]: c for c in en_offer_configs()}
+    elif locale == "ru":
+        parent_by_nr = {c["nr"]: c for c in ru_offer_configs()}
+    for parent_nr, stage in iter_stage_pages():
+        if parent_nr and int_is_project_offer(parent_nr):
+            continue
+        parent_cfg = parent_by_nr.get(parent_nr) if parent_nr else None
+        gen_international_stage(stage, parent_cfg=parent_cfg, locale=locale)
+
+
+def gen_international_offer(cfg: dict, *, locale: str = "de") -> None:
     slug = cfg["slug"]
     canonical, depth, pre = locale_paths(locale, slug)
     main = _international_offer_main(cfg, locale=locale, pre=pre)
@@ -3388,7 +2246,6 @@ def gen_international_offer(cfg: dict, *, locale: str = "en") -> None:
         "ru": f"ru/internationale-angebote/{slug}/index.html",
         "en": f"international-services/{slug}/index.html",
     }.get(locale, f"internationale-angebote/{slug}/index.html")
-    active_nav = "international-services" if locale == "en" else "internationale-angebote"
     write(
         rel,
         shell(
@@ -3396,16 +2253,16 @@ def gen_international_offer(cfg: dict, *, locale: str = "en") -> None:
             title=cfg["title"],
             description=cfg["description"],
             canonical=canonical,
-            active_nav=active_nav,
+            active_nav="international-services" if locale == "en" else "internationale-angebote",
             main=main,
             json_ld=ld,
-            html_lang={"de": "de", "ru": "ru", "en": "en-GB"}[locale],
+            html_lang={"de": "de", "ru": "ru", "en": "en"}[locale],
             current_locale=locale,
         ),
     )
 
 
-def gen_international_index(*, locale: str = "en") -> None:
+def gen_international_index(*, locale: str = "de") -> None:
     index_cfg = {"ru": INT_INDEX_RU, "en": INT_INDEX_EN}.get(locale, INT_INDEX_DE)
     configs = {"ru": ru_offer_configs(), "en": en_offer_configs()}.get(locale, INT_OFFER_CONFIGS_DE)
     canonical, depth, pre = locale_paths(locale, "", is_index=True)
@@ -3424,20 +2281,53 @@ def gen_international_index(*, locale: str = "en") -> None:
     )
     cta_btn = {"de": "Erstgespräch buchen", "ru": "Записаться", "en": "Book intro call"}[locale]
     contact_href = f"{pre}{'kontakt' if locale != 'en' else 'contact'}/"
+    slider_i18n = {
+        "de": ("Internationale Angebote", "Vorheriges Angebot", "Nächstes Angebot"),
+        "en": ("International services", "Previous offer", "Next offer"),
+        "ru": ("Международные услуги", "Предыдущее предложение", "Следующее предложение"),
+    }[locale]
+    offers_slider = cards_slider_block(
+        "".join(cards),
+        aria_label=slider_i18n[0],
+        prev_label=slider_i18n[1],
+        next_label=slider_i18n[2],
+    )
+    why_slider_i18n = {
+        "de": ("Warum Beraterium", "Vorheriger Punkt", "Nächster Punkt"),
+        "en": ("Why Beraterium", "Previous point", "Next point"),
+        "ru": ("Почему Beraterium", "Предыдущий пункт", "Следующий пункт"),
+    }[locale]
+    why_slider = cards_slider_block(
+        why,
+        aria_label=why_slider_i18n[0],
+        prev_label=why_slider_i18n[1],
+        next_label=why_slider_i18n[2],
+        autoplay_ms=0,
+    )
+    team_block = international_team_section(
+        pre=pre,
+        team_slugs=index_cfg.get("team_slugs", ["veronika-berdnikova", "aleksandra-polosukhina", "till-blania"]),
+        title=index_cfg.get("team_h2", "Ihr deutsch-russisches Beratungsteam"),
+        locale=locale,
+        intro=index_cfg.get("team_intro", ""),
+        tag=index_cfg.get("team_tag", ""),
+        member_intros=index_cfg.get("team_member_intros"),
+    )
     main = (
         hero(pre, index_cfg["tag"], index_cfg["h1"], index_cfg["lead"], compact=True,
              actions=f'<a class="brt-btn" href="{contact_href}">{cta_btn}</a>')
         + international_journey_section(locale=locale, pre=pre, contact_href=contact_href)
         + f"""
     <section class="brt-section" id="angebote"><div class="brt-container">
-      <ul class="brt-cards-3col brt-stagger">{"".join(cards)}</ul>
+      {offers_slider}
     </div></section>
     <section class="brt-section brt-section--alt" id="warum"><div class="brt-container">
       <h2 class="brt-h2">{index_cfg["why_h2"]}</h2>
       <p class="brt-body">{index_cfg["why_intro"]}</p>
-      <ul class="brt-cards-3col brt-stagger">{why}</ul>
+      {why_slider}
     </div></section>"""
-        + faq_section(index_cfg["faq"])
+        + team_block
+        + faq_section(index_cfg["faq"], title=int_faq_title(locale))
         + cta_band(pre, index_cfg["cta_h2"], index_cfg["cta_body"], cta_btn)
     )
     ld = page_schema(faq_page_schema(index_cfg["faq"]), speakable_webpage_schema(canonical))
@@ -3445,7 +2335,6 @@ def gen_international_index(*, locale: str = "en") -> None:
         "ru": "ru/internationale-angebote/index.html",
         "en": "international-services/index.html",
     }.get(locale, "internationale-angebote/index.html")
-    active_nav = "international-services" if locale == "en" else "internationale-angebote"
     write(
         rel,
         shell(
@@ -3453,63 +2342,56 @@ def gen_international_index(*, locale: str = "en") -> None:
             title=index_cfg["title"],
             description=index_cfg["description"],
             canonical=canonical,
-            active_nav=active_nav,
+            active_nav="internationale-angebote",
             main=main,
             json_ld=ld,
-            html_lang={"de": "de", "ru": "ru", "en": "en-GB"}[locale],
+            html_lang={"de": "de", "ru": "ru", "en": "en"}[locale],
             current_locale=locale,
         ),
     )
 
 
-_SCH_PRICING: dict[str, dict] = {
-    o["nr"]: o
-    for cat in PRICE_CATEGORIES
-    for o in cat["offers"]
-    if o["nr"].startswith("SCH-")
-}
-
-
 def schulung_price_section(offer: dict, *, pre: str) -> str:
-    """Price block for a training: base + add-on + capped team flat rate."""
+    """Preisblock einer Schulung: Basis + Aufpreis + gedeckelte Team-Pauschale."""
     team_max = offer.get("team_max")
     if team_max:
         intro = (
-            f"Bookable for individual employees or small groups "
-            f"\u2014 flat rate for up to {team_max} participants."
+            f"Buchbar f\u00fcr einzelne Mitarbeitende oder Kleingruppen "
+            f"\u2014 pauschal bis max. {team_max} Teilnehmer."
         )
         team_card = (
-            f"<strong>{format_eur(offer['price_team'])} flat rate</strong><br>"
-            f"Max. {team_max} participants."
+            f"<strong>{format_eur(offer['price_team'])} pauschal</strong><br>"
+            f"Max. {team_max} Teilnehmer."
         )
     else:
         intro = (
-            f"Bookable for individual employees, small groups or the whole team "
-            f"\u2014 from {offer['team_from']} people the capped team flat rate applies."
+            f"Buchbar f\u00fcr einzelne Mitarbeitende, Kleingruppen oder das ganze Team "
+            f"\u2014 ab {offer['team_from']} Personen greift die gedeckelte Team-Pauschale."
         )
         team_card = (
-            f"<strong>{format_eur(offer['price_team'])} flat rate</strong> from {offer['team_from']} people<br>"
-            f"Capped \u2014 additional participants cost no more."
+            f"<strong>{format_eur(offer['price_team'])} pauschal</strong> ab {offer['team_from']} Personen<br>"
+            f"Gedeckelt \u2014 mehr Teilnehmer kosten nicht mehr."
         )
     return f"""
     <section class="brt-section brt-section--alt" id="preis" aria-labelledby="preis-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">PRICE (EXCL. VAT)</p>
-          <h2 id="preis-title" class="brt-h2">What does the training cost?</h2>
+          <p class="brt-tag">PREIS (NETTO ZZGL. UST.)</p>
+          <h2 id="preis-title" class="brt-h2">Was kostet die Schulung?</h2>
           <p class="brt-body">{intro}</p>
         </header>
         <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Individual</h3><p class="brt-body"><strong>{format_eur(offer["price_base"])}</strong><br>Base price for the first person.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Small group</h3><p class="brt-body"><strong>+{format_eur(offer["price_add"])}</strong> per additional participant<br>You only pay for people who actually attend.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Whole team</h3><p class="brt-body">{team_card}</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Einzeln</h3><p class="brt-body"><strong>{format_eur(offer["price_base"])}</strong><br>Basispreis f\u00fcr die erste Person.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Kleingruppe</h3><p class="brt-body"><strong>+{format_eur(offer["price_add"])}</strong> je weiterem Teilnehmer<br>Sie zahlen nur, wer wirklich teilnimmt.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Ganzes Team</h3><p class="brt-body">{team_card}</p></li>
         </ul>
-        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">All prices and offers at a glance: <a href="{pre}pricing/">Pricing &amp; services</a>.</p>
+        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Alle Preise und Angebote im \u00dcberblick: <a href="{pre}preise/">Preise &amp; Leistungen</a>.</p>
       </div>
     </section>"""
 
+
 def gen_schulung(cfg: dict) -> None:
-    """Datengetriebene Schulungs-Unterseite /training/<slug>/.
+    """Datengetriebene Schulungs-Unterseite /schulungen/<slug>/.
 
     Inhalt aus _schulungen.py (SCHULUNG_CONFIGS), Preis-Staffel aus
     _pricing.py (Join ueber "nr"). Struktur: Hero -> Fuer-wen-Checkliste ->
@@ -3517,7 +2399,7 @@ def gen_schulung(cfg: dict) -> None:
     """
     slug = cfg["slug"]
     pre = "../../"
-    canonical = f"/training/{slug}/"
+    canonical = f"/schulungen/{slug}/"
     offer = _SCH_PRICING[cfg["nr"]]
 
     fuer_wen_items = "".join(f"<li>{item}</li>" for item in cfg["fuer_wen"])
@@ -3534,14 +2416,14 @@ def gen_schulung(cfg: dict) -> None:
         # Slider: zeigt 3 Karten, Pfeile blaettern (initCardsSlider in brt-site.js)
         sessions_block = (
             '<div class="brt-cards-slider brt-fade-up" data-cards-slider>'
-            '<div class="brt-cards-slider__viewport" tabindex="0" role="group" aria-label="Training sessions">'
+            '<div class="brt-cards-slider__viewport" tabindex="0" role="group" aria-label="Sessions der Schulung">'
             f'<ul class="brt-cards-slider__track">{session_cards}</ul>'
             "</div>"
             '<div class="brt-cards-slider__nav">'
-            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--prev" aria-label="Previous session">'
+            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--prev" aria-label="Vorherige Session">'
             '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
             "</button>"
-            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--next" aria-label="Next session">'
+            '<button type="button" class="brt-cards-slider__btn brt-cards-slider__btn--next" aria-label="N\u00e4chste Session">'
             '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'
             "</button></div></div>"
         )
@@ -3552,15 +2434,15 @@ def gen_schulung(cfg: dict) -> None:
         hero(
             pre, cfg["tag"], cfg["h1"], cfg["lead"],
             actions=(
-                f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a>'
-                f'<a class="brt-btn brt-btn--outline" href="#preis">See pricing \u2192</a>'
+                f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespr\u00e4ch buchen</a>'
+                f'<a class="brt-btn brt-btn--outline" href="#preis">Zum Preis \u2192</a>'
             ),
         )
         + f"""
     <section class="brt-section" id="fuer-wen" aria-labelledby="fuer-wen-title">
       <div class="brt-container brt-highlight-box brt-fade-up">
-        <p class="brt-tag">WHO IS IT FOR?</p>
-        <h2 id="fuer-wen-title" class="brt-h2">Who is this training for?</h2>
+        <p class="brt-tag">F\u00dcR WEN?</p>
+        <h2 id="fuer-wen-title" class="brt-h2">F\u00fcr wen ist diese Schulung gedacht?</h2>
         <p class="brt-body">{cfg["fuer_wen_intro"]}</p>
         <ul class="brt-list-check">{fuer_wen_items}</ul>
       </div>
@@ -3568,24 +2450,24 @@ def gen_schulung(cfg: dict) -> None:
     <section class="brt-section brt-section--alt" id="ablauf" aria-labelledby="ablauf-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">CONTENT &amp; FORMAT</p>
-          <h2 id="ablauf-title" class="brt-h2">How does the training work?</h2>
-          <p class="brt-body">Duration: {offer["duration"]} \u2014 on-site at your premises or online. Audience: {cfg["audience"]}.</p>
+          <p class="brt-tag">INHALTE &amp; ABLAUF</p>
+          <h2 id="ablauf-title" class="brt-h2">Wie l\u00e4uft die Schulung ab?</h2>
+          <p class="brt-body">Dauer: {offer["duration"]} \u2014 inhouse bei Ihnen vor Ort oder online. Zielgruppe: {cfg["audience"]}.</p>
         </header>
         {sessions_block}
       </div>
     </section>
     <section class="brt-section" id="ergebnis" aria-labelledby="ergebnis-title">
       <div class="brt-container brt-highlight-box brt-fade-up">
-        <p class="brt-tag">OUTCOMES</p>
-        <h2 id="ergebnis-title" class="brt-h2">What do you take away?</h2>
+        <p class="brt-tag">ERGEBNIS</p>
+        <h2 id="ergebnis-title" class="brt-h2">Was nehmen Sie mit?</h2>
         <ul class="brt-list-check">{ergebnis_items}</ul>
       </div>
     </section>"""
         + schulung_price_section(offer, pre=pre)
         + schulung_geo_note(cfg["nr"], pre=pre)
         + faq_section(cfg["faq"])
-        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], "Book a free intro call")
+        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], "Kostenloses Erstgespr\u00e4ch buchen")
     )
 
     breadcrumb_ld = json.dumps(
@@ -3593,9 +2475,9 @@ def gen_schulung(cfg: dict) -> None:
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
-                {"@type": "ListItem", "position": 2, "name": "Training", "item": f"{EN_SITE_URL}/training/"},
-                {"@type": "ListItem", "position": 3, "name": cfg["h1"], "item": f"{EN_SITE_URL}{canonical}"},
+                {"@type": "ListItem", "position": 1, "name": "Startseite", "item": f"{DE_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": "Schulungen", "item": f"{DE_SITE_URL}/schulungen/"},
+                {"@type": "ListItem", "position": 3, "name": cfg["h1"], "item": f"{DE_SITE_URL}{canonical}"},
             ],
         },
         ensure_ascii=False,
@@ -3615,13 +2497,13 @@ def gen_schulung(cfg: dict) -> None:
         breadcrumb_ld,
     )
     write(
-        f"training/{slug}/index.html",
+        f"schulungen/{slug}/index.html",
         shell(
             depth=2,
             title=cfg["title"],
             description=cfg["description"],
             canonical=canonical,
-            active_nav="training",
+            active_nav="schulungen",
             main=main,
             json_ld=ld,
         ),
@@ -3629,34 +2511,34 @@ def gen_schulung(cfg: dict) -> None:
 
 
 def gen_schulungen_index() -> None:
-    """Index-Seite /training/ mit Karten zu allen Schulungen."""
+    """Index-Seite /schulungen/ mit Karten zu allen Schulungen."""
     pre = "../"
     cards = "".join(
         f'<li class="brt-card brt-card--catalog brt-hover-lift"><a class="brt-card__link" href="{cfg["slug"]}/">'
         f'<h3 class="brt-h3">{cfg["h1"]}</h3>'
         f'<p class="brt-body">{_SCH_PRICING[cfg["nr"]]["desc"]}</p>'
         f'<p class="brt-meta">{_SCH_PRICING[cfg["nr"]]["duration"]} \u00b7 {offer_price_text(_SCH_PRICING[cfg["nr"]])}</p>'
-        f'<span class="brt-meta" aria-hidden="true">View training \u2192</span></a></li>'
+        f'<span class="brt-meta" aria-hidden="true">Zur Schulung \u2192</span></a></li>'
         for cfg in SCHULUNG_CONFIGS
     )
     schulungen_faq = [
-        ("How does training pricing work?", "Each training has a base price for the first person and a fixed add-on per additional participant. From a defined group size a capped team flat rate applies \u2014 additional participants then cost no more. All prices excl. VAT."),
-        ("Can I book training for a single employee?", "Yes. Every training can be booked for individual employees (base price), small groups or the whole team \u2014 content is tailored to group size."),
-        ("Does training take place on our premises?", "Yes, either on-site at your premises or online. For team bookings we recommend on-site \u2014 practical parts work directly on your real processes and cases."),
-        ("How do prices compare in the market?", "Team trainings (SCH-04\u201306): from 2,875 \u20ac, team flat rates 9,395\u20139,875 \u20ac \u2014 below typical on-site prices (2,500\u20134,000 \u20ac). Intensive format (SCH-01\u201303): 3,475\u20134,975 \u20ac for 1:1/small group \u2014 more than open seminars (250\u2013500 \u20ac/day) because coaching depth and transfer are included. Risk Expert (SCH-07): 9,875 \u20ac (1 person) instead of 12,425 \u20ac as individual bookings."),
+        ("Wie funktioniert das Preismodell der Schulungen?", "Jede Schulung hat einen Basispreis f\u00fcr die erste Person und einen festen Aufpreis je weiterem Teilnehmer. Ab einer definierten Gruppengr\u00f6\u00dfe greift eine gedeckelte Team-Pauschale \u2014 mehr Teilnehmer kosten dann nicht mehr. Alle Preise netto zzgl. USt."),
+        ("Kann ich eine Schulung f\u00fcr einen einzelnen Mitarbeiter buchen?", "Ja. Jede Schulung ist sowohl f\u00fcr einzelne Mitarbeitende (Basispreis) als auch f\u00fcr Kleingruppen oder das ganze Team buchbar \u2014 die Inhalte werden auf die Gruppengr\u00f6\u00dfe zugeschnitten."),
+        ("Finden die Schulungen bei uns im Haus statt?", "Ja, wahlweise inhouse bei Ihnen vor Ort oder online. Bei Team-Buchungen empfehlen wir inhouse \u2014 die Praxisteile arbeiten direkt an Ihren realen Prozessen und F\u00e4llen."),
+        ("Wie liegen die Preise im Marktvergleich?", "Team-Schulungen (SCH-04–06): ab 2.875 €, Team-Pauschalen 9.395–9.875 € — unter üblichen Inhouse-Preisen (2.500–4.000 €). Intensivformat (SCH-01–03): 3.475–4.975 € für 1:1/Kleinstgruppe — mehr als offene Seminare (250–500 €/Tag), weil Coaching-Tiefe und Transfer inklusive sind. Risikoexperte (SCH-07): 9.875 € (1 Pers.) statt 12.425 € als Einzelbuchungen."),
     ] + list(SCHULUNGEN_GEO_FAQ)
     main = (
-        hero(pre, "TRAINING", "Training for risk culture, innovation &amp; leadership",
-             "Seven in-depth trainings \u2014 from the full Risk Expert programme via aviation-inspired risk-awareness culture and practical risk management to innovation, feedback and cross-cultural management. Bookable for individual employees or the whole team, on-site or online. Risk Expert training from 9,875 \u20ac (2 people 14,315 \u20ac); individual intensive-format trainings from 3,475 \u20ac (excl. VAT).",
+        hero(pre, "SCHULUNGEN", "Schulungen f\u00fcr Risikokultur, Innovation &amp; F\u00fchrung",
+             "Sieben vertiefende Schulungen \u2014 von der kompletten Ausbildung zum Risikoexperten \u00fcber die Risk-Awareness-Kultur nach Luftfahrt-Vorbild \u00fcber praktisches Risikomanagement bis zu Innovations-, Feedback- und interkulturellem Management. Buchbar f\u00fcr einzelne Mitarbeitende oder das ganze Team, inhouse oder online. Ausbildung zum Risikoexperten ab 9.875 \u20ac (2 Personen 14.315 \u20ac); Einzelschulungen Intensivformat ab 3.475 \u20ac (netto zzgl. USt.).",
              compact=True,
-             actions=f'<a class="brt-btn" href="{pre}contact/">Book a free intro call</a>')
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespr\u00e4ch buchen</a>')
         + f"""
     <section class="brt-section" id="katalog" aria-labelledby="katalog-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">SEVEN TRAININGS</p>
-          <h2 id="katalog-title" class="brt-h2">Which trainings does Beraterium offer?</h2>
-          <p class="brt-body">All trainings come from our risk analysis practice \u2014 and give your team methods they can apply themselves afterwards.</p>
+          <p class="brt-tag">SECHS SCHULUNGEN</p>
+          <h2 id="katalog-title" class="brt-h2">Welche Schulungen bietet Beraterium an?</h2>
+          <p class="brt-body">Alle Schulungen kommen aus der Praxis unserer Risikoanalysen \u2014 und geben Ihrem Team Methoden an die Hand, die es danach selbst anwenden kann.</p>
         </header>
         <ul class="brt-cards-3col brt-stagger">{cards}</ul>
       </div>
@@ -3664,38 +2546,300 @@ def gen_schulungen_index() -> None:
     <section class="brt-section brt-section--alt" id="preismodell" aria-labelledby="preismodell-title">
       <div class="brt-container">
         <header class="brt-section__header brt-fade-up">
-          <p class="brt-tag">THE PRICING MODEL</p>
-          <h2 id="preismodell-title" class="brt-h2">One pricing model, three tiers</h2>
+          <p class="brt-tag">DAS PREISMODELL</p>
+          <h2 id="preismodell-title" class="brt-h2">Ein Preismodell, drei Stufen</h2>
         </header>
         <ul class="brt-cards-3col brt-stagger">
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Individual</h3><p class="brt-body">Intensive format from 3,475 \u20ac or combined Risk Expert programme from 9,875 \u20ac \u2014 ideal to try one training first.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Small group</h3><p class="brt-body">Fixed add-on per additional participant (725\u2013995 \u20ac depending on training) \u2014 transparent and predictable; you only pay for people who attend.</p></li>
-          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Whole team</h3><p class="brt-body">Capped team flat rate from group size (9,395\u20139,875 \u20ac) \u2014 additional participants cost no more. Deliberately below typical on-site seminar prices (2,500\u20134,000 \u20ac).</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Einzeln</h3><p class="brt-body">Intensivformat ab 3.475 \u20ac oder Kombi-Ausbildung Risikoexperte ab 9.875 \u20ac \u2014 ideal, um eine Schulung erst einmal zu testen.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Kleingruppe</h3><p class="brt-body">Fester Aufpreis je weiterem Teilnehmer (725\u2013995 \u20ac je nach Schulung) \u2014 transparent und planbar, Sie zahlen nur, wer teilnimmt.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Ganzes Team</h3><p class="brt-body">Gedeckelte Team-Pauschale ab Gruppengr\u00f6\u00dfe (9.395\u20139.875 \u20ac) \u2014 mehr Teilnehmer kosten nicht mehr. Bewusst unter den \u00fcblichen Inhouse-Seminarpreisen (2.500\u20134.000 \u20ac).</p></li>
         </ul>
-        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">All tiers in detail: <a href="{pre}pricing/#schulungen">Pricing &amp; services</a>.</p>
+        <p class="brt-meta brt-fade-up" style="margin-top: var(--space-6); text-align: center;">Alle Staffeln im Detail: <a href="{pre}preise/#schulungen">Preise &amp; Leistungen</a>.</p>
       </div>
     </section>"""
         + schulungen_value_section(pre=pre)
-        + faq_section_html(schulungen_faq, title="Frequently asked questions about training")
-        + cta_band(pre, "Which training fits your team?", "In a free intro call we clarify your goal, team size and the best starting point \u2014 no obligation, 30 minutes.")
+        + faq_section_html(schulungen_faq, title="H\u00e4ufige Fragen zu den Schulungen")
+        + cta_band(pre, "Welche Schulung passt zu Ihrem Team?", "Im kostenlosen Erstgespr\u00e4ch kl\u00e4ren wir Ziel, Teamgr\u00f6\u00dfe und den besten Einstieg \u2014 unverbindlich, in 30 Minuten.")
     )
     breadcrumb_ld = json.dumps(
         {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
-                {"@type": "ListItem", "position": 2, "name": "Training", "item": f"{EN_SITE_URL}/training/"},
+                {"@type": "ListItem", "position": 1, "name": "Startseite", "item": f"{DE_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": "Schulungen", "item": f"{DE_SITE_URL}/schulungen/"},
             ],
         },
         ensure_ascii=False,
         indent=2,
     )
-    schulungen_title = "Risk management & leadership training | Beraterium"
-    schulungen_desc = "Seven on-site trainings: Risk Expert programme from 9,875 \u20ac, individual intensive-format trainings from 3,475 \u20ac, innovation, feedback, cross-cultural management."
-    write("training/index.html", shell(depth=1, title=schulungen_title, description=schulungen_desc,
-          canonical="/training/", active_nav="training", main=main,
-          json_ld=page_schema(faq_page_schema(schulungen_faq), speakable_webpage_schema("/training/", selectors=[".brt-highlight-box", ".brt-faq__answer", "#schulungen-vergleich .brt-body"]), breadcrumb_ld)))
+    schulungen_title = "Schulungen Risikomanagement & F\u00fchrung | Beraterium"
+    schulungen_desc = "Sieben Inhouse-Schulungen: Ausbildung zum Risikoexperten ab 9.875 \u20ac, Einzelschulungen Intensivformat ab 3.475 \u20ac, Innovation, Feedback, interkulturelles Management."
+    write("schulungen/index.html", shell(depth=1, title=schulungen_title, description=schulungen_desc,
+          canonical="/schulungen/", active_nav="schulungen", main=main,
+          json_ld=page_schema(faq_page_schema(schulungen_faq), speakable_webpage_schema("/schulungen/", selectors=[".brt-highlight-box", ".brt-faq__answer", "#schulungen-vergleich .brt-body"]), breadcrumb_ld)))
+
+
+def lp_shell(depth: int, slug: str, title: str, desc: str, du: bool, main: str, *, json_ld: str = "") -> None:
+    write(
+        f"angebote/{slug}/index.html",
+        shell(
+            depth=depth,
+            title=title,
+            description=desc,
+            canonical=f"/angebote/{slug}/",
+            active_nav=f"angebote/{slug}",
+            main=main,
+            json_ld=json_ld,
+        ),
+    )
+
+
+def gen_lp_startups() -> None:
+    pre = "../../"
+    startups_faq = [
+        ("Wie viel Zeit kostet mich das?", "Pro Session rund 2 Stunden, insgesamt 1–2 Sessions plus Kick-off. Den Rest übernehmen wir."),
+        ("Lohnt sich das so früh überhaupt?", "Gerade früh: Ein Key-Person- oder Cash-Risiko kann ein junges Startup komplett stoppen."),
+        ("Was, wenn wir nur zu zweit sind?", "Kein Problem. Wir moderieren so, dass auch ein kleines Gründerteam zu einer realistischen Bewertung kommt."),
+        ("Bekomme ich etwas Vorzeigbares für Investoren?", "Du bekommst einen priorisierten Risiko-Report als One-Pager. Ehrlich, nicht geschönt."),
+        ("Welche Risiken haben Startups, die oft übersehen werden?", "Co-Founder-Konflikte, Klumpenrisiko bei Kunden, Key-Person-Abhängigkeit und Cash-Runway-Unterschätzung — nicht das Produkt allein."),
+        ("Wie bereite ich mein Startup auf Due Diligence vor?", "Investoren prüfen auch, ob Gründer ihre Risiken kennen. Ein strukturiertes, priorisiertes Risiko-Portfolio ist ein starkes Signal."),
+    ]
+    opts = [
+        {"title": "Option A — Risiko-Snapshot", "claim": "In 4 Wochen weißt du, wo du dran bist.", "features": [
+            "Kick-off (Scope, Nutzen-Kriterien)", "Moderierte Risikoanalyse mit Team (1–2 Sessions, je 2h)",
+            "Gefahrenkatalog Startup-Edition (3 Ebenen)", "Bewertung: Schadenshöhe in Euro + Wahrscheinlichkeit",
+            "Inventar-Check + Risiko-Report (One-Pager)"]},
+        {"title": "Option B — Snapshot + Maßnahmen-Sprint", "claim": "Du weißt, was los ist – und was zu tun ist.", "badge": "Beliebt", "featured": True,
+         "extra": "Alles aus A, plus:", "features": [
+            "Maßnahmen-Sprint: Top-Risiken → konkrete Maßnahmen", "Bewertung: Wirkung, Aufwand, Umsetzbarkeit je Maßnahme",
+            "Quick-Win-Liste für diese Woche", "Fahrplan mit Verantwortlichkeiten & Timeline", "Gründer-Abschluss-Call"]},
+        {"title": "Option C — Snapshot + Maßnahmen + Gründer-Sparring", "claim": "Wir begleiten dich, bis die ersten Maßnahmen greifen.",
+         "extra": "Alles aus B, plus:", "features": [
+            "2 Monate Gründer-Sparring (2× monatlich 30 Min.)", "Zugang zur RisikoRadar-Community",
+            "Experten-Vermittlung bei Bedarf", "Risiko-Update nach 2 Monaten"]},
+    ]
+    main = (
+        hero(pre, "RISIKO-CHECK FÜR STARTUPS", "In 4 Wochen weißt du, welche Risiken dein Wachstum bremsen",
+             "Für Gründer und Startup-CEOs mit 2–10 Mitarbeitenden. Du baust, du rennst – wir sorgen dafür, dass dich kein blinder Fleck ausbremst.",
+             split=True, media_label="Gründerteam beim Risiko-Check mit Beraterium",
+             media_src=IMG_ANGEBOT_STARTUPS_HERO,
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a><a class="brt-btn brt-btn--outline" href="#optionen">Die 3 Optionen ansehen →</a>')
+        + """
+    <section class="brt-section" aria-labelledby="problem-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">KENNST DU DAS?</p>
+          <h2 id="problem-title" class="brt-h2">Risiken? „Ja, klar – irgendwann." Aber irgendwann ist meistens zu spät.</h2>
+          <p class="brt-body">Du hast tausend Dinge gleichzeitig im Kopf: Produkt, Kunden, Hiring, Cash. Risikoanalyse klingt nach Konzern, nach Excel-Monster, nach Bürokratie – also schiebst du es.</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Das externe Problem</h3><p class="brt-body">Du hast kein strukturiertes Bild deiner Risiken. Was dich morgen 30.000 € kosten könnte, weißt du heute nicht.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Das interne Problem</h3><p class="brt-body">Tief drinnen weißt du: Es gibt Dinge, die du übersiehst. Key-Person-Risk, Cashflow-Lücken, rechtliche Stolperfallen, technische Schulden.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Die Überzeugung</h3><p class="brt-body">Ein Gründer, der Verantwortung für sein Team trägt, sollte nicht raten, wo die größten Gefahren liegen. Er sollte es wissen.</p></li>
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="erstgespraech-title">
+      <div class="brt-container brt-fade-up">
+        <p class="brt-tag">ERST GEBEN, DANN ANBIETEN</p>
+        <h2 id="erstgespraech-title" class="brt-h2">Dein kostenloses Erstgespräch: die Methode zum Selbermachen</h2>
+        <p class="brt-body">Im Erstgespräch (ca. 30–45 Min.) zeigen wir dir, wie du selbst eine Risikoanalyse für dein Startup machst. Kein Verkaufsgespräch – echtes Wissen:</p>
+        <ul class="brt-list-check">
+          <li>Die 3-Ebenen-Methode: Gefahren sammeln → Risiken bewerten → Maßnahmen priorisieren</li>
+          <li>Bewertungslogik für Startups: Schadenshöhe schätzen, auch ohne Historie</li>
+          <li>Die 5 typischen Startup-Gefahrenfelder: Key Person, Cash, Legal, Tech Debt, Markt</li>
+          <li>Konkrete Leitfragen, mit denen du dein Co-Founder-Team einbindest</li>
+        </ul>
+        <p class="brt-meta brt-meta--italic" style="margin-top: var(--space-6);">Was du nicht bekommst: unseren vollständigen Gefahrenkatalog und die moderierte Durchführung mit Auswertung.</p>
+      </div>
+    </section>"""
+        + pricing_cards(pre, opts, du=True, price_note=f'Der Einstieg ist kostenlos: 1-Stunden-Risiko-Check für Startups (0 €). Alle Preise findest du transparent auf der <a href="{pre}preise/">Preisseite</a>.')
+        + guarantee(pre, du=True, tag="Dein Risiko liegt bei uns")
+        + faq_section(startups_faq, alt=True)
+        + f"""
+    <section class="brt-section" aria-label="Ratgeber-Empfehlung">
+      <div class="brt-container brt-fade-up">
+        <p class="brt-body">Gründerwissen, Investorenvertrauen, Burnout-Gefahr: Warum Key-Person-Risk Startups besonders hart trifft, liest du im Ratgeber <a href="{pre}blog/schluesselpersonrisiko-erkennen-absichern/">Schlüsselpersonrisiko erkennen, bewerten und absichern &rarr;</a></p>
+      </div>
+    </section>"""
+        + cta_band(pre, "Bereit, deine größten Risiken zu kennen?",
+                   "Erstgespräch buchen – gratis, kein Sales-Pitch. Du gehst mit einer DIY-Anleitung raus, egal wie du dich entscheidest.",
+                   "Kostenloses Erstgespräch buchen")
+    )
+    startups_title = "Risikomanagement für Startups – 4-Wochen-Check | Beraterium"
+    startups_desc = "Risikomanagement für Startups: Key-Person, Cash, Legal, Tech — in 4 Wochen kennst du deine größten Risiken. Investor-ready, in Euro bewertet."
+    startups_ld = page_schema(
+        service_schema(name="4-Wochen Risiko-Check für Startups", description=startups_desc, url="/angebote/startups/", audience="Startups und Gründerteams"),
+        faq_page_schema(startups_faq),
+    )
+    lp_shell(2, "startups", startups_title, startups_desc, True, main, json_ld=startups_ld)
+
+
+def gen_lp_kmu() -> None:
+    pre = "../../"
+    kmu_faq = [
+        ("Wie viel Zeit bindet das im Team?", "Pro Session 2–3 Stunden, insgesamt 2–3 Sessions plus Kick-off. Wir moderieren effizient."),
+        ("Ist das auch für Familienunternehmen geeignet?", "Besonders. Themen wie Generationenwechsel oder Schlüsselpersonen werden strukturiert sichtbar."),
+        ("Was unterscheidet Sie von einer Wirtschaftsprüfung?", "Wir prüfen nicht Zahlen der Vergangenheit, sondern machen Ihre Zukunftsrisiken greifbar."),
+        ("Bekommen wir ein vorzeigbares Dokument?", "Ja, ein Risiko-Portfolio-Report, den Sie Beirat, Bank oder Team vorlegen können."),
+        ("Was ist das Schlüsselpersonrisiko und wie schützt mein KMU sich dagegen?", "Der wirtschaftliche Schaden, wenn eine unverzichtbare Person ausfällt. Beraterium erfasst das systematisch und entwickelt Maßnahmen zur Wissensverteilung."),
+        ("Wie unterscheidet sich Risikomanagement für KMU von Konzern-Methodik?", "KMU brauchen ein klares Lagebild — welche 3–5 Risiken wirklich teuer werden — nicht ISO-Bürokratie. In 6 Wochen, mit Ihrem Team."),
+        (
+            "Welche Dienstleister bieten professionelle Risikoanalysen für mittelständische Unternehmen an?",
+            "Vier Typen: Big-4/ISO-Beratung, spezialisierte Mittelstandsberater, Versicherungsmakler und Eigenregie. "
+            "Für ein handlungsfähiges Ergebnis ohne Zertifizierungszwang eignet sich ein spezialisierter Berater mit Euro-Bewertung und Umsetzungsbegleitung. "
+            "Vergleich der Anbietertypen im Blog-Artikel Risikomanagement-Beratung KMU; das Beraterium-Angebot finden Sie unter /angebote/kmu/.",
+        ),
+        (
+            "Welche Beratungsansätze für Risikomanagement sind für den Mittelstand am effektivsten?",
+            "Am effektivsten ist ein pragmatischer Ansatz: vollständiger Gefahrenkatalog, Bewertung in Euro, Priorisierung auf wenige wirksame Maßnahmen — ohne ISO-Bürokratie. "
+            "Genau so arbeitet die Beraterium-Methode in rund 6 Wochen mit Ihrem Team.",
+        ),
+    ]
+    opts = [
+        {"title": "Option A — Analyse Pur", "claim": "Sie bekommen Klarheit. Wir liefern das Lagebild.", "features": [
+            "Kick-off mit Geschäftsführung (Ziele, Scope, Nutzen-Kriterien)", "Moderierte Risikoanalyse mit Team (2–3 Sessions, je 2–3h)",
+            "Vollständiger Gefahrenkatalog (3 Ebenen, branchenangepasst)", "Bewertung: Schadenshöhe in Euro + Eintrittswahrscheinlichkeit",
+            "Inventar-Erfassung + Risiko-Portfolio-Report (priorisiert)"]},
+        {"title": "Option B — Analyse + Fahrplan", "claim": "Klarheit UND einen konkreten Plan.", "badge": "Beliebt", "featured": True,
+         "extra": "Alles aus A, plus:", "features": [
+            "Maßnahmen-Workshop für die Top-Risiken", "Bewertung je Maßnahme: Wirkung, Wirtschaftlichkeit, Umsetzbarkeit",
+            "Umsetzungsfahrplan mit Timeline & Verantwortlichkeiten", "GF-Abschluss-Session"]},
+        {"title": "Option C — Analyse + Fahrplan + Umsetzungsbegleitung", "claim": "Wir bleiben dran, bis die Maßnahmen greifen.",
+         "extra": "Alles aus B, plus:", "features": [
+            "3 Monate Umsetzungsbegleitung (monatliche Check-ins)", "Zugang zur RisikoRadar-Community (geprüfte Experten)",
+            "Koordination von Fachexperten bei komplexen Maßnahmen", "Quartals-Review (Risiko-Update + Fortschritt)"]},
+    ]
+    main = (
+        hero(pre, "RISIKOANALYSE FÜR KMU", "Risikomanagement für den Mittelstand — welche Risiken kosten Sie wirklich Geld?",
+             "Für Geschäftsführer und Inhaber von KMU mit 10 bis über 100 Mitarbeitenden. In rund 6 Wochen bekommen Sie ein vollständiges, in Euro bewertetes Risiko-Lagebild – plus konkreten Fahrplan.",
+             split=True, media_label="Geschäftsführung eines Mittelständlers bei der Risikoanalyse",
+             media_src=IMG_ANGEBOT_KMU_HERO,
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a><a class="brt-btn brt-btn--outline" href="#optionen">Die 3 Optionen ansehen →</a>')
+        + """
+    <section class="brt-section" aria-labelledby="problem-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">DIE TEURE UNSICHERHEIT</p>
+          <h2 id="problem-title" class="brt-h2">Sie wissen, dass irgendwo Risiken lauern. Aber welche sind die teuren?</h2>
+          <p class="brt-body">Welches Risiko könnte Sie im nächsten Jahr 50.000 €, 200.000 € oder mehr kosten? Sie führen ein Unternehmen mit Mitarbeitenden, Kunden, Prozessen und Verantwortung – und spüren: Da ist etwas, das Sie übersehen.</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Das externe Problem</h3><p class="brt-body">Sie haben kein vollständiges Bild Ihrer Risiken. Klassische Methoden sind für Konzerne gebaut – komplex, theoretisch, bürokratisch.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Das interne Problem</h3><p class="brt-body">Das Bauchgefühl sagt ‚da ist was' – aber Sie können es nicht benennen, nicht priorisieren, nicht beziffern.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Die Überzeugung</h3><p class="brt-body">Wer Verantwortung für Mitarbeitende und Kunden trägt, sollte wissen, wo die größten Risiken liegen. Nicht irgendwann. Jetzt.</p></li>
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="erstgespraech-title">
+      <div class="brt-container brt-fade-up">
+        <p class="brt-tag">ERST GEBEN, DANN ANBIETEN</p>
+        <h2 id="erstgespraech-title" class="brt-h2">Ihr kostenloses Erstgespräch: die komplette Methode, offen erklärt</h2>
+        <p class="brt-body">In ca. 45–60 Minuten zeigen wir Ihnen, wie Sie selbst eine strukturierte Risikoanalyse durchführen. Sie bekommen:</p>
+        <ul class="brt-list-check">
+          <li>Den 3-Ebenen-Ansatz erklärt (Gefahren → Risiken → Maßnahmen)</li>
+          <li>Die Bewertungslogik (Szenario, Schaden in Euro, Eintrittswahrscheinlichkeit, Inventar)</li>
+          <li>Die Fragetechnik, mit der Sie Ihr Team einbinden</li>
+          <li>Einen konkreten Startpunkt: die 5 Gefahrenfelder, die Sie zuerst durchgehen sollten</li>
+        </ul>
+      </div>
+    </section>"""
+        + pricing_cards(pre, opts, price_note=f'Analysepakete ab 3.475 € Festpreis. Alle Preise transparent auf der <a href="{pre}preise/">Preisseite</a>.')
+        + guarantee(pre, "Ihr Risiko ist null")
+        + faq_section(kmu_faq, alt=True)
+        + f"""
+    <section class="brt-section" aria-label="Ratgeber-Empfehlung">
+      <div class="brt-container brt-fade-up">
+        <p class="brt-body">Geschäftsführung, Meister, Vertrieb: Wie Sie Schlüsselpersonen im Mittelstand erkennen und absichern, lesen Sie im Ratgeber <a href="{pre}blog/schluesselpersonrisiko-erkennen-absichern/">Schlüsselpersonrisiko erkennen, bewerten und absichern &rarr;</a></p>
+      </div>
+    </section>"""
+        + cta_band(pre, "Verschaffen Sie sich Klarheit – bevor ein Risiko zuschlägt",
+                   "Erstgespräch buchen – kostenlos, unverbindlich. Sie gehen mit einer DIY-Anleitung raus, egal wie Sie sich entscheiden.",
+                   "Kostenloses Erstgespräch buchen")
+    )
+    kmu_title = "Risikomanagement Beratung KMU & Mittelstand | Beraterium"
+    kmu_desc = "Risikomanagement-Beratung für den Mittelstand: Risiko-Lagebild in Euro, ab 3.475 € Festpreis. Kostenloses Erstgespräch. Doppelte Garantie."
+    kmu_ld = page_schema(
+        service_schema(name="6-Wochen Klarheits-Fahrplan für KMU", description=kmu_desc, url="/angebote/kmu/", audience="KMU und Mittelstand"),
+        faq_page_schema(kmu_faq),
+    )
+    lp_shell(2, "kmu", kmu_title, kmu_desc, False, main, json_ld=kmu_ld)
+
+
+def gen_lp_solo() -> None:
+    pre = "../../"
+    solo_faq = [
+        ("Lohnt sich das, wenn ich nur ich bin?", "Gerade dann. Fällst du aus, gibt es keinen Puffer."),
+        ("Wie viel Zeit kostet es mich?", "Eine Session von 2–3 Stunden plus ein kurzes Kick-off. Mehr nicht."),
+        ("Ich finde Risiko-Themen unangenehm – wird das ein Angst-Termin?", "Nein. Es geht um Klarheit und Handlungsfähigkeit, nicht um Angst."),
+        ("Was bringt mir der KI-Impulsgeber konkret?", "Er liefert statistische Einschätzungen und Erfahrungswerte, damit deine Bewertung nicht nur auf deinem Bauchgefühl beruht."),
+        ("Was passiert, wenn ich als Selbstständiger krank werde?", "Keine Lohnfortzahlung — fixe Kosten laufen weiter. Beraterium bewertet das Szenario konkret und hilft beim Notfallplan."),
+        ("Was ist Scheinselbstständigkeit und wie prüfe ich, ob ich betroffen bin?", "Formal Freelancer, faktisch wie Angestellter — die Rentenversicherung kann rückwirkend Beiträge nachfordern. Wir bewerten das Risiko im Solo-Kompass."),
+        ("Wie viele Rücklagen sollte ich als Selbstständiger aufbauen?", "Faustregel: 3–6 Monate laufende Kosten. Im Risiko-Kompass rechnen wir das für dein konkretes Profil durch."),
+    ]
+    opts = [
+        {"title": "Option A — Risiko-Check Solo", "claim": "In 2 Wochen weißt du, wo du verletzlich bist.", "features": [
+            "Kick-off (Situation, Scope, Nutzen-Kriterien)", "Moderierte Risikoanalyse (1 Session, 2–3h) mit 2 Moderatoren + KI-Impulsgeber",
+            "Gefahrenkatalog Solo-Edition (3 Ebenen)", "Bewertung: Schadenshöhe in Euro + Wahrscheinlichkeit",
+            "Inventar-Check + Risiko-Report (1–2 Seiten)"]},
+        {"title": "Option B — Risiko-Check + Maßnahmen-Plan", "claim": "Du weißt, was los ist – und was du tun kannst.", "badge": "Beliebt", "featured": True,
+         "extra": "Alles aus A, plus:", "features": [
+            "Maßnahmen-Session (Top-Risiken → konkrete Schritte)", "Quick-Win-Liste für diese Woche",
+            "Priorisierter Fahrplan: Was zuerst, was kann warten?", "Ressourcen-Check: Was schaffst du allein, wo brauchst du Hilfe?"]},
+        {"title": "Option C — Risiko-Check + Maßnahmen + Umsetzungs-Sparring", "claim": "Wir bleiben dran, bis du sicher aufgestellt bist.",
+         "extra": "Alles aus B, plus:", "features": [
+            "6 Wochen Sparring (3× 30 Min., alle 2 Wochen)", "Zugang zur RisikoRadar-Community",
+            "Experten-Vermittlung bei konkretem Bedarf", "Risiko-Update nach 6 Wochen"]},
+    ]
+    main = (
+        hero(pre, "RISIKO-KOMPASS FÜR SOLO-SELBSTSTÄNDIGE", "Du bist dein Unternehmen. Weißt du, wo du verletzlich bist?",
+             "Für Freiberufler, Einzelunternehmer und Solo-Selbstständige. In 2 Wochen weißt du, welche Risiken dich am härtesten treffen würden – nicht um Angst zu haben, sondern um frei entscheiden zu können.",
+             split=True, media_label="Solo-Selbstständige beim Risiko-Kompass mit Beraterium",
+             media_src=IMG_ANGEBOT_SOLO_HERO,
+             actions=f'<a class="brt-btn" href="{pre}kontakt/">Kostenloses Erstgespräch buchen</a><a class="brt-btn brt-btn--outline" href="#optionen">Die 3 Optionen ansehen →</a>')
+        + """
+    <section class="brt-section" aria-labelledby="problem-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">KENNST DU DAS GEFÜHL?</p>
+          <h2 id="problem-title" class="brt-h2">Wenn du ausfällst, steht alles. Wenn ein Kunde wegbricht, wackelt die Existenz.</h2>
+          <p class="brt-body">Es gibt keinen Kollegen, der auffängt. Und ‚Risikomanagement' steht seit Ewigkeiten auf deiner ‚Müsste-ich-mal'-Liste.</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Das externe Problem</h3><p class="brt-body">Du hast keinen Überblick, welche Risiken dein Business wirklich bedrohen. Klassische Risikoanalyse fühlt sich an wie für Konzerne mit 500 Leuten.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Das interne Problem</h3><p class="brt-body">Du machst dir Sorgen – über Ausfall, Abhängigkeiten, Dinge, die du übersiehst. Aber als Solo bist du allein mit diesen Gedanken.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Die Überzeugung</h3><p class="brt-body">Wer sein eigenes Unternehmen trägt, hat das Recht zu wissen, wo die größten Gefahren liegen. Um frei entscheiden zu können.</p></li>
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="moderatoren-title">
+      <div class="brt-container brt-highlight-box brt-fade-up">
+        <h3 id="moderatoren-title" class="brt-h3">Warum zwei Moderatoren und ein KI-Impulsgeber?</h3>
+        <p class="brt-body">Als Solo hast du kein Team, das verschiedene Perspektiven einbringt. Das ersetzen wir: zwei Moderatoren, die strukturieren und hinterfragen, plus ein KI-gestützter Impulsgeber für statistische Erfahrungswerte.</p>
+      </div>
+    </section>"""
+        + pricing_cards(pre, opts, du=True, price_note=f'Kompakte Checks ab 47 € — alle Preise findest du transparent auf der <a href="{pre}preise/">Preisseite</a>.')
+        + guarantee(pre, du=True, h2="Null Risiko für dich", tag="Dein Risiko liegt bei uns")
+        + faq_section(solo_faq, alt=True)
+        + f"""
+    <section class="brt-section" aria-label="Ratgeber-Empfehlung">
+      <div class="brt-container brt-fade-up">
+        <p class="brt-body">Als Solo bist du selbst die Schlüsselperson. Was das konkret bedeutet und welche Sofortmaßnahmen helfen, liest du im Ratgeber <a href="{pre}blog/schluesselpersonrisiko-erkennen-absichern/">Schlüsselpersonrisiko erkennen, bewerten und absichern &rarr;</a></p>
+      </div>
+    </section>"""
+        + cta_band(pre, "Hol dir Klarheit über deine Risiken",
+                   "Erstgespräch buchen – 30 Minuten, gratis, kein Druck. Du bekommst unsere DIY-Methode erklärt und entscheidest danach in Ruhe.",
+                   "Kostenloses Erstgespräch buchen")
+    )
+    solo_title = "Risikomanagement Selbstständige – 2 Wochen | Beraterium"
+    solo_desc = "Risikomanagement für Selbstständige: In 2 Wochen weißt du, wo du verletzlich bist — Ausfall, Kundenabhängigkeit, Scheinselbstständigkeit. Mit Garantie."
+    solo_ld = page_schema(
+        service_schema(name="2-Wochen Risiko-Kompass für Solo-Selbstständige", description=solo_desc, url="/angebote/solo/", audience="Solo-Selbstständige und Freelancer"),
+        faq_page_schema(solo_faq),
+    )
+    lp_shell(2, "solo", solo_title, solo_desc, True, main, json_ld=solo_ld)
+
 
 def lp_deep_sections_html(sections: list[dict], start: int = 0, end: int | None = None) -> str:
     """Vertiefungs-Bloecke einer Landingpage (Prosa + optionale Checkliste)."""
@@ -3797,8 +2941,9 @@ def lp_related_blog_section(slugs: list[str]) -> str:
       </div>
     </section>"""
 
+
 def gen_landingpage(cfg: dict) -> None:
-    """Datengetriebenes SEO+GEO-One-Pager-Template unter /solutions/<slug>/.
+    """Datengetriebenes SEO+GEO-One-Pager-Template unter /loesungen/<slug>/.
 
     Eine neue Landingpage = ein neuer Eintrag in LP_CONFIGS (siehe NIS2 als
     Referenz). Struktur: Hero (answer-first) -> Kriterien-Checkliste (GEO-
@@ -3807,7 +2952,7 @@ def gen_landingpage(cfg: dict) -> None:
     """
     slug = cfg["slug"]
     pre = "../../"
-    canonical = f"/solutions/{slug}/"
+    canonical = f"/loesungen/{slug}/"
 
     criteria_items = "".join(f"<li>{item}</li>" for item in cfg["criteria"])
     pain_cards = "".join(
@@ -3824,16 +2969,22 @@ def gen_landingpage(cfg: dict) -> None:
 
     hero_cta2 = cfg.get("hero_cta2")
     hero_cta2_html = (
-        f'<a class="brt-btn brt-btn--outline" href="{pre}{hero_cta2["href"]}">{hero_cta2["label"]}</a>'
+        f'<a class="brt-btn brt-btn--outline" href="{pre}{hero_cta2["href"]}" '
+        f'data-print-url="{DE_SITE_URL}/{hero_cta2["href"]}">{hero_cta2["label"]}</a>'
         if hero_cta2
-        else '<a class="brt-btn brt-btn--outline" href="#faq">Frequently asked questions \u2192</a>'
+        else '<a class="brt-btn brt-btn--outline" href="#faq">Häufige Fragen \u2192</a>'
+    )
+    pdf_button_html = (
+        '<button type="button" class="brt-btn brt-btn--ghost" data-brt-print>Als PDF speichern</button>'
+        if cfg.get("pdf_button")
+        else ""
     )
     main = (
         hero(
             pre, cfg["tag"], cfg["h1"], cfg["lead"],
             actions=(
-                f'<a class="brt-btn" href="{pre}contact/">{cfg["hero_cta"]}</a>'
-                f'{hero_cta2_html}'
+                f'<a class="brt-btn" href="{pre}kontakt/" data-print-url="{DE_SITE_URL}/kontakt/">{cfg["hero_cta"]}</a>'
+                f'{hero_cta2_html}{pdf_button_html}'
             ),
         )
         + f"""
@@ -3883,8 +3034,8 @@ def gen_landingpage(cfg: dict) -> None:
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
-                {"@type": "ListItem", "position": 2, "name": cfg["breadcrumb_name"], "item": f"{EN_SITE_URL}{canonical}"},
+                {"@type": "ListItem", "position": 1, "name": "Startseite", "item": f"{DE_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": cfg["breadcrumb_name"], "item": f"{DE_SITE_URL}{canonical}"},
             ],
         },
         ensure_ascii=False,
@@ -3902,7 +3053,7 @@ def gen_landingpage(cfg: dict) -> None:
         breadcrumb_ld,
     )
     write(
-        f"solutions/{slug}/index.html",
+        f"loesungen/{slug}/index.html",
         shell(
             depth=2,
             title=cfg["title"],
@@ -3913,6 +3064,7 @@ def gen_landingpage(cfg: dict) -> None:
             json_ld=ld,
         ),
     )
+
 
 LP_CONFIGS: list[dict] = [
     {
@@ -3930,7 +3082,7 @@ LP_CONFIGS: list[dict] = [
             "haftet dabei persönlich. Beraterium hilft Ihnen, Ihre Betroffenheit zu prüfen und die "
             "wichtigsten Risiken mit dem 3-Ebenen-Gefahrenkatalog in Euro bewertet sichtbar zu machen."
         ),
-        "hero_cta": "Book a free intro call",
+        "hero_cta": "Kostenloses Erstgespräch buchen",
         "criteria_tag": "DIREKT-CHECK",
         "criteria_h2": "Welche Unternehmen müssen NIS2 umsetzen?",
         "criteria_intro": "Sie sind wahrscheinlich betroffen, wenn Ihr Unternehmen mindestens eines der folgenden Kriterien erfüllt:",
@@ -3963,9 +3115,9 @@ LP_CONFIGS: list[dict] = [
             "nicht mit Ampelfarben."
         ),
         "overview_cards": [
-            ("Die Methode", "Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.", "method/", "Zur Methode"),
-            ("Risikoanalyse für KMU", "In rund 6 Wochen zu einem vollständigen, bankfähigen Risiko-Lagebild – inklusive NIS2-relevanter Cyberrisiken.", "services/smb/", "Zum Angebot für KMU"),
-            ("Doppelte Garantie", "Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.", "benefit-guarantee/", "Zur Garantie"),
+            ("Die Methode", "Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.", "methode/", "Zur Methode"),
+            ("Risikoanalyse für KMU", "In rund 6 Wochen zu einem vollständigen, bankfähigen Risiko-Lagebild – inklusive NIS2-relevanter Cyberrisiken.", "angebote/kmu/", "Zum Angebot für KMU"),
+            ("Doppelte Garantie", "Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.", "nutzen-garantie/", "Zur Garantie"),
         ],
         "faq": [
             ("Welche Unternehmen müssen NIS2 umsetzen?", "Betroffen sind vor allem mittelständische und größere Unternehmen aus definierten Sektoren wie Energie, Gesundheit, Transport, digitaler Infrastruktur oder verarbeitendem Gewerbe – meist ab 50 Mitarbeitenden oder 10 Mio. € Jahresumsatz. Auch wichtige Zulieferer betroffener Unternehmen können erfasst sein."),
@@ -4023,20 +3175,20 @@ LP_CONFIGS: list[dict] = [
             ],
         },
         "blog_slugs": [
-            "cyber-attack-what-to-do-smb",
-            "business-security-risk-management-smb",
-            "risk-management-consulting-smb-providers",
+            "cyberangriff-was-tun-kmu",
+            "sicherheit-unternehmen-risikomanagement-kmu",
+            "risikomanagement-beratung-kmu-anbieter",
         ],
         "cta_h2": "Klären Sie Ihre NIS2-Betroffenheit – kostenlos und unverbindlich",
         "cta_body": "Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Sie erhalten unsere Methode erklärt und wissen danach, wo Sie stehen.",
         "title": "NIS2-Betroffenheit prüfen für KMU | Beraterium",
-        "description": "Prüfen Sie, ob Ihr Unternehmen von der NIS2-Richtlinie betroffen ist – inklusive Pflichten, Fristen und Bußgeldern. Book a free intro call.",
+        "description": "Prüfen Sie, ob Ihr Unternehmen von der NIS2-Richtlinie betroffen ist – inklusive Pflichten, Fristen und Bußgeldern. Kostenloses Erstgespräch buchen.",
         "service_name": "NIS2-Risikocheck für KMU",
         "breadcrumb_name": "NIS2-Betroffenheit",
     },
     {
         # Keyword (Webseite/Keywords/keyword-liste-master.csv): unternehmensnachfolge planen / nachfolge mittelstand risiken
-        "slug": "succession",
+        "slug": 'nachfolge',
         "du": False,
         "audience": 'KMU und Mittelstand',
         "tag": 'NACHFOLGE',
@@ -4048,7 +3200,7 @@ LP_CONFIGS: list[dict] = [
             'Finanzierungsstruktur. Beraterium hilft Ihnen, diese Risiken vor der Übergabe mit dem '
             '3-Ebenen-Gefahrenkatalog in Euro bewertet sichtbar zu machen.'
         ),
-        "hero_cta": 'Book a free intro call',
+        "hero_cta": 'Kostenloses Erstgespräch buchen',
         "criteria_tag": 'DIREKT-CHECK',
         "criteria_h2": 'Wann sollten Sie mit der Nachfolge-Risikoanalyse beginnen?',
         "criteria_intro": 'Sie sollten Ihre Nachfolge-Risiken jetzt strukturiert prüfen, wenn mindestens eines dieser Kriterien zutrifft:',
@@ -4081,9 +3233,9 @@ LP_CONFIGS: list[dict] = [
             'wirklich gefährden, in Euro bewertet und priorisiert.'
         ),
         "overview_cards": [
-            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
-            ('Risikoanalyse für KMU', 'In rund 6 Wochen zu einem vollständigen, bankfähigen Risiko-Lagebild – inklusive Nachfolge-Risiken.', 'services/smb/', 'Zum Angebot für KMU'),
-            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'methode/', 'Zur Methode'),
+            ('Risikoanalyse für KMU', 'In rund 6 Wochen zu einem vollständigen, bankfähigen Risiko-Lagebild – inklusive Nachfolge-Risiken.', 'angebote/kmu/', 'Zum Angebot für KMU'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.', 'nutzen-garantie/', 'Zur Garantie'),
         ],
         "faq": [
             ('Welche Risiken entstehen bei der Unternehmensnachfolge im Mittelstand?', 'Bei der Unternehmensnachfolge treten drei Risikofelder gleichzeitig auf: Wissenstransfer (implizites Führungswissen des Seniors geht verloren), Führungsakzeptanz (Mitarbeitende und Kunden müssen Vertrauen zur Nachfolge aufbauen) und Finanzierungsstruktur (oft ungeklärte Haftungsfragen oder stille Reserven). Eine strukturierte Risikoanalyse vor der Übergabe identifiziert diese Felder und priorisiert Maßnahmen.'),
@@ -4144,9 +3296,9 @@ LP_CONFIGS: list[dict] = [
             ],
         },
         "blog_slugs": [
-            "business-succession-overlooked-risks",
-            "family-succession-generational-conflict-risk",
-            "key-person-risk-identify-mitigate",
+            "unternehmensnachfolge-uebersehene-risiken",
+            "familiennachfolge-generationskonflikt-risiko-nach-uebergabe",
+            "schluesselpersonrisiko-erkennen-absichern",
         ],
         "cta_h2": 'Klären Sie Ihre Nachfolge-Risiken – kostenlos und unverbindlich',
         "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Sie erhalten unsere Methode erklärt und wissen danach, wo Sie stehen.',
@@ -4157,7 +3309,7 @@ LP_CONFIGS: list[dict] = [
     },
     {
         # Keyword (Webseite/Keywords/keyword-liste-master.csv): cyberangriff unternehmen was tun / cyberangriff mittelstand schutz
-        "slug": "cyber-attack",
+        "slug": 'cyberangriff',
         "du": False,
         "audience": 'KMU und Mittelstand',
         "tag": 'CYBERANGRIFF',
@@ -4169,7 +3321,7 @@ LP_CONFIGS: list[dict] = [
             'Ihnen, Cyberrisiken vorab zu bewerten und eine Reaktionskette zu planen – in Euro '
             'bewertet, nicht mit Ampelfarben.'
         ),
-        "hero_cta": 'Book a free intro call',
+        "hero_cta": 'Kostenloses Erstgespräch buchen',
         "criteria_tag": 'DIREKT-CHECK',
         "criteria_h2": 'Wann ist Ihr Unternehmen besonders angreifbar?',
         "criteria_intro": 'Ihr Cyberrisiko ist besonders hoch, wenn mindestens eines dieser Kriterien zutrifft:',
@@ -4202,9 +3354,9 @@ LP_CONFIGS: list[dict] = [
             'Schaden verhindern, statt Compliance-Blindflug.'
         ),
         "overview_cards": [
-            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
-            ('Risikoanalyse für KMU', 'In rund 6 Wochen zu einem vollständigen, bankfähigen Risiko-Lagebild – inklusive Cyber- und NIS2-Risiken.', 'services/smb/', 'Zum Angebot für KMU'),
-            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'methode/', 'Zur Methode'),
+            ('Risikoanalyse für KMU', 'In rund 6 Wochen zu einem vollständigen, bankfähigen Risiko-Lagebild – inklusive Cyber- und NIS2-Risiken.', 'angebote/kmu/', 'Zum Angebot für KMU'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.', 'nutzen-garantie/', 'Zur Garantie'),
         ],
         "faq": [
             ('Was tun, wenn mein Unternehmen von einem Cyberangriff betroffen ist?', 'Im Ernstfall zählen die ersten 2 Stunden: betroffene Systeme isolieren (Netzwerk trennen), nicht selbst versuchen zu löschen oder zu entschlüsseln, IT-Sicherheitsexperten hinzuziehen und bei schweren Angriffen das BSI sowie die Polizei informieren. Danach folgt die Schadenserfassung. Beraterium unterstützt KMU dabei, diese Reaktionskette vorab zu planen — damit im Ernstfall niemand raten muss.'),
@@ -4271,9 +3423,9 @@ LP_CONFIGS: list[dict] = [
             ],
         },
         "blog_slugs": [
-            "cyber-attack-what-to-do-smb",
-            "business-security-risk-management-smb",
-            "key-person-risk-identify-mitigate",
+            "cyberangriff-was-tun-kmu",
+            "sicherheit-unternehmen-risikomanagement-kmu",
+            "schluesselpersonrisiko-erkennen-absichern",
         ],
         "cta_h2": 'Bewerten Sie Ihr Cyberrisiko – kostenlos und unverbindlich',
         "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Sie erhalten unsere Methode erklärt und wissen danach, wo Sie stehen.',
@@ -4284,7 +3436,7 @@ LP_CONFIGS: list[dict] = [
     },
     {
         # Keyword (Webseite/Keywords/keyword-liste-master.csv): selbstständig absichern / risiken selbstständigkeit
-        "slug": "self-employed-protection",
+        "slug": 'selbststaendig-absichern',
         "du": True,
         "audience": 'Solo-Selbstständige und Freelancer',
         "tag": 'SELBSTSTÄNDIGKEIT',
@@ -4296,7 +3448,7 @@ LP_CONFIGS: list[dict] = [
             'dem 2-Wochen-Risiko-Kompass in Euro bewertet sichtbar zu machen – bevor der Ernstfall '
             'eintritt.'
         ),
-        "hero_cta": 'Book a free intro call',
+        "hero_cta": 'Kostenloses Erstgespräch buchen',
         "criteria_tag": 'DIREKT-CHECK',
         "criteria_h2": 'Wann solltest du deine Absicherung prüfen?',
         "criteria_intro": 'Du solltest deine Risiken jetzt strukturiert prüfen, wenn mindestens eines dieser Kriterien zutrifft:',
@@ -4331,9 +3483,9 @@ LP_CONFIGS: list[dict] = [
             'zeigt dir in 10 Minuten deine größten blinden Flecken.'
         ),
         "overview_cards": [
-            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
-            ('2-Wochen-Risiko-Kompass', 'In zwei Wochen zu einem vollständigen Risiko-Lagebild – speziell für Solo-Selbstständige und Freelancer.', 'services/solo/', 'Zum Solo-Angebot'),
-            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Du erhältst den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'methode/', 'Zur Methode'),
+            ('2-Wochen-Risiko-Kompass', 'In zwei Wochen zu einem vollständigen Risiko-Lagebild – speziell für Solo-Selbstständige und Freelancer.', 'angebote/solo/', 'Zum Solo-Angebot'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Du erhältst den vollen Betrag zurück.', 'nutzen-garantie/', 'Zur Garantie'),
         ],
         "faq": [
             ('Was sind die größten Risiken für Selbstständige und Freelancer?', 'Die drei größten Risiken für Solo-Selbstständige sind: (1) Ausfall der eigenen Arbeitskraft — durch Krankheit, Burnout oder Unfall — ohne Vertretung und ohne Gehaltsfortzahlung; (2) Kundenkonzentration — wenn ein Hauptkunde wegbricht, bricht der Umsatz weg; (3) Scheinselbstständigkeit — eine rückwirkende Feststellung kostet Sozialversicherungsbeiträge über mehrere Jahre. Der 2-Wochen-Risiko-Kompass von Beraterium deckt alle drei auf.'),
@@ -4392,20 +3544,20 @@ LP_CONFIGS: list[dict] = [
             ],
         },
         "blog_slugs": [
-            "risks-self-employed-freelancers",
-            "false-self-employment-check",
-            "key-person-risk-identify-mitigate",
+            "risiken-selbststaendige-freelancer",
+            "scheinselbststaendigkeit-pruefen",
+            "schluesselpersonrisiko-erkennen-absichern",
         ],
         "cta_h2": 'Prüfe deine Absicherung – kostenlos und unverbindlich',
         "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Du erhältst unsere Methode erklärt und weißt danach, wo du stehst.',
         "title": 'Selbstständig absichern: Ausfallrisiko | Beraterium',
-        "description": 'Selbstständig absichern: Ausfallrisiko und Kundenkonzentration in Euro bewertet. Der 2-Wochen-Risiko-Kompass. Book a free intro call.',
+        "description": 'Selbstständig absichern: Ausfallrisiko und Kundenkonzentration in Euro bewertet. Der 2-Wochen-Risiko-Kompass. Kostenloses Erstgespräch buchen.',
         "service_name": '2-Wochen-Risiko-Kompass für Solo',
         "breadcrumb_name": 'Selbstständig absichern',
     },
     {
         # Keyword (Webseite/Keywords/keyword-liste-master.csv): schlüsselperson absichern unternehmen / key person risiko
-        "slug": "key-person-risk",
+        "slug": 'schluesselperson-risiko',
         "du": False,
         "audience": 'KMU, Startups und Solo-Selbstständige',
         "tag": 'SCHLÜSSELPERSON',
@@ -4417,7 +3569,7 @@ LP_CONFIGS: list[dict] = [
             'bei Solo-Selbstständigen sind Sie die Schlüsselperson selbst. Beraterium erfasst diese '
             'Abhängigkeiten mit dem 3-Ebenen-Gefahrenkatalog in Euro.'
         ),
-        "hero_cta": 'Book a free intro call',
+        "hero_cta": 'Kostenloses Erstgespräch buchen',
         "criteria_tag": 'DIREKT-CHECK',
         "criteria_h2": 'Wann ist Ihr Unternehmen von Schlüsselpersonen abhängig?',
         "criteria_intro": 'Sie haben ein relevantes Schlüsselpersonrisiko, wenn mindestens eines dieser Kriterien zutrifft:',
@@ -4450,9 +3602,9 @@ LP_CONFIGS: list[dict] = [
             'in Euro bewertet, mit Maßnahmen zur Wissensverteilung und Vertretung.'
         ),
         "overview_cards": [
-            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
-            ('Angebote für jede Zielgruppe', 'Ob KMU, Startup oder Solo – Beraterium hat ein passendes Risiko-Angebot für Ihre Situation.', 'services/', 'Zu den Angeboten'),
-            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'methode/', 'Zur Methode'),
+            ('Angebote für jede Zielgruppe', 'Ob KMU, Startup oder Solo – Beraterium hat ein passendes Risiko-Angebot für Ihre Situation.', 'angebote/', 'Zu den Angeboten'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Sie erhalten den vollen Betrag zurück.', 'nutzen-garantie/', 'Zur Garantie'),
         ],
         "faq": [
             ('Was ist das Schlüsselpersonrisiko und wie schützt mein KMU sich dagegen?', 'Das Schlüsselpersonrisiko beschreibt den wirtschaftlichen Schaden, der entsteht, wenn eine für das Unternehmen unverzichtbare Person langfristig ausfällt — durch Krankheit, Kündigung oder Tod. In vielen KMU ist das die Geschäftsführung selbst. Beraterium erfasst im 3-Ebenen-Gefahrenkatalog systematisch, welche Personen welche einzigartigen Funktionen tragen, und entwickelt Maßnahmen zur Wissensverteilung oder -dokumentation.'),
@@ -4501,9 +3653,9 @@ LP_CONFIGS: list[dict] = [
             ],
         },
         "blog_slugs": [
-            "key-person-risk-identify-mitigate",
-            "business-succession-overlooked-risks",
-            "risks-self-employed-freelancers",
+            "schluesselpersonrisiko-erkennen-absichern",
+            "unternehmensnachfolge-uebersehene-risiken",
+            "risiken-selbststaendige-freelancer",
         ],
         "cta_h2": 'Bewerten Sie Ihr Schlüsselpersonrisiko – kostenlos und unverbindlich',
         "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Sie erhalten unsere Methode erklärt und wissen danach, wo Sie stehen.',
@@ -4526,7 +3678,7 @@ LP_CONFIGS: list[dict] = [
             'Wochen ein strukturiertes Risiko-Portfolio in Euro bewertet – investor-ready statt '
             'improvisiert.'
         ),
-        "hero_cta": 'Book a free intro call',
+        "hero_cta": 'Kostenloses Erstgespräch buchen',
         "criteria_tag": 'DIREKT-CHECK',
         "criteria_h2": 'Wann solltest du dein Startup investor-ready machen?',
         "criteria_intro": 'Du solltest deine Due-Diligence-Vorbereitung starten, wenn mindestens eines dieser Kriterien zutrifft:',
@@ -4559,9 +3711,9 @@ LP_CONFIGS: list[dict] = [
             'priorisiert und als Portfolio dokumentiert.'
         ),
         "overview_cards": [
-            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'method/', 'Zur Methode'),
-            ('4-Wochen-Risiko-Check', 'In vier Wochen zu einem investor-ready Risiko-Portfolio – Key-Person, Cash, Legal und Tech.', 'services/startups/', 'Zum Startup-Angebot'),
-            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Du erhältst den vollen Betrag zurück.', 'benefit-guarantee/', 'Zur Garantie'),
+            ('Die Methode', 'Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.', 'methode/', 'Zur Methode'),
+            ('4-Wochen-Risiko-Check', 'In vier Wochen zu einem investor-ready Risiko-Portfolio – Key-Person, Cash, Legal und Tech.', 'angebote/startups/', 'Zum Startup-Angebot'),
+            ('Doppelte Garantie', 'Kein relevantes Risiko gefunden oder kein Nutzen? Du erhältst den vollen Betrag zurück.', 'nutzen-garantie/', 'Zur Garantie'),
         ],
         "faq": [
             ('Wie bereite ich mein Startup auf Due Diligence vor?', 'Due Diligence durch Investoren prüft nicht nur die Zahlen — sie prüft auch, ob Gründer ihre eigenen Risiken kennen und managen. Ein strukturiertes Risiko-Portfolio, in dem Key-Person-, Cash-, Legal- und Tech-Risiken bewertet und priorisiert sind, ist ein starkes Signal für Investor-Readiness. Beraterium erstellt dieses Portfolio in 4 Wochen.'),
@@ -4618,350 +3770,352 @@ LP_CONFIGS: list[dict] = [
             ],
         },
         "blog_slugs": [
-            "startup-mistakes-avoid-risk-management",
-            "key-person-risk-identify-mitigate",
+            "startup-fehler-vermeiden-risikomanagement",
+            "schluesselpersonrisiko-erkennen-absichern",
             "what-is-risk-management",
         ],
         "cta_h2": 'Mach dein Startup investor-ready – kostenlos und unverbindlich',
         "cta_body": 'Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Du erhältst unsere Methode erklärt und weißt danach, wo du stehst.',
         "title": 'Startup Due Diligence vorbereiten | Beraterium',
-        "description": 'Due Diligence für Startups: Risiken erkennen, in Euro bewerten und investor-ready werden. Der 4-Wochen-Check. Book a free intro call.',
+        "description": 'Due Diligence für Startups: Risiken erkennen, in Euro bewerten und investor-ready werden. Der 4-Wochen-Check. Kostenloses Erstgespräch buchen.',
         "service_name": '4-Wochen-Risiko-Check für Startups',
         "breadcrumb_name": 'Investor Due Diligence',
     },
     {
-        # Offer one-pager (2026-08-08). Keyword intent: risk analysis startup cost / process / pricing
-        "slug": "risk-analysis-startup",
+        # Angebots-One-Pager ohne BAFA (2026-08-07). Keyword (Webseite/Keywords/keyword-themen-map.md): "risikoanalyse startup kosten"
+        "slug": "risikoanalyse-startup",
         "du": True,
-        "audience": "Startups and founders",
-        "tag": "STARTUP RISK ANALYSIS",
-        "h1": "Startup risk management: risk analysis process and pricing",
+        "audience": "Startups und Gründer",
+        "tag": "RISIKOANALYSE STARTUP",
+        "h1": "Risikoanalyse für dein Startup: Ablauf und Kosten",
         "lead": (
-            "The 360° Risk Analysis shows your startup&rsquo;s top 5&ndash;10 risks, assessed in euros "
-            "and prioritised &mdash; from key-person dependency to runway. You get analysis, strategy "
-            "session and budget planning as a fixed-price bundle for &euro;3,475, completed in "
-            "2&ndash;4 weeks. Not there yet? The free Blindspot Quick Check reveals your biggest "
-            "blind spots in 10 minutes."
+            "Die Risiko-Analyse 360° zeigt dir die Top 5–10 Risiken deines Startups, in Euro bewertet "
+            "und priorisiert – von Schlüsselperson-Abhängigkeit bis Runway. Du bekommst Analyse, "
+            "Strategie-Sitzung und Budgetplanung als Festpreis-Bundle für 3.475 €, abgeschlossen in "
+            "2–4 Wochen. Noch nicht so weit? Der kostenlose Blindspot Quick Check zeigt dir in 10 "
+            "Minuten deine größten blinden Flecken."
         ),
-        "hero_cta": "Book a free intro call",
-        "hero_cta2": {"label": "Blindspot Quick Check (10 min)", "href": "tools/blindspot-check/"},
+        "hero_cta": "Kostenloses Erstgespräch buchen",
+        "hero_cta2": {"label": "Blindspot Quick Check (10 Min)", "href": "tools/blindspot-check/"},
         "guarantee_section": True,
-        "criteria_tag": "FIT CHECK",
-        "criteria_h2": "Is a risk analysis right for your startup?",
-        "criteria_intro": "A structured risk analysis is worth it if at least one of these applies:",
+        "criteria_tag": "DIREKT-CHECK",
+        "criteria_h2": "Passt eine Risikoanalyse zu deinem Startup?",
+        "criteria_intro": "Eine strukturierte Risikoanalyse lohnt sich für dich, wenn mindestens eines dieser Kriterien zutrifft:",
         "criteria": [
-            "You have reached product&ndash;market fit or are close",
-            "Your team has 3&ndash;20 people",
-            "An investor conversation or due diligence review is coming up or on the horizon",
-            "At least one risk (key person, runway, major customer) would seriously hurt the business",
+            "Du hast Product-Market-Fit erreicht oder stehst kurz davor",
+            "Dein Team hat 3–20 Mitarbeitende",
+            "Ein Investoren-Gespräch oder eine Due-Diligence-Prüfung steht an oder ist absehbar",
+            "Mindestens ein Risiko (Schlüsselperson, Runway, Kunde) würde dein Startup ernsthaft treffen",
         ],
-        "stats_aria": "Startup risk analysis at a glance",
+        "stats_aria": "Risikoanalyse Startup in Zahlen",
         "stats": [
-            ("2&ndash;4 weeks", "from analysis to final report"),
-            ("Top 5&ndash;10", "risks assessed in euros and prioritised"),
-            ("&euro;3,475", "fixed price for analysis, strategy and budget"),
-            ("2&times; money back", "relevance and value guarantee"),
+            ("2–4 Wochen", "von der Analyse bis zum fertigen Report"),
+            ("Top 5–10", "Risiken einzeln in Euro bewertet und priorisiert"),
+            ("3.475 €", "Festpreis für Analyse, Strategie und Budget"),
+            ("2× Geld zurück", "Relevanz- und Nutzen-Garantie"),
         ],
-        "pain_tag": "THREE RISKS INVESTORS SPOT",
-        "pain_h2": "What happens if these three risks stay hidden?",
-        "pain_intro": "As a founder you carry risks that stay invisible day to day &mdash; until an investor or an outage makes them obvious.",
+        "pain_tag": "DIE DREI RISIKEN, DIE INVESTOREN SEHEN",
+        "pain_h2": "Was passiert, wenn diese drei Risiken unentdeckt bleiben?",
+        "pain_intro": "Als Gründer trägst du Risiken, die im Alltag unsichtbar bleiben – bis ein Investor oder ein Ausfall sie sichtbar macht.",
         "pain_cards": [
-            ("Key-person risk", 'Does product or sales depend on one person &mdash; often you? If you drop out, the startup stalls. More: <a href="../../solutions/key-person-risk/">Identify key-person risk</a>.'),
-            ("Runway and burn rate", "Roughly 32% of failed startups run out of cash, not product. Without a clear picture, runway only becomes a topic when it is too late."),
-            ("Due diligence", 'Investors ask for your risk assessment. Without a structured risk picture it reads as uncertainty &mdash; not control. More: <a href="../../solutions/investor-due-diligence/">Prepare for investor due diligence</a>.'),
+            ("Schlüsselperson-Risiko", 'Hängt Produkt oder Vertrieb an einer Person – meist dir selbst? Fällst du aus, steht das Startup still. Mehr dazu: <a href="../../loesungen/schluesselperson-risiko/">Schlüsselperson-Risiko erkennen</a>.'),
+            ("Runway und Burn-Rate", "Rund 32 % der scheiternden Startups scheitern an Cash, nicht am Produkt. Ohne klares Bild wird Runway erst zum Thema, wenn es zu spät ist."),
+            ("Due Diligence", 'Investoren fragen nach deinem Risk Assessment. Ohne strukturiertes Risikobild wirkt das wie Unsicherheit – nicht wie Kontrolle. Mehr dazu: <a href="../../loesungen/investor-due-diligence/">Investor Due Diligence vorbereiten</a>.'),
         ],
-        "overview_tag": "NEXT STEPS",
-        "overview_h2": "How does the risk analysis connect to our other services?",
-        "overview_intro": "The risk analysis is the entry point &mdash; depending on the outcome, further focused steps follow.",
+        "overview_tag": "WEITERFÜHREND",
+        "overview_h2": "Wie hängt die Risikoanalyse mit dem restlichen Angebot zusammen?",
+        "overview_intro": "Die Risikoanalyse ist der Einstieg – je nach Ergebnis ergeben sich daraus weitere, gezielte Schritte.",
         "overview_cards": [
-            ("The method", "The 3-level hazard catalogue: collect hazards, assess risks in euros, prioritise measures.", "method/", "View method"),
-            ("Services for startups", "All startup packages &mdash; from a short analysis to the full 360° risk analysis.", "services/startups/", "Startup services"),
-            ("Full pricing", "Complete price list for all 32 services &mdash; analysis, workshops and training.", "pricing/", "View pricing"),
-            ("Blindspot Quick Check", "Free self-assessment: 10 minutes to surface your biggest blind spots.", "tools/blindspot-check/", "Start quick check"),
+            ("Die Methode", "Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.", "methode/", "Zur Methode"),
+            ("Angebot für Startups", "Alle Pakete für Startups im Überblick – von der Kurzanalyse bis zur vollen Risiko-Analyse 360°.", "angebote/startups/", "Zum Startup-Angebot"),
+            ("Alle Preise", "Die komplette Preisübersicht aller 32 Angebote – Analyse, Workshops, Schulungen.", "preise/", "Zur Preisübersicht"),
+            ("Blindspot Quick Check", "Kostenloser Selbsttest: 10 Minuten, deine größten blinden Flecken sofort sichtbar.", "tools/blindspot-check/", "Zum Quick Check"),
         ],
         "faq": [
-            ("What does a risk analysis for startups cost?", "The 360° Risk Analysis (RA-01) costs &euro;3,475 as a fixed price for analysis, strategy session and budget planning &mdash; bought separately the three parts would cost &euro;5,150. For a smaller entry there is analysis only (RA-02) at &euro;1,725 or startup risk-analysis preparation (ZUS-05) at &euro;295."),
-            ("How long does the risk analysis take?", "The 360° Risk Analysis includes three workshops, each with its own report and follow-up call &mdash; from booking to final deliverable the process usually takes 2&ndash;4 weeks, depending on your team&rsquo;s availability."),
-            ("What happens in the free intro call?", "In a 30-minute intro call we clarify where your startup stands, which risks are already visible and which package fits your stage &mdash; no obligation and no sales pressure."),
-            ("What do I receive in writing?", "After each workshop you get a report: the prioritised risk list in euros, the strategy and implementation plan, and the budget plan with cost&ndash;benefit view &mdash; together a complete, investor-ready document."),
-            ("What if I am not sure my startup needs this yet?", "If product&ndash;market fit, investor interest or a tangible risk are not there yet, the free Blindspot Quick Check is often enough as a first step &mdash; it shows where you stand in 10 minutes."),
-            ("What if the analysis finds no relevant risk?", "Then the relevance guarantee applies: if the analysis finds no risk above the agreed threshold, Beraterium refunds the full fee. The value guarantee additionally ensures the agreed criteria are actually met."),
+            ("Was kostet eine Risikoanalyse für Startups?", "Die Risiko-Analyse 360° (RA-01) kostet 3.475 € als Festpreis für Analyse, Strategie-Sitzung und Budgetplanung – einzeln würden die drei Bausteine 5.150 € kosten. Für einen kleineren Einstieg gibt es die reine Analyse (RA-02) für 1.725 € oder die Risikoanalyse-Vorbereitung für Startups (ZUS-05) für 295 €."),
+            ("Wie lange dauert die Risikoanalyse?", "Die Risiko-Analyse 360° umfasst drei Workshops mit jeweils eigenem Report und Nachbereitungsgespräch – von der Terminvereinbarung bis zum fertigen Ergebnis dauert der gesamte Prozess in der Regel 2–4 Wochen, abhängig von der Terminverfügbarkeit deines Teams."),
+            ("Was passiert im kostenlosen Erstgespräch?", "Im 30-minütigen Erstgespräch klären wir, wo dein Startup steht, welche Risiken bereits absehbar sind und welches Paket zu deiner Phase passt – unverbindlich und ohne Verkaufsdruck."),
+            ("Was bekomme ich am Ende schriftlich?", "Nach jedem Workshop erhältst du einen Report: die priorisierte Risikoliste in Euro bewertet, den Strategie- und Umsetzungsplan sowie den Budgetplan mit Kosten-Nutzen-Einordnung – zusammen ein vollständiges, investorentaugliches Dokument."),
+            ("Was ist, wenn ich unsicher bin, ob mein Startup das schon braucht?", "Wenn Product-Market-Fit, Investoren-Interesse oder ein spürbares Risiko noch nicht da sind, reicht oft der kostenlose Blindspot Quick Check als erster Schritt – er zeigt in 10 Minuten, wo du stehst."),
+            ("Was passiert, wenn die Analyse kein relevantes Risiko findet?", "Dann greift die Relevanz-Garantie: Findet die Analyse kein einziges Risiko mit relevanter Schadenshöhe, erstattet Beraterium den vollen Betrag. Zusätzlich sichert die Nutzen-Garantie ab, dass die vereinbarten Kriterien auch tatsächlich erfüllt werden."),
         ],
         "deep_sections": [
             {
-                "tag": "SCOPE (RA-01)",
-                "h2": "What is included in fixed price RA-01 (&euro;3,475)?",
+                "tag": "LEISTUNGSUMFANG (RA-01)",
+                "h2": "Was ist im Festpreis RA-01 (3.475 €) enthalten?",
                 "intro": (
-                    "All three analysis building blocks &mdash; analysis, strategy and budget &mdash; in one "
-                    "continuous process with your team. The bundle costs less than booking separately "
-                    "(&euro;5,150 individually) and is the recommended entry for startups under investor or growth pressure."
+                    "Die Kombination aller drei Analyse-Bausteine — Analyse, Strategie und Budget — in einem "
+                    "durchgehenden Prozess mit deinem Team. Das Bundle ist günstiger als die Einzelbuchung "
+                    "(einzeln 5.150 €) und der empfohlene Einstieg für Startups mit Investoren- oder Wachstumsdruck."
                 ),
                 "items": [
-                    "Analysis workshop: identify top 5&ndash;10 risks, assess in euros and by likelihood",
-                    "Strategy workshop: develop concrete, actionable measures for the top risks &mdash; with implementation plan",
-                    "Budget workshop: weigh internal resources vs external providers, guided by damage figures from the analysis",
-                    "Each phase ends with a report and a follow-up call with leadership",
+                    "Analyse-Workshop: die Top 5–10 Risiken identifizieren, in Euro bewerten und nach Eintrittswahrscheinlichkeit einordnen",
+                    "Strategie-Workshop: für die wichtigsten Risiken konkrete, umsetzbare Maßnahmen entwickeln – mit Umsetzungsplan",
+                    "Budget-Workshop: eigene Ressourcen vs. externe Dienstleister abwägen, orientiert am Schaden aus der Analyse",
+                    "Jede Phase endet mit einem Report und einem Nachbereitungsgespräch mit der Geschäftsführung",
                 ],
             },
         ],
         "steps_section": {
-            "tag": "HOW IT WORKS",
-            "h2": "How does the risk analysis for your startup work?",
-            "intro": "Five clear steps &mdash; no guesswork about effort.",
+            "tag": "SO LÄUFT ES AB",
+            "h2": "Wie läuft die Risikoanalyse für dein Startup ab?",
+            "intro": "Fünf klare Schritte – kein Rätselraten über den Aufwand.",
             "steps": [
-                ("Intro call (30 min)", "We clarify your starting point, goal and whether RA-01, RA-02 or ZUS-05 fits your stage."),
-                ("Analysis workshop", "Together we identify your startup&rsquo;s top 5&ndash;10 risks and assess them in euros."),
-                ("Report with prioritised risks", "You receive the prioritised risk list in writing &mdash; basis for investor or bank conversations."),
-                ("Strategy session", "For the top risks we develop concrete, actionable measures with an implementation plan."),
-                ("Budget planning", "You decide how much budget goes into which measure &mdash; guided by actual damage from the analysis."),
+                ("Erstgespräch (30 Min)", "Wir klären deine Ausgangslage, dein Ziel und ob RA-01, RA-02 oder ZUS-05 zu deiner Phase passt."),
+                ("Analyse-Workshop", "Gemeinsam mit dir identifizieren wir die Top 5–10 Risiken deines Startups und bewerten sie in Euro."),
+                ("Report mit priorisierten Risiken", "Du erhältst die priorisierte Risikoliste schriftlich – Basis für Investoren- oder Bankgespräche."),
+                ("Strategie-Sitzung", "Für die wichtigsten Risiken entwickeln wir konkrete, umsetzbare Maßnahmen mit Umsetzungsplan."),
+                ("Budgetplanung", "Du entscheidest, wie viel Budget in welche Maßnahme fließt – orientiert am tatsächlichen Schaden aus der Analyse."),
             ],
         },
         "facts_table": {
-            "tag": "PACKAGE COMPARISON",
-            "h2": "Which package fits your stage?",
-            "intro": "Three entry points by startup stage and budget &mdash; from a compact check to the full 360° risk analysis.",
-            "caption": "Package comparison ZUS-05, RA-02 and RA-01 for startups",
-            "headers": ["Package", "Duration", "Outcome", "Price"],
+            "tag": "PAKETVERGLEICH",
+            "h2": "Welches Paket passt zu deiner Phase?",
+            "intro": "Drei Einstiegspunkte, je nach Startup-Phase und Budget – vom kompakten Check bis zur vollen Risiko-Analyse 360°.",
+            "caption": "Paketvergleich ZUS-05, RA-02 und RA-01 für Startups",
+            "headers": ["Paket", "Dauer", "Ergebnis", "Preis"],
             "rows": [
-                ("ZUS-05 Risk analysis preparation", "Session + review", "Typical risk fields for your sector mapped &mdash; basis for investor talks", "&euro;295"),
-                ("RA-02 Risk consulting (analysis)", "1 workshop (2&ndash;3 h) + report", "Top 5&ndash;10 risks identified, assessed in euros and prioritised", "&euro;1,725"),
-                ("RA-01 360° Risk Analysis", "3 workshops + 3 reports", "Analysis, strategy and budget planning in one fixed-price bundle", "&euro;3,475"),
+                ("ZUS-05 Risikoanalyse-Vorbereitung", "Session + Auswertung", "Typische Risikofelder deiner Branche eingeordnet, Basis für Investorengespräche", "295 €"),
+                ("RA-02 Risiko-Beratung (Analyse)", "1 Workshop (2–3 h) + Report", "Top 5–10 Risiken identifiziert, in Euro bewertet und priorisiert", "1.725 €"),
+                ("RA-01 Risiko-Analyse 360°", "3 Workshops + 3 Reports", "Analyse, Strategie und Budgetplanung im Festpreis-Bundle", "3.475 €"),
             ],
         },
         "blog_slugs": [
-            "startup-mistakes-avoid-risk-management",
-            "key-person-risk-identify-mitigate",
+            "startup-fehler-vermeiden-risikomanagement",
+            "schluesselpersonrisiko-erkennen-absichern",
             "what-is-risk-management",
         ],
-        "cta_h2": "Clarify your top risks &mdash; free and no obligation",
-        "cta_body": "Book an intro call &mdash; 30 minutes, no sales pressure. We explain our method and you will know where you stand.",
-        "cta_note": 'Not there yet? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> &mdash; 10 minutes, free.',
-        "title": "Startup Risk Management: Analysis & Pricing | Beraterium",
-        "description": "Startup risk management in practice: process, duration and pricing from &euro;295. Top risks valued in euros, &euro;3,475 bundle. Free intro call.",
-        "service_name": "360° Risk Analysis for startups",
-        "breadcrumb_name": "Startup risk analysis",
+        "cta_h2": "Kläre deine Top-Risiken – kostenlos und unverbindlich",
+        "cta_body": "Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Du erhältst unsere Methode erklärt und weißt danach, wo du stehst.",
+        "cta_note": 'Noch nicht so weit? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> – 10 Minuten, kostenlos.',
+        "title": "Risikoanalyse Startup: Kosten & Ablauf | Beraterium",
+        "description": "Risikoanalyse für dein Startup: Ablauf, Dauer und Preis ab 295 €. Top 5–10 Risiken in Euro bewertet, Festpreis 3.475 €. Kostenloses Erstgespräch buchen.",
+        "service_name": "Risiko-Analyse 360° für Startups",
+        "breadcrumb_name": "Risikoanalyse Startup",
     },
     {
-        # Offer one-pager (2026-08-08). Keyword intent: risk analysis SME cost / process / pricing
-        "slug": "risk-analysis-smb",
+        # Angebots-One-Pager ohne BAFA (2026-08-07). Keyword (Webseite/Keywords/keyword-themen-map.md): "risikoanalyse kmu kosten"
+        "slug": "risikoanalyse-kmu",
         "du": False,
-        "audience": "SMEs and mid-market businesses",
-        "tag": "SME RISK ANALYSIS",
-        "h1": "Risk analysis for your SME: process and pricing",
+        "audience": "KMU und Mittelstand",
+        "tag": "RISIKOANALYSE KMU",
+        "h1": "Risikoanalyse für Ihr KMU: Ablauf und Kosten",
         "lead": (
-            "The 360° Risk Analysis delivers your company&rsquo;s top 5&ndash;10 risks, assessed in euros "
-            "and prioritised &mdash; from director liability to dependencies in grown processes. "
-            "Analysis, strategy session and budget planning come as a fixed-price bundle for "
-            "&euro;3,475, completed in around 6 weeks. Still unsure? The free Blindspot Quick Check "
-            "shows your biggest blind spots in 10 minutes."
+            "Die Risiko-Analyse 360° liefert Ihnen die Top 5–10 Risiken Ihres Unternehmens, in Euro "
+            "bewertet und priorisiert – von Geschäftsführerhaftung bis Abhängigkeiten in gewachsenen "
+            "Prozessen. Analyse, Strategie-Sitzung und Budgetplanung erhalten Sie als Festpreis-Bundle "
+            "für 3.475 €, abgeschlossen in rund 6 Wochen. Noch unsicher? Der kostenlose Blindspot Quick "
+            "Check zeigt in 10 Minuten Ihre größten blinden Flecken."
         ),
-        "hero_cta": "Book a free intro call",
-        "hero_cta2": {"label": "Blindspot Quick Check (10 min)", "href": "tools/blindspot-check/"},
+        "hero_cta": "Kostenloses Erstgespräch buchen",
+        "hero_cta2": {"label": "Blindspot Quick Check (10 Min)", "href": "tools/blindspot-check/"},
         "guarantee_section": True,
-        "criteria_tag": "FIT CHECK",
-        "criteria_h2": "Is a risk analysis right for your company?",
-        "criteria_intro": "A structured risk analysis is worth it if at least one of these applies:",
+        "criteria_tag": "DIREKT-CHECK",
+        "criteria_h2": "Passt eine Risikoanalyse zu Ihrem Unternehmen?",
+        "criteria_intro": "Eine strukturierte Risikoanalyse lohnt sich für Sie, wenn mindestens eines dieser Kriterien zutrifft:",
         "criteria": [
-            "Your company has 10&ndash;80 employees",
-            "Processes and responsibilities grew over years but were never systematically reviewed",
-            "As management you carry personal liability, e.g. under NIS2 or other regulation",
-            "Succession, a bank or advisory board conversation is coming up or on the horizon",
+            "Ihr Unternehmen hat 10–80 Mitarbeitende",
+            "Prozesse und Verantwortlichkeiten sind über Jahre gewachsen, aber nie systematisch geprüft worden",
+            "Sie tragen als Geschäftsführung persönliche Haftung, z. B. durch NIS2 oder andere Regulatorik",
+            "Eine Nachfolge, ein Bank- oder Beiratsgespräch steht an oder ist absehbar",
         ],
-        "stats_aria": "SME risk analysis at a glance",
+        "stats_aria": "Risikoanalyse KMU in Zahlen",
         "stats": [
-            ("Around 6 weeks", "from analysis to complete risk picture"),
-            ("Top 5&ndash;10", "risks assessed in euros and prioritised"),
-            ("&euro;3,475", "fixed price for analysis, strategy and budget"),
-            ("2&times; money back", "relevance and value guarantee"),
+            ("Rund 6 Wochen", "von der Analyse bis zum vollständigen Lagebild"),
+            ("Top 5–10", "Risiken einzeln in Euro bewertet und priorisiert"),
+            ("3.475 €", "Festpreis für Analyse, Strategie und Budget"),
+            ("2× Geld zurück", "Relevanz- und Nutzen-Garantie"),
         ],
-        "pain_tag": "THREE MID-MARKET RISKS",
-        "pain_h2": "What happens if these three risks stay hidden?",
-        "pain_intro": "In a grown mid-market business, risks often hide in processes nobody questions any more.",
+        "pain_tag": "DIE DREI RISIKEN IM MITTELSTAND",
+        "pain_h2": "Was passiert, wenn diese drei Risiken unentdeckt bleiben?",
+        "pain_intro": "Im gewachsenen Mittelstand verstecken sich Risiken oft in Prozessen, die niemand mehr hinterfragt.",
         "pain_cards": [
-            ("Director liability and NIS2", 'NIS2 and other regulation make risk management a management duty &mdash; without documented analysis you are personally liable. More: <a href="../../solutions/nis2/">Check NIS2 applicability</a>.'),
-            ("Succession", 'Around 186,000 business handovers are due in Germany by 2030. Without a solid risk picture, transition is hard for bank, board or successor to assess. More: <a href="../../solutions/succession/">Succession risks</a>.'),
-            ("Dependencies in grown processes", 'Key people, single suppliers or undocumented knowledge build up unnoticed over years &mdash; and only surface in a crisis. More: <a href="../../solutions/key-person-risk/">Identify key-person risk</a>.'),
+            ("GF-Haftung und NIS2", 'NIS2 und weitere Regulatorik machen Risikomanagement zur Geschäftsführerpflicht – ohne dokumentierte Analyse haften Sie persönlich. Mehr dazu: <a href="../../loesungen/nis2/">NIS2-Betroffenheit prüfen</a>.'),
+            ("Nachfolge", 'Bis 2030 stehen rund 186.000 Unternehmensübergaben an. Ohne belastbares Risikobild wird die Übergabe für Bank, Beirat oder Nachfolger schwer einschätzbar. Mehr dazu: <a href="../../loesungen/nachfolge/">Risiken bei der Unternehmensnachfolge</a>.'),
+            ("Abhängigkeiten in gewachsenen Prozessen", 'Schlüsselpersonen, Einzel-Lieferanten oder undokumentiertes Wissen entstehen unbemerkt über Jahre – und werden erst im Ernstfall sichtbar. Mehr dazu: <a href="../../loesungen/schluesselperson-risiko/">Schlüsselperson-Risiko erkennen</a>.'),
         ],
-        "overview_tag": "NEXT STEPS",
-        "overview_h2": "How does the risk analysis connect to our other services?",
-        "overview_intro": "The risk analysis is the entry point &mdash; depending on the outcome, further focused steps follow.",
+        "overview_tag": "WEITERFÜHREND",
+        "overview_h2": "Wie hängt die Risikoanalyse mit dem restlichen Angebot zusammen?",
+        "overview_intro": "Die Risikoanalyse ist der Einstieg – je nach Ergebnis ergeben sich daraus weitere, gezielte Schritte.",
         "overview_cards": [
-            ("The method", "The 3-level hazard catalogue: collect hazards, assess risks in euros, prioritise measures.", "method/", "View method"),
-            ("Services for SMEs", "All mid-market packages &mdash; from a short analysis to the full 360° risk analysis.", "services/smb/", "SME services"),
-            ("Full pricing", "Complete price list for all 32 services &mdash; analysis, workshops and training.", "pricing/", "View pricing"),
-            ("Blindspot Quick Check", "Free self-assessment: 10 minutes to surface your biggest blind spots.", "tools/blindspot-check/", "Start quick check"),
+            ("Die Methode", "Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.", "methode/", "Zur Methode"),
+            ("Angebot für KMU", "Alle Pakete für den Mittelstand im Überblick – von der Kurzanalyse bis zur vollen Risiko-Analyse 360°.", "angebote/kmu/", "Zum KMU-Angebot"),
+            ("Alle Preise", "Die komplette Preisübersicht aller 32 Angebote – Analyse, Workshops, Schulungen.", "preise/", "Zur Preisübersicht"),
+            ("Blindspot Quick Check", "Kostenloser Selbsttest: 10 Minuten, Ihre größten blinden Flecken sofort sichtbar.", "tools/blindspot-check/", "Zum Quick Check"),
         ],
         "faq": [
-            ("What does a risk analysis for SMEs cost?", "The 360° Risk Analysis (RA-01) costs &euro;3,475 as a fixed price for analysis, strategy session and budget planning &mdash; bought separately the three parts would cost &euro;5,150. For a smaller entry there is analysis only (RA-02) at &euro;1,725."),
-            ("How long does the risk analysis take for an SME?", "The 360° Risk Analysis includes three workshops, each with its own report and follow-up with leadership &mdash; the full process usually takes around 6 weeks, depending on your team&rsquo;s availability."),
-            ("What happens in the free intro call?", "In a 30-minute intro call we clarify your starting point, possible risk fields and which package fits your company &mdash; no obligation and no sales pressure."),
-            ("What do we receive in writing?", "After each workshop you get a report: the prioritised risk list in euros, the strategy and implementation plan, and the budget plan with cost&ndash;benefit view &mdash; together a complete, bank-ready risk picture."),
-            ("What if we are not sure we need this yet?", "If it is still unclear whether structured risk management is needed, the free Blindspot Quick Check is often enough as a first step &mdash; it shows where your company stands in 10 minutes."),
-            ("What if the analysis finds no relevant risk?", "Then the relevance guarantee applies: if the analysis finds no risk above the agreed threshold, Beraterium refunds the full fee. The value guarantee additionally ensures the agreed criteria are actually met."),
+            ("Was kostet eine Risikoanalyse für KMU?", "Die Risiko-Analyse 360° (RA-01) kostet 3.475 € als Festpreis für Analyse, Strategie-Sitzung und Budgetplanung – einzeln würden die drei Bausteine 5.150 € kosten. Für einen kleineren Einstieg gibt es die reine Analyse (RA-02) für 1.725 €."),
+            ("Wie lange dauert die Risikoanalyse für ein KMU?", "Die Risiko-Analyse 360° umfasst drei Workshops mit jeweils eigenem Report und Nachbereitungsgespräch mit der Geschäftsführung – der gesamte Prozess dauert in der Regel rund 6 Wochen, abhängig von der Terminverfügbarkeit Ihres Teams."),
+            ("Was passiert im kostenlosen Erstgespräch?", "Im 30-minütigen Erstgespräch klären wir Ihre Ausgangslage, mögliche Risikofelder und welches Paket zu Ihrem Unternehmen passt – unverbindlich und ohne Verkaufsdruck."),
+            ("Was erhalten wir am Ende schriftlich?", "Nach jedem Workshop erhalten Sie einen Report: die priorisierte Risikoliste in Euro bewertet, den Strategie- und Umsetzungsplan sowie den Budgetplan mit Kosten-Nutzen-Einordnung – zusammen ein vollständiges, bankfähiges Lagebild."),
+            ("Was ist, wenn wir unsicher sind, ob wir das brauchen?", "Wenn noch unklar ist, ob strukturiertes Risikomanagement nötig ist, reicht oft der kostenlose Blindspot Quick Check als erster Schritt – er zeigt in 10 Minuten, wo Ihr Unternehmen steht."),
+            ("Was passiert, wenn die Analyse kein relevantes Risiko findet?", "Dann greift die Relevanz-Garantie: Findet die Analyse kein einziges Risiko mit relevanter Schadenshöhe, erstattet Beraterium den vollen Betrag. Zusätzlich sichert die Nutzen-Garantie ab, dass die vereinbarten Kriterien auch tatsächlich erfüllt werden."),
         ],
         "deep_sections": [
             {
-                "tag": "SCOPE (RA-01)",
-                "h2": "What is included in fixed price RA-01 (&euro;3,475)?",
+                "tag": "LEISTUNGSUMFANG (RA-01)",
+                "h2": "Was ist im Festpreis RA-01 (3.475 €) enthalten?",
                 "intro": (
-                    "All three analysis building blocks &mdash; analysis, strategy and budget &mdash; in one "
-                    "continuous process with your team. The bundle costs less than booking separately "
-                    "(&euro;5,150 individually) and is the recommended entry for SMEs."
+                    "Die Kombination aller drei Analyse-Bausteine — Analyse, Strategie und Budget — in einem "
+                    "durchgehenden Prozess mit Ihrem Team. Das Bundle ist günstiger als die Einzelbuchung "
+                    "(einzeln 5.150 €) und der empfohlene Einstieg für KMU."
                 ),
                 "items": [
-                    "Analysis workshop: identify top 5&ndash;10 risks, assess in euros and by likelihood",
-                    "Strategy workshop: develop concrete, actionable measures for the top risks &mdash; with implementation plan",
-                    "Budget workshop: weigh internal resources vs external providers, guided by damage figures from the analysis",
-                    "Each phase ends with a report and a follow-up call with leadership",
+                    "Analyse-Workshop: die Top 5–10 Risiken identifizieren, in Euro bewerten und nach Eintrittswahrscheinlichkeit einordnen",
+                    "Strategie-Workshop: für die wichtigsten Risiken konkrete, umsetzbare Maßnahmen entwickeln – mit Umsetzungsplan",
+                    "Budget-Workshop: eigene Ressourcen vs. externe Dienstleister abwägen, orientiert am Schaden aus der Analyse",
+                    "Jede Phase endet mit einem Report und einem Nachbereitungsgespräch mit der Geschäftsführung",
                 ],
             },
         ],
         "steps_section": {
-            "tag": "HOW IT WORKS",
-            "h2": "How does the risk analysis for your company work?",
-            "intro": "Five clear steps &mdash; no guesswork about effort.",
+            "tag": "SO LÄUFT ES AB",
+            "h2": "Wie läuft die Risikoanalyse für Ihr Unternehmen ab?",
+            "intro": "Fünf klare Schritte – kein Rätselraten über den Aufwand.",
             "steps": [
-                ("Intro call (30 min)", "We clarify your starting point and which package fits your company."),
-                ("Analysis workshop", "Together we identify your top 5&ndash;10 risks and assess them in euros."),
-                ("Report with prioritised risks", "You receive the prioritised risk list in writing &mdash; basis for bank or board conversations."),
-                ("Strategy session", "For the top risks we develop concrete, actionable measures with an implementation plan."),
-                ("Budget planning", "You decide how much budget goes into which measure &mdash; guided by actual damage from the analysis."),
+                ("Erstgespräch (30 Min)", "Wir klären Ihre Ausgangslage, Ihr Ziel und ob RA-01 oder RA-02 zu Ihrem Unternehmen passt."),
+                ("Analyse-Workshop", "Gemeinsam mit Ihrem Team identifizieren wir die Top 5–10 Risiken und bewerten sie in Euro."),
+                ("Report mit priorisierten Risiken", "Sie erhalten die priorisierte Risikoliste schriftlich – Basis für Bank-, Beirats- oder Nachfolgegespräche."),
+                ("Strategie-Sitzung", "Für die wichtigsten Risiken entwickeln wir konkrete, umsetzbare Maßnahmen mit Umsetzungsplan."),
+                ("Budgetplanung", "Sie entscheiden, wie viel Budget in welche Maßnahme fließt – orientiert am tatsächlichen Schaden aus der Analyse."),
             ],
         },
         "facts_table": {
-            "tag": "PACKAGE COMPARISON",
-            "h2": "Which package fits your company?",
-            "intro": "Two main entry points for mid-market businesses &mdash; from analysis only to the full 360° bundle.",
-            "caption": "Package comparison RA-02 and RA-01 for SMEs",
-            "headers": ["Package", "Duration", "Outcome", "Price"],
+            "tag": "PAKETVERGLEICH",
+            "h2": "Welches Paket passt zu Ihrem Unternehmen?",
+            "intro": "Drei Stufen, je nach Bedarf – von der reinen Analyse bis zur begleiteten Umsetzung.",
+            "caption": "Paketvergleich RA-02, RA-01 und RA-07 für KMU",
+            "headers": ["Paket", "Dauer", "Ergebnis", "Preis"],
             "rows": [
-                ("RA-02 Risk consulting (analysis)", "1 workshop (2&ndash;3 h) + report", "Top 5&ndash;10 risks identified, assessed in euros and prioritised", "&euro;1,725"),
-                ("RA-01 360° Risk Analysis", "3 workshops + 3 reports", "Analysis, strategy and budget planning in one fixed-price bundle", "&euro;3,475"),
+                ("RA-02 Risiko-Beratung (Analyse)", "1 Workshop (2–3 h) + Report", "Top 5–10 Risiken identifiziert, in Euro bewertet und priorisiert", "1.725 €"),
+                ("RA-01 Risiko-Analyse 360°", "3 Workshops + 3 Reports", "Analyse, Strategie und Budgetplanung im Festpreis-Bundle", "3.475 €"),
+                ("RA-07 Gesamtpaket L", "24–32 Wochen Begleitung", "Risiko-Analyse 360° plus Maßnahmen-Integration bis zur gelebten Umsetzung", "7.825 €"),
             ],
         },
         "blog_slugs": [
-            "cyber-attack-what-to-do-smb",
-            "business-succession-overlooked-risks",
-            "risk-management-consulting-smb-providers",
+            "cyberangriff-was-tun-kmu",
+            "unternehmensnachfolge-uebersehene-risiken",
+            "risikomanagement-beratung-kmu-anbieter",
         ],
-        "cta_h2": "Clarify your top risks &mdash; free and no obligation",
-        "cta_body": "Book an intro call &mdash; 30 minutes, no sales pressure. We explain our method and you will know where you stand.",
-        "cta_note": 'Still unsure? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> &mdash; 10 minutes, free.',
-        "title": "SME risk analysis: pricing & process | Beraterium",
-        "description": "Risk analysis for your SME: process, duration and &euro;3,475 fixed price. Top 5&ndash;10 risks in euros, double guarantee. Book a free intro call.",
-        "service_name": "360° Risk Analysis for SMEs",
-        "breadcrumb_name": "SME risk analysis",
+        "cta_h2": "Klären Sie Ihre Top-Risiken – kostenlos und unverbindlich",
+        "cta_body": "Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Sie erhalten unsere Methode erklärt und wissen danach, wo Sie stehen.",
+        "cta_note": 'Noch unsicher? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> – 10 Minuten, kostenlos.',
+        "title": "Risikoanalyse KMU: Kosten & Ablauf | Beraterium",
+        "description": "Risikoanalyse für Ihr KMU: Ablauf, Dauer und Festpreis 3.475 €. Top 5–10 Risiken in Euro bewertet, doppelte Garantie. Kostenloses Erstgespräch buchen.",
+        "service_name": "Risiko-Analyse 360° für KMU",
+        "breadcrumb_name": "Risikoanalyse KMU",
     },
     {
-        # Offer one-pager (2026-08-08). Keyword intent: risk analysis self-employed cost / freelancer
-        "slug": "risk-analysis-solo",
+        # Angebots-One-Pager ohne BAFA (2026-08-07). Keyword (Webseite/Keywords/keyword-themen-map.md): "risikoanalyse selbstständige kosten"
+        "slug": "risikoanalyse-solo",
         "du": True,
-        "audience": "Solo self-employed professionals and freelancers",
-        "tag": "SOLO RISK ANALYSIS",
-        "h1": "Risk analysis for self-employed professionals: process and pricing",
+        "audience": "Solo-Selbstständige und Freelancer",
+        "tag": "RISIKOANALYSE SELBSTSTÄNDIGE",
+        "h1": "Risikoanalyse für Selbstständige: Ablauf und Kosten",
         "lead": (
-            "Risk consulting shows your top 5&ndash;10 self-employment risks, assessed in euros "
-            "&mdash; from incapacity to client concentration. You get a workshop with report and "
-            "follow-up from &euro;1,725; for a first overview the compact risk check from &euro;97 "
-            "is enough. Not there yet? The free Blindspot Quick Check reveals your biggest blind "
-            "spots in 10 minutes."
+            "Die Risiko-Beratung zeigt dir die Top 5–10 Risiken deiner Selbstständigkeit, in Euro "
+            "bewertet – von Ausfall durch Krankheit bis Kundenabhängigkeit. Du bekommst einen Workshop "
+            "mit Report und Nachbereitungsgespräch ab 1.725 €, für den ersten Überblick reicht auch der "
+            "kompakte Risiko-Check ab 97 €. Noch nicht so weit? Der kostenlose Blindspot Quick Check "
+            "zeigt dir in 10 Minuten deine größten blinden Flecken."
         ),
-        "hero_cta": "Book a free intro call",
-        "hero_cta2": {"label": "Blindspot Quick Check (10 min)", "href": "tools/blindspot-check/"},
+        "hero_cta": "Kostenloses Erstgespräch buchen",
+        "hero_cta2": {"label": "Blindspot Quick Check (10 Min)", "href": "tools/blindspot-check/"},
         "guarantee_section": True,
-        "criteria_tag": "FIT CHECK",
-        "criteria_h2": "Is a risk analysis right for your self-employment?",
-        "criteria_intro": "A structured risk analysis is worth it if at least one of these applies:",
+        "criteria_tag": "DIREKT-CHECK",
+        "criteria_h2": "Passt eine Risikoanalyse zu deiner Selbstständigkeit?",
+        "criteria_intro": "Eine strukturierte Risikoanalyse lohnt sich für dich, wenn mindestens eines dieser Kriterien zutrifft:",
         "criteria": [
-            "Your revenue depends entirely on you as a person &mdash; if you stop, revenue stops",
-            "You employ 1&ndash;5 people or work with a fixed network of collaborators",
-            "One main client accounts for a large share of your revenue",
-            "You have no clear picture of what an outage would actually cost you",
+            "Dein Umsatz hängt vollständig an dir als Person – fällst du aus, fällt der Umsatz aus",
+            "Du beschäftigst 1–5 Mitarbeitende oder arbeitest mit einem festen Netzwerk aus Kolleg:innen",
+            "Ein Hauptkunde macht einen großen Teil deines Umsatzes aus",
+            "Du hast noch keinen Überblick, wie viel dich ein Ausfall wirklich kosten würde",
         ],
-        "stats_aria": "Solo risk analysis at a glance",
+        "stats_aria": "Risikoanalyse Selbstständige in Zahlen",
         "stats": [
-            ("From &euro;97", "for the compact risk check (30 min)"),
-            ("Top 5&ndash;10", "risks assessed in euros and prioritised"),
-            ("From &euro;1,725", "for full risk consulting with report"),
-            ("2&times; money back", "relevance and value guarantee"),
+            ("Ab 97 €", "für den kompakten Risiko-Check (30 Min)"),
+            ("Top 5–10", "Risiken einzeln in Euro bewertet und priorisiert"),
+            ("Ab 1.725 €", "für die vollständige Risiko-Beratung mit Report"),
+            ("2× Geld zurück", "Relevanz- und Nutzen-Garantie"),
         ],
-        "pain_tag": "THREE RISKS WITH NO BACKUP",
-        "pain_h2": "What happens if these three risks stay hidden?",
-        "pain_intro": "As a solo professional you carry every risk alone &mdash; no works council, no cover, no IT department.",
+        "pain_tag": "DIE DREI RISIKEN OHNE VERTRETUNG",
+        "pain_h2": "Was passiert, wenn diese drei Risiken unentdeckt bleiben?",
+        "pain_intro": "Als Selbstständiger trägst du jedes Risiko allein – ohne Betriebsrat, ohne Vertretung, ohne IT-Abteilung.",
         "pain_cards": [
-            ("Incapacity", 'There is no employer sick pay &mdash; 4&ndash;6 weeks off or burnout can threaten your livelihood while fixed costs continue. More: <a href="../../solutions/self-employed-protection/">Protect yourself as self-employed</a>.'),
-            ("Client concentration", 'If one main client drives most of your revenue, their budget cycle decides your survival. More: <a href="../../blog/risks-self-employed-freelancers/">Risks for self-employed professionals</a>.'),
-            ("No cover", 'Without colleagues or a network contact with access to your projects, everything stops when you do &mdash; including towards clients. More: <a href="../../solutions/key-person-risk/">Identify key-person risk</a>.'),
+            ("Ausfall durch Krankheit", 'Es gibt keine Lohnfortzahlung – schon 4–6 Wochen Krankheit oder Burnout können existenzbedrohend werden, während Fixkosten weiterlaufen. Mehr dazu: <a href="../../loesungen/selbststaendig-absichern/">Als Selbstständiger absichern</a>.'),
+            ("Kundenabhängigkeit", 'Macht ein Hauptkunde einen Großteil deines Umsatzes aus, entscheidet dessen Budgetplanung über deine Existenz. Mehr dazu: <a href="../../blog/risiken-selbststaendige-freelancer/">Risiken für Selbstständige</a>.'),
+            ("Keine Vertretung", 'Ohne Kollegen oder Netzwerk-Kontakt mit Zugriff auf deine laufenden Projekte steht bei Ausfall alles still – auch gegenüber deinen Kunden. Mehr dazu: <a href="../../loesungen/schluesselperson-risiko/">Schlüsselperson-Risiko erkennen</a>.'),
         ],
-        "overview_tag": "NEXT STEPS",
-        "overview_h2": "How does the risk analysis connect to our other services?",
-        "overview_intro": "The risk analysis is the entry point &mdash; depending on the outcome, further focused steps follow.",
+        "overview_tag": "WEITERFÜHREND",
+        "overview_h2": "Wie hängt die Risikoanalyse mit dem restlichen Angebot zusammen?",
+        "overview_intro": "Die Risikoanalyse ist der Einstieg – je nach Ergebnis ergeben sich daraus weitere, gezielte Schritte.",
         "overview_cards": [
-            ("The method", "The 3-level hazard catalogue: collect hazards, assess risks in euros, prioritise measures.", "method/", "View method"),
-            ("Services for solo professionals", "All solo packages &mdash; from compact check to full risk consulting.", "services/solo/", "Solo services"),
-            ("Full pricing", "Complete price list for all 32 services &mdash; analysis, workshops and training.", "pricing/", "View pricing"),
-            ("Blindspot Quick Check", "Free self-assessment: 10 minutes to surface your biggest blind spots.", "tools/blindspot-check/", "Start quick check"),
+            ("Die Methode", "Der 3-Ebenen-Gefahrenkatalog: Gefahren sammeln, Risiken in Euro bewerten, Maßnahmen priorisieren.", "methode/", "Zur Methode"),
+            ("Angebot für Solo", "Alle Pakete für Solo-Selbstständige im Überblick – vom kompakten Check bis zur vollen Risiko-Beratung.", "angebote/solo/", "Zum Solo-Angebot"),
+            ("Alle Preise", "Die komplette Preisübersicht aller 32 Angebote – Analyse, Workshops, Schulungen.", "preise/", "Zur Preisübersicht"),
+            ("Blindspot Quick Check", "Kostenloser Selbsttest: 10 Minuten, deine größten blinden Flecken sofort sichtbar.", "tools/blindspot-check/", "Zum Quick Check"),
         ],
         "faq": [
-            ("What does a risk analysis for self-employed professionals cost?", "The compact risk check costs &euro;97 (30 minutes) for a first assessment. Full risk consulting with workshop, report and follow-up costs &euro;1,725."),
-            ("How long does the risk analysis take?", "The compact risk check takes 30 minutes. Full risk consulting includes a 2&ndash;3 hour workshop plus report and follow-up &mdash; completed within a few days."),
-            ("What happens in the free intro call?", "In a 30-minute intro call we clarify where you stand, which risks are already visible and whether the compact check or full consulting fits you."),
-            ("What do I receive in writing?", "You get a report with your top 5&ndash;10 risks, assessed by damage in euros and likelihood &mdash; a basis for insurance or bank conversations."),
-            ("What if I am not sure I need this yet?", "If you cannot yet estimate your biggest risks, the free Blindspot Quick Check is often enough as a first step &mdash; it shows where you stand in 10 minutes."),
-            ("What if the outcome is not useful?", "Then the relevance guarantee applies: if the analysis finds no risk above the agreed threshold, Beraterium refunds the full fee. The value guarantee additionally ensures the agreed criteria are actually met."),
+            ("Was kostet eine Risikoanalyse für Selbstständige?", "Der kompakte Risiko-Check kostet 97 € (30 Minuten) für eine erste Einschätzung. Die vollständige Risiko-Beratung mit Workshop, Report und Nachbereitungsgespräch kostet 1.725 €."),
+            ("Wie lange dauert die Risikoanalyse?", "Der kompakte Risiko-Check dauert 30 Minuten. Die vollständige Risiko-Beratung umfasst einen Workshop von 2–3 Stunden plus Report und Nachbereitungsgespräch – abgeschlossen innerhalb weniger Tage."),
+            ("Was passiert im kostenlosen Erstgespräch?", "Im 30-minütigen Erstgespräch klären wir, wo du stehst, welche Risiken bereits spürbar sind und ob der kompakte Check oder die vollständige Risiko-Beratung zu dir passt."),
+            ("Was bekomme ich am Ende schriftlich?", "Du erhältst einen Report mit deinen Top 5–10 Risiken, bewertet nach Schadenshöhe in Euro und Eintrittswahrscheinlichkeit – Basis für Versicherungs- oder Bankgespräche."),
+            ("Was ist, wenn ich unsicher bin, ob ich das brauche?", "Wenn du noch nicht einschätzen kannst, wo deine größten Risiken liegen, reicht oft der kostenlose Blindspot Quick Check als erster Schritt – er zeigt in 10 Minuten, wo du stehst."),
+            ("Was passiert, wenn das Ergebnis nichts bringt?", "Dann greift die Relevanz-Garantie: Findet die Analyse kein einziges Risiko mit relevanter Schadenshöhe, erstattet Beraterium den vollen Betrag. Zusätzlich sichert die Nutzen-Garantie ab, dass die vereinbarten Kriterien auch tatsächlich erfüllt werden."),
         ],
         "deep_sections": [
             {
-                "tag": "SCOPE (RA-02)",
-                "h2": "What do you get with risk consulting (RA-02)?",
+                "tag": "LEISTUNGSUMFANG (RA-02)",
+                "h2": "Was bekommst du mit der Risiko-Beratung (RA-02)?",
                 "intro": (
-                    "One workshop (2&ndash;3 hours), facilitated by us. Goal: turn gut feeling into a "
-                    "prioritised list assessed in euros &mdash; without jumping straight into implementation planning."
+                    "Ein Workshop (2–3 Stunden), moderiert von uns. Ziel: aus Bauchgefühl wird eine "
+                    "priorisierte, in Euro bewertete Liste – ohne dass du bereits in die Maßnahmenplanung "
+                    "einsteigen musst."
                 ),
                 "items": [
-                    "Each risk assessed by damage in euros and likelihood",
-                    "Top 5&ndash;10 risks named and prioritised &mdash; basis for insurance or bank talks",
-                    "Outcome documented as a report, including follow-up call to interpret results",
-                    "Ideal if you want clarity on your risk picture first, without immediate measure planning",
+                    "Bewertung jedes Risikos nach Schadenshöhe in Euro und Eintrittswahrscheinlichkeit",
+                    "Top 5–10 Risiken benannt und priorisiert – Basis für Versicherungs- oder Bankgespräche",
+                    "Ergebnis als Report dokumentiert, inklusive Nachbereitungsgespräch zur Einordnung",
+                    "Ideal, wenn du zunächst nur Klarheit über die Risikolage willst, ohne direkt in die Maßnahmenplanung zu gehen",
                 ],
             },
         ],
         "steps_section": {
-            "tag": "HOW IT WORKS",
-            "h2": "How does the risk analysis work for you?",
-            "intro": "Five clear steps &mdash; no guesswork about effort.",
+            "tag": "SO LÄUFT ES AB",
+            "h2": "Wie läuft die Risikoanalyse für dich ab?",
+            "intro": "Fünf klare Schritte – kein Rätselraten über den Aufwand.",
             "steps": [
-                ("Intro call (30 min)", "We clarify your starting point and whether the compact check or full consulting fits you."),
-                ("Analysis workshop", "Together we identify your top 5&ndash;10 risks and assess them in euros."),
-                ("Report with prioritised risks", "You receive the prioritised risk list in writing &mdash; basis for insurance or bank conversations."),
-                ("Follow-up call", "We interpret the results together and answer open questions on prioritisation."),
-                ("Next steps", "You decide which measures to tackle first &mdash; alone or with implementation support."),
+                ("Erstgespräch (30 Min)", "Wir klären deine Ausgangslage und ob der kompakte Check oder die vollständige Risiko-Beratung zu dir passt."),
+                ("Analyse-Workshop", "Im Workshop identifizieren wir gemeinsam deine Top 5–10 Risiken und bewerten sie in Euro."),
+                ("Report mit priorisierten Risiken", "Du erhältst die priorisierte Risikoliste schriftlich – Basis für Versicherungs- oder Bankgespräche."),
+                ("Nachbereitungsgespräch", "Wir ordnen die Ergebnisse gemeinsam ein und klären offene Fragen zur Priorisierung."),
+                ("Nächste Schritte festlegen", "Du entscheidest, welche Maßnahmen du zuerst angehst – allein oder mit begleitender Umsetzung."),
             ],
         },
         "facts_table": {
-            "tag": "PACKAGE COMPARISON",
-            "h2": "Which package fits you?",
-            "intro": "Three entry points &mdash; from compact check to full 360° analysis if your business grows.",
-            "caption": "Package comparison ZUS-02, RA-02 and RA-01 for solo professionals",
-            "headers": ["Package", "Duration", "Outcome", "Price"],
+            "tag": "PAKETVERGLEICH",
+            "h2": "Welches Paket passt zu dir?",
+            "intro": "Drei Einstiegspunkte – vom kompakten Check bis zur vollständigen Risiko-Analyse 360°, falls dein Unternehmen wächst.",
+            "caption": "Paketvergleich ZUS-02, RA-02 und RA-01 für Solo-Selbstständige",
+            "headers": ["Paket", "Dauer", "Ergebnis", "Preis"],
             "rows": [
-                ("ZUS-02 Short risk check", "30 minutes", "Rough read on your risk status, top 3 risks plus immediate pointers", "&euro;97"),
-                ("RA-02 Risk consulting (analysis)", "1 workshop (2&ndash;3 h) + report", "Top 5&ndash;10 risks identified, assessed in euros and prioritised", "&euro;1,725"),
-                ("RA-01 360° Risk Analysis", "3 workshops + 3 reports", "Analysis, strategy and budget planning in one bundle &mdash; e.g. when your team grows", "&euro;3,475"),
+                ("ZUS-02 Kurzer Risiko-Check", "30 Minuten", "Grobe Einordnung deines Risiko-Status, Top-3-Risiken plus Sofort-Impulse", "97 €"),
+                ("RA-02 Risiko-Beratung (Analyse)", "1 Workshop (2–3 h) + Report", "Top 5–10 Risiken identifiziert, in Euro bewertet und priorisiert", "1.725 €"),
+                ("RA-01 Risiko-Analyse 360°", "3 Workshops + 3 Reports", "Analyse, Strategie und Budgetplanung im Festpreis-Bundle – z. B. bei wachsendem Team", "3.475 €"),
             ],
         },
         "blog_slugs": [
-            "risks-self-employed-freelancers",
-            "false-self-employment-check",
-            "key-person-risk-identify-mitigate",
+            "risiken-selbststaendige-freelancer",
+            "scheinselbststaendigkeit-pruefen",
+            "schluesselpersonrisiko-erkennen-absichern",
         ],
-        "cta_h2": "Clarify your top risks &mdash; free and no obligation",
-        "cta_body": "Book an intro call &mdash; 30 minutes, no sales pressure. We explain our method and you will know where you stand.",
-        "cta_note": 'Not there yet? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> &mdash; 10 minutes, free.',
-        "title": "Self-employed risk analysis: pricing | Beraterium",
-        "description": "Risk analysis for self-employed professionals: process, duration and pricing from &euro;97. Top 5&ndash;10 risks in euros. Book a free intro call.",
-        "service_name": "Risk consulting for solo self-employed professionals",
-        "breadcrumb_name": "Solo risk analysis",
+        "cta_h2": "Kläre deine Top-Risiken – kostenlos und unverbindlich",
+        "cta_body": "Erstgespräch buchen – 30 Minuten, ohne Verkaufsdruck. Du erhältst unsere Methode erklärt und weißt danach, wo du stehst.",
+        "cta_note": 'Noch nicht so weit? <a href="../../tools/blindspot-check/">Blindspot Quick Check</a> – 10 Minuten, kostenlos.',
+        "title": "Risikoanalyse Selbstständige: Kosten | Beraterium",
+        "description": "Risikoanalyse für Selbstständige: Ablauf, Dauer und Preis ab 97 €. Top 5–10 Risiken in Euro bewertet, doppelte Garantie. Kostenloses Erstgespräch buchen.",
+        "service_name": "Risiko-Beratung für Solo-Selbstständige",
+        "breadcrumb_name": "Risikoanalyse Selbstständige",
     },
 ]
 
@@ -4996,8 +4150,9 @@ def standort_cities_section(cfg: dict) -> str:
       </div>
     </section>"""
 
+
 def gen_standort(cfg: dict) -> None:
-    """Lokale Vertretungs-One-Pager unter /locations/<slug>/ (Local SEO + GEO).
+    """Lokale Vertretungs-One-Pager unter /standort/<slug>/ (Local SEO + GEO).
 
     Neue Stadt = neuer Eintrag in STANDORT_CONFIGS (Muenchen als Referenz).
     Struktur: Hero (answer-first) -> Lokalvertretung (Person + Region) ->
@@ -5008,7 +4163,7 @@ def gen_standort(cfg: dict) -> None:
     slug = cfg["slug"]
     city = cfg["city"]
     pre = "../../"
-    canonical = f"/locations/{slug}/"
+    canonical = f"/standort/{slug}/"
 
     member = team_by_slug(load_team_members()).get(cfg["member_slug"])
     rep_bio = (
@@ -5043,19 +4198,19 @@ def gen_standort(cfg: dict) -> None:
             (
                 "Risikoanalyse für KMU",
                 f"In rund 6 Wochen zum vollständigen, in Euro bewerteten Risiko-Lagebild – moderiert vor Ort in {city} oder remote.",
-                "services/smb/",
+                "angebote/kmu/",
                 "Zum Angebot für KMU",
             ),
             (
                 "Risiko-Check für Startups",
                 "In 4 Wochen wissen Gründerteams, welche Risiken ihr Wachstum bremsen – investor-ready aufbereitet.",
-                "services/startups/",
+                "angebote/startups/",
                 "Zum Angebot für Startups",
             ),
             (
                 "Risiko-Kompass für Solo-Selbstständige",
                 "In 2 Wochen weißt du, wo du verletzlich bist – Ausfall, Kundenabhängigkeit, Rücklagen.",
-                "services/solo/",
+                "angebote/solo/",
                 "Zum Angebot für Solo-Selbstständige",
             ),
         ]
@@ -5070,7 +4225,7 @@ def gen_standort(cfg: dict) -> None:
             cfg["lead"],
             actions=(
                 f'<a class="brt-btn" href="#termin">{cfg["hero_cta"]}</a>'
-                f'<a class="brt-btn brt-btn--outline" href="#faq">Frequently asked questions \u2192</a>'
+                f'<a class="brt-btn brt-btn--outline" href="#faq">Häufige Fragen \u2192</a>'
             ),
         )
         + geo_section
@@ -5101,7 +4256,7 @@ def gen_standort(cfg: dict) -> None:
           <li>Die wenigen wirksamsten Maßnahmen priorisieren – mit Fahrplan und Verantwortlichkeiten</li>
           <li>Doppelte Garantie: Relevanz und Nutzen – sonst erstatten wir den vollen Betrag</li>
         </ul>
-        <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}method/">Zur Methode \u2192</a> <a class="brt-btn brt-btn--outline" href="{pre}pricing/">Preise &amp; Leistungen \u2192</a></p>
+        <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}methode/">Zur Methode \u2192</a> <a class="brt-btn brt-btn--outline" href="{pre}preise/">Preise &amp; Leistungen \u2192</a></p>
       </div>
     </section>
     <section class="brt-section" aria-labelledby="angebote-title">
@@ -5129,7 +4284,7 @@ def gen_standort(cfg: dict) -> None:
             <span class="brt-map-embed__hint">Beim Klick wird eine Google-Maps-Karte geladen; dabei werden Daten an Google übertragen.</span>
           </button>
         </div>
-        <p class="brt-meta brt-fade-up">Details zur Datenverarbeitung durch Google finden Sie in unserer <a href="{pre}privacy/">Datenschutzerklärung</a>.</p>
+        <p class="brt-meta brt-fade-up">Details zur Datenverarbeitung durch Google finden Sie in unserer <a href="{pre}datenschutz/">Datenschutzerklärung</a>.</p>
       </div>
     </section>
     <section class="brt-section" aria-labelledby="blog-title">
@@ -5160,7 +4315,7 @@ def gen_standort(cfg: dict) -> None:
       </div>
     </section>"""
         + faq_section(cfg["faq"], alt=True)
-        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], "Book a free intro call")
+        + cta_band(pre, cfg["cta_h2"], cfg["cta_body"], "Kostenloses Erstgespräch buchen")
     )
 
     breadcrumb_ld = json.dumps(
@@ -5168,8 +4323,8 @@ def gen_standort(cfg: dict) -> None:
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{EN_SITE_URL}/"},
-                {"@type": "ListItem", "position": 2, "name": f"Beraterium vor Ort {city}", "item": f"{EN_SITE_URL}{canonical}"},
+                {"@type": "ListItem", "position": 1, "name": "Startseite", "item": f"{DE_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": f"Beraterium vor Ort {city}", "item": f"{DE_SITE_URL}{canonical}"},
             ],
         },
         ensure_ascii=False,
@@ -5179,7 +4334,7 @@ def gen_standort(cfg: dict) -> None:
     member_section_id = team_section_id(member.slug) if member else ""
     if member:
         person_data = person_schema(member)
-        person_data["@id"] = f"{EN_SITE_URL}/team/#{member_section_id}"
+        person_data["@id"] = f"{DE_SITE_URL}/team/#{member_section_id}"
         person_ld = json.dumps(
             {"@context": "https://schema.org", **person_data},
             ensure_ascii=False,
@@ -5197,7 +4352,7 @@ def gen_standort(cfg: dict) -> None:
             email=member.email if member else "",
             telephone=member.phone if member else "",
             employee_name=member.name if member else "",
-            employee_id=f"{EN_SITE_URL}/team/#{member_section_id}" if member else "",
+            employee_id=f"{DE_SITE_URL}/team/#{member_section_id}" if member else "",
             schema_locality=cfg.get("schema_locality", ""),
             street_address=cfg.get("street_address", ""),
             postal_code=cfg.get("postal_code", ""),
@@ -5226,7 +4381,7 @@ def gen_standort(cfg: dict) -> None:
         breadcrumb_ld,
     )
     write(
-        f"locations/{slug}/index.html",
+        f"standort/{slug}/index.html",
         shell(
             depth=2,
             title=cfg["title"],
@@ -5235,19 +4390,20 @@ def gen_standort(cfg: dict) -> None:
             active_nav=None,
             main=main,
             json_ld=ld,
-            og_image=(f"https://www.beraterium.com/{member.image}" if member and member.image else ""),
+            og_image=(f"https://www.beraterium.de/{member.image}" if member and member.image else ""),
         ).replace(
             f'<script src="{pre}js/brt-analytics.js?v={BRT_ASSET_VERSION}"></script>\n<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
             f'<script src="{pre}js/brt-analytics.js?v={BRT_ASSET_VERSION}"></script>\n<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>\n<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
         ),
     )
 
+
 STANDORT_CONFIGS: list[dict] = [
     {
         # Keyword (lokal, Muster wie "risikomanagement bautzen" in Webseite/Keywords/keyword-liste-master.csv):
         # "risikomanagement münchen" / "risikoberatung münchen" — anbieter-suchend, Local SEO/GEO.
         # Adresse bewusst nur Region-Level (Umzug steht an); exakte Anschrift + Map-Pin nachrüsten, sobald final.
-        "slug": "munich",
+        "slug": "muenchen",
         "city": "München",
         "region": "Bayern",
         "lat": 48.1372,
@@ -5263,7 +4419,7 @@ STANDORT_CONFIGS: list[dict] = [
             "Solo-Selbstständige – wir machen Ihre größten Risiken sichtbar, bewerten sie in Euro "
             "und priorisieren die Maßnahmen, die wirklich zählen. Vor Ort bei Ihnen oder remote."
         ),
-        "hero_cta": "Book a free intro call",
+        "hero_cta": "Kostenloses Erstgespräch buchen",
         "rep_h2": "Peter Münstermann – Ihre Beraterium-Lokalvertretung in München",
         "rep_paragraphs": [
             "Peter Münstermann bringt über 20 Jahre Erfahrung als Risikomanager in großen Unternehmen mit – und übersetzt Konzern-Risikomanagement in eine Form, die für Mittelstand, Familienunternehmen und Startups im Raum München praktisch funktioniert.",
@@ -5306,7 +4462,7 @@ STANDORT_CONFIGS: list[dict] = [
     {
         # Keywords (lokal): risikomanagement bautzen/dresden/leipzig/chemnitz/goerlitz, risikoberatung sachsen
         # GEO: Städte-Abdeckung + FAQ je Kernstadt; Schema areaServed + Firmensitz Bautzen (NAP).
-        "slug": "saxony",
+        "slug": "sachsen",
         "city": "Sachsen",
         "region": "Sachsen",
         "lat": 51.1814,
@@ -5328,7 +4484,7 @@ STANDORT_CONFIGS: list[dict] = [
             "ist persönlich in Bautzen, Dresden, Görlitz, Leipzig, Chemnitz und der gesamten Region für Sie da. "
             "Risiken werden in Euro bewertet, Maßnahmen priorisiert – vor Ort bei Ihnen oder remote."
         ),
-        "hero_cta": "Book a free intro call",
+        "hero_cta": "Kostenloses Erstgespräch buchen",
         "rep_h2": "Till Manfred Blania – Ihre Beraterium-Lokalvertretung in Sachsen",
         "map_h2": "So erreichen Sie uns in Sachsen",
         "map_body": (
@@ -5422,7 +4578,7 @@ STANDORT_CONFIGS: list[dict] = [
             ),
             (
                 "Was kostet eine Risikoanalyse in Sachsen?",
-                "Kompakte Checks ab 47 €, vollständige Analysepakete ab 3.475 € Festpreis. Alle Preise stehen transparent auf beraterium.de/pricing/ – unabhängig davon, ob Sie in Dresden, Leipzig oder Bautzen sitzen.",
+                "Kompakte Checks ab 47 €, vollständige Analysepakete ab 3.475 € Festpreis. Alle Preise stehen transparent auf beraterium.de/preise/ – unabhängig davon, ob Sie in Dresden, Leipzig oder Bautzen sitzen.",
             ),
             (
                 "Finden Risikoanalyse-Sessions vor Ort in Sachsen statt?",
@@ -5447,7 +4603,7 @@ STANDORT_CONFIGS: list[dict] = [
             "Formate: Kick-off, Analyse-Sessions und Workshops bei Ihnen im Unternehmen oder remote.",
             "Zielgruppen: KMU, Familienunternehmen, Startups, Gründerteams, Solo-Selbstständige und Freelancer.",
             "Ergebnis: Risiko-Lagebild in Euro plus Fahrplan – abgesichert durch die doppelte Garantie (Relevanz + Nutzen).",
-            "Preise: transparent auf beraterium.de/pricing/; kein Aufschlag für Sachsen.",
+            "Preise: transparent auf beraterium.de/preise/; kein Aufschlag für Sachsen.",
         ],
         "service_audience": "KMU, Startups und Solo-Selbstständige in Sachsen",
         "cta_h2": "Bereit für Klarheit über Ihre Risiken – vor Ort in Sachsen?",
@@ -5488,7 +4644,7 @@ STANDORT_CONFIGS: list[dict] = [
             "dem gesamten Ruhrgebiet für Sie da. Risiken werden in Euro bewertet, Maßnahmen "
             "priorisiert – vor Ort bei Ihnen oder remote."
         ),
-        "hero_cta": "Book a free intro call",
+        "hero_cta": "Kostenloses Erstgespräch buchen",
         "rep_h2": "Joachim Lau – Ihre Beraterium-Lokalvertretung in NRW",
         "map_h2": "So erreichen Sie uns in NRW",
         "map_body": (
@@ -5571,7 +4727,7 @@ STANDORT_CONFIGS: list[dict] = [
         "faq": [
             (
                 "Wer ist der lokale Risikomanagement-Partner von Beraterium in NRW?",
-                "Beraterium mit Joachim Lau als Lokalvertretung in Nordrhein-Westfalen. Er betreut KMU, Startups und Solo-Selbstständige in ganz NRW persönlich – Risiken in Euro bewertet, mit doppelter Garantie und transparenten Festpreisen auf beraterium.de/pricing/.",
+                "Beraterium mit Joachim Lau als Lokalvertretung in Nordrhein-Westfalen. Er betreut KMU, Startups und Solo-Selbstständige in ganz NRW persönlich – Risiken in Euro bewertet, mit doppelter Garantie und transparenten Festpreisen auf beraterium.de/preise/.",
             ),
             (
                 "Bietet Beraterium Risikomanagement in Köln an?",
@@ -5599,7 +4755,7 @@ STANDORT_CONFIGS: list[dict] = [
             ),
             (
                 "Was kostet eine Risikoanalyse in NRW?",
-                "Kompakte Checks ab 47 €, vollständige Analysepakete ab 3.475 € Festpreis. Alle Preise stehen transparent auf beraterium.de/pricing/ – unabhängig davon, ob Sie in Köln, Düsseldorf oder Dortmund sitzen.",
+                "Kompakte Checks ab 47 €, vollständige Analysepakete ab 3.475 € Festpreis. Alle Preise stehen transparent auf beraterium.de/preise/ – unabhängig davon, ob Sie in Köln, Düsseldorf oder Dortmund sitzen.",
             ),
             (
                 "Finden Risikoanalyse-Sessions vor Ort in NRW statt?",
@@ -5628,7 +4784,7 @@ STANDORT_CONFIGS: list[dict] = [
             "Formate: Kick-off, Analyse-Sessions und Workshops bei Ihnen im Unternehmen oder remote.",
             "Zielgruppen: KMU, Familienunternehmen, Startups, Gründerteams, Solo-Selbstständige und Freelancer.",
             "Ergebnis: Risiko-Lagebild in Euro plus Fahrplan – abgesichert durch die doppelte Garantie (Relevanz + Nutzen).",
-            "Preise: transparent auf beraterium.de/pricing/; kein Aufschlag für NRW.",
+            "Preise: transparent auf beraterium.de/preise/; kein Aufschlag für NRW.",
         ],
         "service_audience": "KMU, Startups und Solo-Selbstständige in NRW (Köln, Düsseldorf, Ruhrgebiet)",
         "cta_h2": "Bereit für Klarheit über Ihre Risiken – vor Ort in NRW?",
@@ -5644,6 +4800,653 @@ STANDORT_CONFIGS: list[dict] = [
         "breadcrumb_name": "NRW",
     },
 ]
+
+
+def gen_risikoradar() -> None:
+    pre = "../"
+    main = (
+        hero(pre, "UNSER NETZWERK", "RisikoRadar – Lösungen entstehen nicht isoliert",
+             "Ein geschützter Raum aus geprüften, vertrauten Experten. Kein loser Kontaktpool, sondern ein funktionierendes Netzwerk, in dem Disziplinen zusammenspielen – damit aus Ihrer Analyse echte Umsetzung wird.")
+        + """
+    <section class="brt-section brt-section--narrow" aria-labelledby="umsetzung-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="umsetzung-title" class="brt-h2">Wir liefern keine Analyse zum Ablegen – sondern Lösungen zum Umsetzen</h2>
+        <p class="brt-body">Die Analyse schafft Klarheit. Der eigentliche Mehrwert entsteht in der Umsetzung. Genau hier setzt RisikoRadar an: Wir bringen die richtigen Menschen zusammen und sorgen dafür, dass Maßnahmen sinnvoll ineinandergreifen. Beraterium bleibt dabei die Klammer.</p>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="ways-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">SIE ENTSCHEIDEN</p>
+          <h2 id="ways-title" class="brt-h2">Wie soll die Umsetzung laufen?</h2>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Selbst umsetzen</h3><p class="brt-body">Mit Ihrer eigenen Mannschaft – für organisatorische oder einfache Maßnahmen.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Mit Ihren Dienstleistern</h3><p class="brt-body">Mit vertrauten Partnern weiterarbeiten – für gewachsene Geschäftsbeziehungen.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Wir koordinieren</h3><p class="brt-body">Ein fester Ansprechpartner, ‚one face to the customer'. Wir bringen die richtigen Experten zusammen.</p></li>
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section" aria-labelledby="special-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">KEIN LOSER KONTAKTPOOL</p>
+          <h2 id="special-title" class="brt-h2">Vertrauen, Qualität, Zusammenarbeit</h2>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Zugang nur über Empfehlung oder Bewerbung</h3><p class="brt-body">Nicht jeder kommt rein. Das schützt die Qualität.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Geprüfte Experten</h3><p class="brt-body">Vertraute Spezialisten aus Organisation, Prozesse, Technik &amp; Sicherheit, IT &amp; Systeme, Mitarbeitende &amp; Verhalten.</p></li>
+          <li class="brt-card brt-hover-lift"><h3 class="brt-h3">Ein Ansprechpartner</h3><p class="brt-body">Kein Koordinationsaufwand, keine Diskussionen über Zuständigkeiten – Ergebnisse statt Organisation.</p></li>
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="dual-cta">
+      <div class="brt-container brt-two-col brt-two-col--cta brt-fade-up">
+        <div>
+          <h3 class="brt-h3">Sie suchen Umsetzung?</h3>
+          <p class="brt-body">Nach Ihrer Risikoanalyse stellen wir Ihnen bei Bedarf genau die Experten zusammen, die zu Ihren Top-Risiken passen – schon geprüft, kein Google-Roulette.</p>
+          <p class="brt-section__cta">
+            <a class="brt-btn brt-btn--outline" href="../kontakt/">Erstgespräch buchen →</a>
+          </p>
+        </div>
+        <div>
+          <h3 class="brt-h3">Sie sind Experte und möchten mitwirken?</h3>
+          <p class="brt-body">RisikoRadar wächst über Empfehlung und Bewerbung. Wenn Sie Qualität, Vertrauen und echte Zusammenarbeit schätzen, freuen wir uns über Ihre Nachricht.</p>
+          <p class="brt-section__cta">
+            <a class="brt-btn brt-btn--outline" href="../kontakt/">Als Experte bewerben →</a>
+          </p>
+        </div>
+      </div>
+    </section>"""
+        + faq_section_html([
+            ("Was ist RisikoRadar?", "RisikoRadar ist das geschützte Expertennetzwerk hinter Beraterium — geprüfte Fachleute, die Maßnahmen aus Ihrer Risikoanalyse umsetzen."),
+            ("Wie komme ich in RisikoRadar?", "Als Beraterium-Kunde erhalten Sie Zugang. Experten kommen über Empfehlung oder Bewerbung — kein offenes Forum."),
+        ], title="Häufige Fragen zu RisikoRadar", section_id="faq", alt=True)
+        + cta_band(pre, "Aus Klarheit wird Handlungsfähigkeit", "Sie entscheiden, wie die Umsetzung läuft – wir sorgen dafür, dass sie funktioniert.")
+    )
+    risikoradar_faq = [
+        ("Was ist RisikoRadar?", "RisikoRadar ist das geschützte Expertennetzwerk hinter Beraterium — geprüfte Fachleute, die Maßnahmen aus Ihrer Risikoanalyse umsetzen."),
+        ("Wie komme ich in RisikoRadar?", "Als Beraterium-Kunde erhalten Sie Zugang. Experten kommen über Empfehlung oder Bewerbung — kein offenes Forum."),
+    ]
+    write("risikoradar/index.html", shell(depth=1, title="RisikoRadar – Expertennetzwerk | Beraterium",
+          description="RisikoRadar ist ein geschütztes Netzwerk geprüfter Experten. So setzen Sie Maßnahmen um – mit einem Ansprechpartner statt Koordinationschaos.",
+          canonical="/risikoradar/", active_nav="risikoradar", main=main,
+          json_ld=page_schema(faq_page_schema(risikoradar_faq))))
+
+
+BLINDSPOT_FAQ = [
+    ("Was ist der Blindspot Quick Check?",
+     "Der Blindspot Quick Check ist ein kostenloser Online-Selbsttest von Beraterium. In 10 bis 15 Fragen prüfen Sie, wo Ihr Unternehmen verwundbar ist — bei Schlüsselpersonen, Technik und operativen Abläufen. Die Auswertung erhalten Sie sofort, ohne Anmeldung."),
+    ("Was ist der Unterschied zum Blindspot Check in Stufe 1 der Risikoanalyse?",
+     "Der Quick Check hier auf der Seite ist eine vereinfachte Selbstprüfung: 15 ausgewählte Gefahrenbereiche, Ampelbewertung, ohne Gespräch. Stufe 1 der Risikoanalyse ist ein moderierter Prozess mit branchenspezifischem Fragenkatalog, Schadensszenarien in Euro, Eintrittswahrscheinlichkeit, Inventar und einem priorisierten Risikoportfolio — typischerweise in einem gemeinsamen Termin."),
+    ("Wie lange dauert der Blindspot Quick Check?",
+     "Etwa 10 Minuten. Sie beantworten je nach Zielgruppe 10 bis 15 kurze „Was passiert, wenn …“-Fragen und sehen die Auswertung direkt im Anschluss."),
+    ("Ist der Blindspot Quick Check kostenlos?",
+     "Ja, der Check ist vollständig kostenlos und ohne Registrierung nutzbar. Optional können Sie sich die Auswertung als PDF-Report per E-Mail zusenden lassen."),
+    ("Ersetzt der Quick Check eine vollständige Risikoanalyse?",
+     "Nein. Der Quick Check bildet einen Ausschnitt aus über 100 Gefahrenbereichen unseres 3-Ebenen-Gefahrenkatalogs ab. Ein gutes Ergebnis bedeutet nicht, dass alle Risiken ausgeschlossen sind — dafür gibt es die systematische Risikoanalyse Stufe 1 und 2 von Beraterium."),
+    ("Für wen ist der Blindspot Quick Check gedacht?",
+     "Für Solo-Selbstständige, Gründer und Startups sowie kleine und mittlere Unternehmen (KMU). Die Fragen passen sich Ihrer Auswahl an: Solo-Selbstständige beantworten 10 Fragen, Gründer und KMU je 15."),
+    ("Was passiert mit meinen Antworten?",
+     "Die Auswertung läuft direkt in Ihrem Browser. Persönliche Daten geben Sie nur an, wenn Sie den optionalen PDF-Report anfordern — dann gelten die Hinweise in unserer Datenschutzerklärung. IP-Adressen speichern wir nicht."),
+]
+
+
+def gen_tools_index() -> None:
+    pre = "../"
+    main = (
+        hero(
+            pre,
+            "KOSTENLOSE TOOLS",
+            "Tools: Risiken selbst prüfen — in Minuten statt Wochen",
+            "Kompakte Selbsttests aus der Beraterium-Methode. Kein Ersatz für eine vollständige Risikoanalyse, aber ein ehrlicher erster Blick auf Ihre blinden Flecken.",
+            compact=True,
+        )
+        + f"""
+    <section class="brt-section" aria-labelledby="tools-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">SELBST TESTEN</p>
+          <h2 id="tools-title" class="brt-h2">Welche Tools stehen zur Verfügung?</h2>
+          <p class="brt-body">Aktuell ein Tool — weitere sind in Arbeit. Alle Tools basieren auf unserem 3-Ebenen-Gefahrenkatalog mit über 100 Gefahrenbereichen.</p>
+        </header>
+        <ul class="brt-cards-3col brt-stagger">
+          <li class="brt-card brt-card--target brt-hover-lift">
+            <h3 class="brt-h3">Blindspot Check</h3>
+            <p class="brt-body">Der kostenlose Quick Check: 10–15 „Was passiert, wenn …“-Fragen zu Schlüsselpersonen, Technik und operativen Abläufen. Sofortige Auswertung mit Ampelstatus und konkreten ersten Schritten.</p>
+            <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}tools/blindspot-check/">Blindspot Check starten →</a></p>
+          </li>
+          <li class="brt-card brt-card--target brt-hover-lift">
+            <h3 class="brt-h3">RisikoRadar</h3>
+            <p class="brt-body">Kein Selbsttest, aber der nächste Schritt: unser geschütztes Expertennetzwerk für die Umsetzung der Maßnahmen aus Ihrer Risikoanalyse.</p>
+            <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}risikoradar/">RisikoRadar kennenlernen →</a></p>
+          </li>
+        </ul>
+      </div>
+    </section>"""
+        + cta_band(pre, "Lieber direkt mit Experten sprechen?", "Im kostenlosen Erstgespräch klären wir, welche Risiken für Ihr Unternehmen wirklich relevant sind.")
+    )
+    breadcrumb_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Startseite", "item": f"{DE_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": "Tools", "item": f"{DE_SITE_URL}/tools/"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    write("tools/index.html", shell(
+        depth=1,
+        title="Tools – Kostenlose Risiko-Checks | Beraterium",
+        description="Kostenlose Tools von Beraterium: Mit dem Blindspot Check erkennen Sie in 10 Minuten blinde Flecken und Unternehmensrisiken – sofort und ohne Anmeldung.",
+        canonical="/tools/",
+        active_nav="tools",
+        main=main,
+        json_ld=page_schema(breadcrumb_ld),
+    ))
+
+
+def gen_blindspot_check() -> None:
+    pre = "../../"
+    canonical = "/tools/blindspot-check/"
+    config_json = blindspot_config_json(
+        locale="de",
+        submit_url="https://script.google.com/macros/s/AKfycbyPc0XZXUu9ok3-5rkXJNlAYbj5WsmzVq9vyuquKJmtjPKhgSfqXPDQMM63lC2OreIVIQ/exec",
+        report_url="https://script.google.com/macros/s/AKfycbyPc0XZXUu9ok3-5rkXJNlAYbj5WsmzVq9vyuquKJmtjPKhgSfqXPDQMM63lC2OreIVIQ/exec",
+        booking_url=f"{pre}kontakt/",
+        privacy_url=f"{pre}datenschutz/",
+    )
+    main = (
+        hero(
+            pre,
+            "KOSTENLOSER SELBSTTEST",
+            "Blindspot Quick Check: Wo ist Ihr Unternehmen verwundbar?",
+            "Beantworten Sie 10–15 kurze „Was passiert, wenn …“-Fragen und erhalten Sie sofort eine Auswertung: Ampelstatus, Risikoprofil nach Kategorien und konkrete erste Schritte für Ihre kritischsten Punkte. Der Quick Check ist die vereinfachte Online-Variante — Stufe 1 der Risikoanalyse geht deutlich tiefer.",
+            compact=True,
+            actions='<a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-blindspot">Check jetzt starten</a>',
+        )
+        + f"""
+    <section class="brt-section" aria-labelledby="warum-title">
+      <div class="brt-container brt-split">
+        <div class="brt-split__text brt-fade-up">
+          <h2 id="warum-title" class="brt-h2">Warum ein Blindspot Quick Check?</h2>
+          <p class="brt-body">Die meisten Unternehmen scheitern nicht an den Risiken, die sie kennen — sondern an denen, die sie nie betrachtet haben. Der Blindspot Quick Check macht diese blinden Flecken sichtbar: Er prüft 15 der über 100 Gefahrenbereiche aus unserem 3-Ebenen-Gefahrenkatalog, verteilt auf die Bereiche <strong>Mensch</strong>, <strong>Technik</strong> und <strong>Operatives</strong>.</p>
+          <p class="brt-body">Jede Frage beschreibt ein konkretes Szenario. Sie bewerten, wie kritisch es für Sie wäre — und ob Sie bereits Maßnahmen vorbereitet haben. Daraus entsteht Ihr persönliches Risikoprofil mit Ampelstatus je Frage.</p>
+        </div>
+        {split_media_html(IMG_BLINDSPOT_WARUM, "Blindspot Check macht übersehene Unternehmensrisiken in den Bereichen Mensch, Technik und Operatives sichtbar", 2, contain=True)}
+      </div>
+    </section>
+    <section id="check" class="brt-section brt-section--alt" aria-labelledby="check-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">INTERAKTIVER CHECK</p>
+          <h2 id="check-title" class="brt-h2">Der Blindspot Quick Check</h2>
+          <p class="brt-body brt-section__lede">Hier starten Sie den vereinfachten Selbsttest — online, in etwa 10 Minuten, ohne Termin. Er ersetzt nicht Stufe 1 der Risikoanalyse, gibt Ihnen aber einen ehrlichen ersten Blick auf typische blinde Flecken.</p>
+        </header>
+        <div id="brt-blindspot" class="bqc-widget brt-fade-up" aria-live="polite"></div>
+      </div>
+    </section>
+    <section class="brt-section" aria-labelledby="vergleich-title">
+      <div class="brt-container brt-fade-up">
+        <header class="brt-section__header">
+          <p class="brt-tag">ZWEI FORMEN</p>
+          <h2 id="vergleich-title" class="brt-h2">Quick Check vs. Risikoanalyse Stufe&nbsp;1</h2>
+        </header>
+        <ul class="brt-guarantee-duo brt-stagger">
+          <li class="brt-card">
+            <h3 class="brt-h3">Blindspot Quick Check (diese Seite)</h3>
+            <ul class="brt-list">
+              <li>Online-Selbsttest, sofort startbar</li>
+              <li>10–15 ausgewählte Fragen aus dem Gefahrenkatalog</li>
+              <li>Ampelbewertung und Kategorien-Profil</li>
+              <li>Kein Gespräch, keine Branchenanpassung im Detail</li>
+              <li>Kostenlos und ohne Anmeldung</li>
+            </ul>
+          </li>
+          <li class="brt-card">
+            <h3 class="brt-h3">Risikoanalyse Stufe&nbsp;1 (moderierter Prozess)</h3>
+            <ul class="brt-list">
+              <li>Gemeinsamer Termin mit Beraterium</li>
+              <li>Branchenspezifischer Fragenkatalog (15–16 Gefahrenfelder)</li>
+              <li>Schadensszenarien in Euro, Eintrittswahrscheinlichkeit, Inventar</li>
+              <li>Priorisiertes Risikoportfolio statt Einzelthemen</li>
+              <li>Grundlage für Stufe&nbsp;2 mit Maßnahmenplan</li>
+            </ul>
+            <p class="brt-section__cta"><a class="brt-btn brt-btn--outline" href="{pre}angebote/">Angebote &amp; Stufen →</a></p>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="methode-title">
+      <div class="brt-container brt-fade-up">
+        <header class="brt-section__header">
+          <p class="brt-tag">GRUNDIDEE</p>
+          <h2 id="methode-title" class="brt-h2">So funktioniert die Risikoanalyse — und was der Quick Check davon übernimmt</h2>
+        </header>
+        <p class="brt-body">Die Beraterium-Methode arbeitet mit einem strukturierten Gefahrenkatalog: Für jedes relevante Feld klären wir Leitfrage, Schadensszenario, möglichen Schaden in Euro, Eintrittswahrscheinlichkeit und <em>Inventar</em> — also, was Sie bereits haben, um das Risiko zu mindern. Daraus entsteht kein Sammelsurium einzelner Themen, sondern ein vergleichbares Risikoportfolio mit klaren Prioritäten.</p>
+        <p class="brt-body">Der Blindspot Quick Check nutzt dieselbe Logik in stark vereinfachter Form: konkrete „Was passiert, wenn …“-Szenarien, Ihre Einschätzung der Kritikalität und ob Vorsorge existiert. Er zeigt Richtung und blinde Flecken — Stufe 1 und 2 der Risikoanalyse vertiefen und priorisieren systematisch über den gesamten Katalog. Mehr zur Methode: <a href="{pre}methode/">Beraterium-Methode</a>.</p>
+      </div>
+    </section>
+    <section class="brt-section brt-section--narrow" aria-labelledby="grenzen-title">
+      <div class="brt-container brt-fade-up">
+        <h2 id="grenzen-title" class="brt-h2">Was der Quick Check leistet — und was nicht</h2>
+        <p class="brt-body">Der Blindspot Quick Check ist ein Schnelltest, keine vollständige Risikoanalyse. Er betrachtet ausgewählte, besonders häufige Blindspots. Ein unauffälliges Ergebnis heißt nicht, dass in den übrigen Gefahrenbereichen keine Risiken bestehen. Wer es genau wissen will, geht den nächsten Schritt: <a href="{pre}angebote/">Risikoanalyse Stufe&nbsp;1</a> prüft alle relevanten Felder des Gefahrenkatalogs — inklusive Priorisierung; Stufe&nbsp;2 liefert den Maßnahmenplan.</p>
+      </div>
+    </section>""".replace("{pre}", pre)
+        + faq_section_html(
+            BLINDSPOT_FAQ,
+            title="Häufige Fragen zum Blindspot Quick Check",
+            section_id="faq",
+            alt=True,
+        )
+        + cta_band(pre, "Rote Punkte im Ergebnis?", "Im kostenlosen Erstgespräch besprechen wir Ihre kritischsten Blindspots und was Sie zuerst angehen sollten.")
+    )
+    webapp_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "Blindspot Check",
+            "url": f"{DE_SITE_URL}{canonical}",
+            "description": "Kostenloser Online-Selbsttest: In 10–15 Fragen prüfen Solo-Selbstständige, Gründer und KMU, wo ihr Unternehmen verwundbar ist. Sofortige Auswertung mit Ampelstatus und ersten Schritten.",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web",
+            "browserRequirements": "Requires JavaScript",
+            "inLanguage": "de",
+            "isAccessibleForFree": True,
+            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+            "provider": {"@id": f"{DE_SITE_URL}/#organization"},
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    breadcrumb_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Startseite", "item": f"{DE_SITE_URL}/"},
+                {"@type": "ListItem", "position": 2, "name": "Tools", "item": f"{DE_SITE_URL}/tools/"},
+                {"@type": "ListItem", "position": 3, "name": "Blindspot Check", "item": f"{DE_SITE_URL}{canonical}"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    extra_css = f'\n  <link rel="stylesheet" href="{pre}css/brt-blindspot.css?v={BRT_ASSET_VERSION}">'
+    extra_scripts = (
+        f'\n<script type="application/json" id="brt-blindspot-config">{config_json}</script>'
+        f'\n<script src="{pre}js/brt-blindspot.js?v={BRT_ASSET_VERSION}"></script>'
+    )
+    write("tools/blindspot-check/index.html", shell(
+        depth=2,
+        title="Blindspot Check – Risiko-Selbsttest kostenlos | Beraterium",
+        description="Blindspot Check: Prüfen Sie in 10 Minuten kostenlos, wo Ihr Unternehmen verwundbar ist. 10–15 Fragen, sofortige Auswertung, konkrete erste Schritte.",
+        canonical=canonical,
+        active_nav="tools/blindspot-check",
+        main=main,
+        json_ld=page_schema(faq_page_schema(BLINDSPOT_FAQ), webapp_ld, breadcrumb_ld),
+        extra_css=extra_css,
+        extra_scripts=extra_scripts,
+    ))
+
+
+# Nach Apps-Script-Deploy: URL hier eintragen (gleiche Web-App-URL wie EN).
+RA_PREP_SUBMIT_URL = "https://script.google.com/macros/s/AKfycbzJDCClA9HKNK99xIjsvt9S9hCYDPtFd9nF4OlV3YPxqqzK9uOXyRz9AdLlXsEfy9gq/exec"
+
+
+def gen_ra_prep() -> None:
+    pre = "../../"
+    canonical = "/tools/ra-vorbereitung/"
+    config_json = ra_prep_config_json(
+        locale="de",
+        submit_url=RA_PREP_SUBMIT_URL,
+        privacy_url=f"{pre}datenschutz/",
+        terms_url=f"{pre}agb/",
+    )
+    main = (
+        hero(
+            pre,
+            "RISIKOANALYSE",
+            "Vorbereitung für Ihre Risikoanalyse",
+            "Mit diesem Fragebogen bereiten Sie den Workshop bei Beraterium optimal vor. Ihre Angaben helfen uns, den Termin zielgerichtet zu planen — Dauer etwa 15–20 Minuten.",
+            compact=True,
+            actions='<a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-ra-prep">Fragebogen starten</a>',
+        )
+        + f"""
+    <section class="brt-section" aria-labelledby="rap-warum-title">
+      <div class="brt-container brt-split">
+        <div class="brt-split__text brt-fade-up">
+          <h2 id="rap-warum-title" class="brt-h2">Warum dieser Fragebogen?</h2>
+          <p class="brt-body">Eine gute Risikoanalyse beginnt nicht im Termin — sondern mit dem richtigen Kontext. Ihre Antworten helfen uns, Schwerpunkte zu setzen, passende Beispiele vorzubereiten und den Workshop an Ihre Branche, Größe und aktuelle Lage anzupassen.</p>
+          <p class="brt-body">Je konkreter Ihre Angaben, desto weniger Zeit verbringen wir mit Standardfragen — und desto mehr mit den Themen, die für Ihr Unternehmen wirklich zählen.</p>
+          <ul class="rap-intro__meta" aria-label="Hinweise zum Fragebogen">
+            <li><span class="rap-intro__meta-label">Dauer</span> 15–20&nbsp;Minuten</li>
+            <li><span class="rap-intro__meta-label">Pflicht</span> Kontakt, Datenschutz, AGB</li>
+            <li><span class="rap-intro__meta-label">Felder</span> nur ausfüllen, was zutrifft</li>
+          </ul>
+        </div>
+        {split_media_html(IMG_RA_PREP_VORBEREITUNG, "Berater und Unternehmer bereiten gemeinsam eine Risikoanalyse vor — strukturierte Vorbereitung am Workshop-Tisch", 2, contain=True)}
+      </div>
+    </section>
+    <section id="fragebogen" class="brt-section brt-section--alt" aria-labelledby="rap-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">FRAGEBOGEN</p>
+          <h2 id="rap-title" class="brt-h2">Online ausfüllen</h2>
+          <p class="brt-body brt-section__lede">Der Fragebogen führt Sie Schritt für Schritt durch fünf Themenbereiche. Sie können jederzeit zurückspringen und am Ende alles prüfen, bevor Sie absenden.</p>
+        </header>
+        <ul class="rap-topics brt-stagger" aria-label="Themenbereiche im Fragebogen">
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">01</p>
+            <h3 class="rap-topic__title brt-h3">Unternehmen &amp; Organisation</h3>
+            <p class="rap-topic__desc">Angebot, Rechtsform, Mitarbeitende, Standorte</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">02</p>
+            <h3 class="rap-topic__title brt-h3">Tätigkeit &amp; Außenwirkung</h3>
+            <p class="rap-topic__desc">Räumlichkeiten, Reichweite, Website, Social Media</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">03</p>
+            <h3 class="rap-topic__title brt-h3">Ziele &amp; Schwerpunkte</h3>
+            <p class="rap-topic__desc">Erwartungen, aktuelle Sorgen, kritische Bereiche</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">04</p>
+            <h3 class="rap-topic__title brt-h3">Erfahrung &amp; Vorsorge</h3>
+            <p class="rap-topic__desc">Störungen, Schutzmaßnahmen, Szenarien</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">05</p>
+            <h3 class="rap-topic__title brt-h3">Workshop</h3>
+            <p class="rap-topic__desc">Teilnehmende, Ansprechpartner, Besonderheiten</p>
+          </li>
+        </ul>
+        <div id="brt-ra-prep" class="rap-widget brt-fade-up" aria-live="polite"></div>
+      </div>
+    </section>"""
+    )
+    extra_css = f'\n  <link rel="stylesheet" href="{pre}css/brt-ra-prep.css?v={BRT_ASSET_VERSION}">'
+    extra_scripts = (
+        f'\n<script type="application/json" id="brt-ra-prep-config">{config_json}</script>'
+        f'\n<script src="{pre}js/brt-ra-prep.js?v={BRT_ASSET_VERSION}"></script>'
+    )
+    write("tools/ra-vorbereitung/index.html", shell(
+        depth=2,
+        title="RA-Vorbereitung – Fragebogen | Beraterium",
+        description="Vorbereitungsfragebogen für Ihre Risikoanalyse bei Beraterium: Unternehmensdaten, Ziele und Workshop-Vorbereitung in 15–20 Minuten.",
+        canonical=canonical,
+        active_nav=None,
+        main=main,
+        noindex=True,
+        extra_css=extra_css,
+        extra_scripts=extra_scripts,
+    ))
+
+
+def gen_blog() -> None:
+    pre = "../"
+    posts = load_blog_posts()
+    cards = []
+    for i, p in enumerate(posts):
+        card = blog_card_html(p, 1, featured=(i == 0))
+        cards.append(card)
+    if not cards:
+        cards = [
+            """        <li class="brt-card brt-card--blog">
+          <div class="brt-card__body">
+            <p class="brt-body">Noch keine veröffentlichten Artikel. Schauen Sie bald wieder vorbei.</p>
+          </div>
+        </li>"""
+        ]
+    main = (
+        hero(
+            pre,
+            "BERATERIUM-BLOG",
+            "Risiko verständlich gemacht",
+            "Praxiswissen zu Risikomanagement, Unternehmensrisiken, HR und Führung – ohne Berater-Kauderwelsch. Für Menschen, die ihr Unternehmen sicher in die Zukunft führen wollen.",
+            compact=True,
+        )
+        + f"""
+    <section class="brt-section" aria-labelledby="blog-grid">
+      <div class="brt-container">
+        <header class="brt-section__header brt-section__header--row brt-fade-up">
+          <div>
+            <h2 id="blog-grid" class="brt-h2">Alle Artikel</h2>
+            <p class="brt-body">{len(posts)} Beiträge zu Risikomanagement, Führung und Unternehmenspraxis.</p>
+          </div>
+        </header>
+        <nav class="brt-blog-filters" aria-label="Kategorien">
+          {blog_filters_html()}
+        </nav>
+        <ul class="brt-blog-grid brt-stagger" id="blog-grid-list">
+{chr(10).join(cards)}
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="newsletter-title">
+      <div class="brt-container brt-centered-cta brt-fade-up">
+        <h2 id="newsletter-title" class="brt-h3">Kein Risiko-Wissen verpassen</h2>
+        <p class="brt-body">Ein kompakter Impuls pro Monat – praxisnah, kostenlos, jederzeit abbestellbar.</p>
+        <form class="brt-form" action="#" method="post" style="max-width: 28rem; margin-inline: auto;">
+          <label>E-Mail
+            <input type="email" name="email" required placeholder="ihre@email.de" autocomplete="email">
+          </label>
+          <button class="brt-btn" type="submit">Anmelden</button>
+          <p class="brt-meta">Mit der Anmeldung stimmen Sie der Verarbeitung gemäß unserer <a href="{pre}datenschutz/">Datenschutzerklärung</a> zu.</p>
+        </form>
+      </div>
+    </section>"""
+    )
+    write(
+        "blog/index.html",
+        shell(
+            depth=1,
+            title="Blog – Risikomanagement & Mittelstand | Beraterium",
+            description="Praxiswissen zu Risikomanagement, Unternehmensrisiken, HR und Führung – für Startups, KMU und Solo-Selbstständige. Klar, ehrlich, sofort anwendbar.",
+            canonical="/blog/",
+            active_nav="blog",
+            main=main,
+        ),
+    )
+
+
+def gen_blog_singles() -> None:
+    posts = load_blog_posts()
+    all_by_slug = {p.slug: p for p in posts}
+    team = team_by_slug(load_team_members())
+    for post in posts:
+        pre = "../../"
+        author = team.get(post.author)
+        author_name = author.name if author else "Beraterium"
+        author_img = ""
+        if author:
+            img = img_html(author.image, author.image_alt, 2, css_class="brt-article__author-img", aspect="1/1")
+            if "brt-image-placeholder" not in img:
+                author_img = img
+        hero_img = img_html(post.hero_image, post.hero_alt, 2, hero=True, css_class="brt-article__hero-img", aspect="16/9")
+        hero_media = (
+            f'<figure class="brt-article__hero-media">{hero_img}{ki_image_label_html()}</figure>'
+            if "brt-image-placeholder" not in hero_img
+            else f'<div class="brt-article__hero-media">{hero_img}</div>'
+        )
+        sticky_title = post.title if len(post.title) <= 72 else post.title[:69].rsplit(" ", 1)[0] + "…"
+        progress_block = """
+        <div class="brt-article__progress" aria-hidden="true" data-article-progress>
+          <span class="brt-article__progress-bar"></span>
+        </div>"""
+        sticky_bar_block = f"""
+      <div class="brt-article__sticky-bar" data-article-sticky-bar hidden>
+        <div class="brt-container brt-article__sticky-inner">
+          <span class="brt-tag brt-tag--small">{escape(post.category)}</span>
+          <p class="brt-article__sticky-title">{escape(sticky_title)}</p>
+        </div>
+{progress_block}
+      </div>"""
+        youtube_block = article_youtube_embed_html(
+            post.youtube_id,
+            post.title,
+            f"https://www.beraterium.de/blog/{post.slug}/",
+        )
+        author_col = article_author_sidebar_html(author, author_name, post.author, 2, pre)
+        author_meta = author_name_link_html(post.author, author_name, pre)
+        aside_block = article_sidebar_html(post.toc, post.category, 2, pre)
+        lead_block = (
+            f'          <p class="brt-lead brt-article__lead">{escape(post.lead)}</p>\n'
+            if post.lead
+            else ""
+        )
+        back_top_block = """
+    <button type="button" class="brt-article__back-top" aria-label="Nach oben scrollen" data-article-back-top hidden>
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M10 4l-6 6h4v6h4v-6h4L10 4z" fill="currentColor"/></svg>
+    </button>"""
+        faq_block = article_faq_section_html(post.faq)
+        related_cards = []
+        for slug in post.related_slugs:
+            rel_post = all_by_slug.get(slug)
+            if rel_post:
+                related_cards.append(blog_card_html(rel_post, 2))
+        if not related_cards:
+            for rel_post in posts:
+                if rel_post.slug != post.slug and rel_post.category == post.category:
+                    related_cards.append(blog_card_html(rel_post, 2))
+                if len(related_cards) >= 3:
+                    break
+        related_block = ""
+        if related_cards:
+            related_block = f"""
+    <section class="brt-section" aria-labelledby="related-posts">
+      <div class="brt-container">
+        <h2 id="related-posts" class="brt-h2">Weitere Artikel</h2>
+        <ul class="brt-blog-grid brt-stagger">
+{chr(10).join(related_cards[:3])}
+        </ul>
+      </div>
+    </section>"""
+        author_box = f"""
+    <section class="brt-section brt-section--alt" aria-labelledby="author-box">
+      <div class="brt-container brt-article__author brt-fade-up">
+        {author_img}
+        <div>
+          <h2 id="author-box" class="brt-h3">{author_name_link_html(post.author, author_name, pre, css_class="brt-article__author-link brt-article__author-link--heading")}</h2>
+          <p class="brt-body">{escape(author.teaser_bio if author else "")}</p>
+          <a class="brt-btn brt-btn--ghost" href="{pre}team/">Unser Team →</a>
+        </div>
+      </div>
+    </section>"""
+        main = f"""
+    <article class="brt-article" data-article>
+{sticky_bar_block}
+      <div class="brt-container brt-article__hero-split brt-fade-up" data-article-hero>
+        <div class="brt-article__hero-copy">
+          <a class="brt-skip-link brt-skip-link--article" href="#article-body">Zum Artikeltext springen</a>
+          <h1 class="brt-h1 brt-article__title">{escape(post.title)}</h1>
+          <p class="brt-article__meta brt-meta">
+            <span class="brt-article__category">{escape(post.category)}</span> · {author_meta} · <time datetime="{post.date.isoformat()}">{format_date_de(post.date)}</time> · ca. {post.reading_time_min} Min. Lesezeit
+          </p>
+        </div>
+        {hero_media}
+      </div>
+      <div class="brt-container brt-article__layout brt-fade-up">
+{author_col}
+        <div class="brt-article__main">
+{lead_block}          <div class="brt-article__body" id="article-body" tabindex="-1">
+{post.body_html}
+          </div>
+        </div>
+{aside_block}
+      </div>
+{youtube_block}
+    </article>
+{back_top_block}
+{faq_block}
+{author_box}
+    <section class="brt-cta-band brt-cta-band--dark brt-section" aria-labelledby="article-cta">
+      <div class="brt-container brt-cta-band__inner brt-fade-up">
+        <h2 id="article-cta" class="brt-h2 brt-h2--on-dark">Risiken im eigenen Unternehmen klären?</h2>
+        <p class="brt-body brt-body--on-dark">Buchen Sie ein kostenloses Erstgespräch – 30 Minuten, unverbindlich.</p>
+        <a class="brt-btn brt-btn--on-dark" href="{pre}kontakt/">Erstgespräch buchen</a>
+      </div>
+    </section>
+{related_block}"""
+        json_ld_blocks = [blog_posting_schema(post, author)]
+        if post.faq:
+            json_ld_blocks.append(faq_page_schema(post.faq))
+        json_ld = page_schema(*json_ld_blocks)
+        og_image = blog_hero_public_url(post.hero_image) if post.hero_image else ""
+        write(
+            f"blog/{post.slug}/index.html",
+            shell(
+                depth=2,
+                title=blog_shell_title(post),
+                description=blog_meta_description(post.excerpt),
+                canonical=f"/blog/{post.slug}/",
+                active_nav="blog",
+                main=main,
+                json_ld=json_ld,
+                og_type="article",
+                og_image=og_image,
+            ),
+        )
+
+
+def gen_home_analyse() -> None:
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    media = img_html(
+        IMG_HOME_ANALYSE,
+        "Unternehmer verschafft sich Klarheit über die größten Risiken",
+        0,
+        aspect="4/3",
+    )
+    old = """      <div class="brt-split__media brt-fade-up" style="--fade-delay: 120ms">
+        <div
+          class="brt-image-placeholder"
+          role="img"
+          aria-label="Unternehmer verschafft sich Klarheit über die größten Risiken">
+          <span class="brt-image-placeholder__label">Analyse-Situation</span>
+        </div>
+      </div>"""
+    new = f"""      <div class="brt-split__media brt-fade-up" style="--fade-delay: 120ms">
+        {media}
+      </div>"""
+    if old not in html:
+        print("  skip index.html home analyse (pattern not found)")
+        return
+    path.write_text(html.replace(old, new), encoding="utf-8")
+    print("  updated index.html home analyse")
+
+
+def gen_home_team() -> None:
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    start = "  <!-- HOME_TEAM_START -->"
+    end = "  <!-- HOME_TEAM_END -->"
+    section = home_team_section_html(0)
+    if start in html and end in html:
+        before = html.split(start)[0]
+        after = html.split(end)[1]
+        path.write_text(before + section + after, encoding="utf-8")
+    else:
+        legacy_start = "  <!-- S7 — Die Köpfe -->"
+        legacy_end = '        <a class="brt-btn brt-btn--outline" href="team/">Mehr über das Team →</a>\n      </p>\n    </div>\n  </section>'
+        if legacy_start not in html or legacy_end not in html:
+            return
+        before = html.split(legacy_start)[0]
+        rest = html.split(legacy_start)[1]
+        after = rest.split(legacy_end, 1)[1]
+        path.write_text(before + section + after, encoding="utf-8")
+    print("  updated index.html home team")
+
+
+
 
 def gen_home_guarantee_avatars() -> None:
     """Home index.html: Garantie-Avatare mit Alt-Text (hand-maintained section)."""
@@ -5662,6 +5465,109 @@ def gen_home_guarantee_avatars() -> None:
         1,
     )
     path.write_text(html, encoding="utf-8")
+    print("  updated index.html guarantee avatars")
+
+def gen_home_analytics() -> None:
+    """Home index.html: GA4-Snippet nach CookieYes synchronisieren."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    start = "  <!-- GA4_START -->"
+    end = "  <!-- GA4_END -->\n"
+    block = f"{start}\n{GA4_ANALYTICS_HEAD}\n{end}"
+    if start in html:
+        i = html.find(start)
+        j = html.find(end, i)
+        if j < 0:
+            print("  skip index.html home analytics (end marker not found)")
+            return
+        path.write_text(html[:i] + block + html[j + len(end) :], encoding="utf-8")
+    else:
+        anchor = "  <!-- End cookieyes banner -->\n"
+        pos = html.find(anchor)
+        if pos < 0:
+            print("  skip index.html home analytics (cookieyes anchor not found)")
+            return
+        pos += len(anchor)
+        path.write_text(html[:pos] + block + html[pos:], encoding="utf-8")
+    print("  updated index.html home analytics")
+
+
+def gen_home_scripts() -> None:
+    """Home index.html: Analytics + Site + Hero JS synchronisieren."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    block = (
+        f'<script src="js/brt-analytics.js?v={BRT_ASSET_VERSION}"></script>\n'
+        f'<script src="js/brt-site.js?v={BRT_ASSET_VERSION}"></script>\n'
+        f'<script src="js/brt-hero.js?v={BRT_ASSET_VERSION}"></script>\n'
+    )
+    start = '<script src="js/brt-site.js?v='
+    i = html.find(start)
+    if i < 0:
+        print("  skip index.html home scripts (anchor not found)")
+        return
+    body = html.find("</body>", i)
+    if body < 0:
+        print("  skip index.html home scripts (body end not found)")
+        return
+    path.write_text(html[:i] + block + html[body:], encoding="utf-8")
+    print("  updated index.html home scripts")
+
+
+def gen_home_nav() -> None:
+    """Home index.html: Hauptnavigation aus nav_html() synchronisieren."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    start = '<nav id="site-nav" class="site-header__nav" aria-label="Primäre Navigation">\n      <ul>\n'
+    end = "\n      </ul>"
+    i = html.find(start)
+    j = html.find(end, i)
+    if i < 0 or j < 0:
+        print("  skip index.html home nav (pattern not found)")
+        return
+    i += len(start)
+    path.write_text(html[:i] + nav_html(0, None) + html[j:], encoding="utf-8")
+    print("  updated index.html home nav")
+
+
+def gen_home_tools_teaser() -> None:
+    """Home index.html: Teaser fuer den Blindspot Check vor dem Blog-Teaser."""
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    html = path.read_text(encoding="utf-8")
+    start = "  <!-- TOOLS_TEASER_START -->"
+    end = "  <!-- TOOLS_TEASER_END -->\n"
+    section = f"""{start}
+  <section class="brt-section brt-section--alt" aria-labelledby="tools-teaser-title">
+    <div class="brt-container brt-split brt-split--text-only">
+      <div class="brt-split__text brt-fade-up">
+        <p class="brt-tag">Kostenloser Selbsttest</p>
+        <h2 id="tools-teaser-title" class="brt-h2">Wo ist Ihr Unternehmen verwundbar? Der Blindspot Check zeigt es in 10 Minuten.</h2>
+        <p class="brt-body">10 bis 15 kurze „Was passiert, wenn …“-Fragen zu Schlüsselpersonen, Technik und operativen Abläufen. Sofortige Auswertung mit Ampelstatus und ersten Schritten, ohne Anmeldung.</p>
+        <a class="brt-btn" href="tools/blindspot-check/">Blindspot Check starten →</a>
+      </div>
+    </div>
+  </section>
+{end}"""
+    if start in html and end in html:
+        before = html.split(start)[0]
+        after = html.split(end)[1]
+        path.write_text(before + section + after, encoding="utf-8")
+    else:
+        anchor = "  <!-- BLOG_TEASER_START -->"
+        if anchor not in html:
+            print("  skip index.html tools teaser (pattern not found)")
+            return
+        path.write_text(html.replace(anchor, section + "\n" + anchor, 1), encoding="utf-8")
+    print("  updated index.html tools teaser")
+
 
 def gen_home_footer() -> None:
     """Home index.html: Footer aus footer_html() synchronisieren."""
@@ -5681,10 +5587,379 @@ def gen_home_footer() -> None:
     print("  updated index.html home footer")
 
 
+def gen_home_blog_teaser() -> None:
+    path = SITE / "index.html"
+    if not path.exists():
+        return
+    posts = load_blog_posts()[:3]
+    if not posts:
+        return
+    cards = "\n".join(blog_card_html(p, 0) for p in posts)
+    html = path.read_text(encoding="utf-8")
+    start = "  <!-- BLOG_TEASER_START -->"
+    end = "  <!-- BLOG_TEASER_END -->"
+    if start not in html or end not in html:
+        return
+    section = f"""  <!-- BLOG_TEASER_START -->
+  <section class="brt-section" aria-labelledby="blog-title">
+    <div class="brt-container">
+      <header class="brt-section__header brt-section__header--row brt-fade-up">
+        <div>
+          <p class="brt-tag">Einblicke</p>
+          <h2 id="blog-title" class="brt-h2">Experten-Einblicke von Beraterium</h2>
+          <p class="brt-body">Kurze, praxisnahe Artikel zu Risiko, Führung und Entscheidungen — geschrieben vom Beraterium-Team für Gründer, KMU und Selbstständige.</p>
+        </div>
+        <a class="brt-btn brt-btn--outline" href="blog/">Alle Artikel →</a>
+      </header>
+      <ul class="brt-blog-grid brt-stagger">
+{cards}
+      </ul>
+    </div>
+  </section>
+  <!-- BLOG_TEASER_END -->"""
+    before = html.split(start)[0]
+    after = html.split(end)[1]
+    path.write_text(before + section + after, encoding="utf-8")
+    print("  updated index.html blog teaser")
+
+
+def gen_kontakt() -> None:
+    pre = "../"
+    main = (
+        hero(pre, "KONTAKT", "Lassen Sie uns über Ihre Risiken sprechen",
+             "30 Minuten, kostenlos, unverbindlich. Sie gehen mit echtem Wissen raus – egal, wie Sie sich danach entscheiden.",
+             compact=True)
+        + f"""
+    <section class="brt-section brt-section--booking" aria-labelledby="contact-title">
+      <div class="brt-container brt-contact-booking brt-fade-up">
+        <div class="brt-contact-booking__head">
+          <div class="brt-contact-booking__intro">
+            <div class="brt-contact-booking__lead">
+              <p class="brt-tag">30 Minuten · kostenlos · unverbindlich</p>
+              <h2 id="contact-title" class="brt-h2">Ihr kostenloses Erstgespräch</h2>
+              <p class="brt-body">Wählen Sie direkt einen Termin – wir nehmen uns Zeit für Ihre Situation, nicht für Verkaufsargumente.</p>
+            </div>
+            <div class="brt-contact-expect">
+              <h3 class="brt-contact-expect__title">Was Sie erwartet</h3>
+              <ul class="brt-contact-expect__points">
+                <li class="brt-contact-expect__point">
+                  <strong>Kein Verkaufsgespräch</strong>
+                  <span>Kein Pitch – wir erklären, was wir tun und wie unsere Methode funktioniert.</span>
+                </li>
+                <li class="brt-contact-expect__point">
+                  <strong>Praxistipps inklusive</strong>
+                  <span>Konkrete Hinweise, mit denen Sie direkt mit Eigenarbeit und Recherche starten können.</span>
+                </li>
+                <li class="brt-contact-expect__point">
+                  <strong>Selbst umsetzen</strong>
+                  <span>Sie gehen mit genug Klarheit raus, um erste Schritte eigenständig anzugehen.</span>
+                </li>
+                <li class="brt-contact-expect__point">
+                  <strong>Unterstützung optional</strong>
+                  <span>Wenn Sie Begleitung brauchen, besprechen wir die weiteren Schritte gemeinsam – wie unten beschrieben.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <aside class="brt-contact-aside">
+            <p class="brt-contact-aside__label">Alternativ</p>
+            <h3 class="brt-h3">Direkter Draht</h3>
+            <p class="brt-body">Lieber schriftlich? Nutzen Sie unser Kontaktformular – Antwort i. d. R. innerhalb eines Werktags.</p>
+            <a class="brt-btn brt-btn--outline" href="{pre}kontaktformular/">Zum Kontaktformular</a>
+            <ul class="brt-contact-aside__links">
+              <li><a href="mailto:info@beraterium.de">info@beraterium.de</a></li>
+              <li><a href="https://www.linkedin.com/company/beraterium">LinkedIn</a></li>
+            </ul>
+          </aside>
+        </div>
+        <div class="brt-calendly" data-calendly-embed>
+          <div id="beraterium-calendly" class="calendly-inline-widget" data-url="https://calendly.com/beraterium/30min"></div>
+        </div>
+      </div>
+    </section>
+    <section class="brt-section brt-section--alt" aria-labelledby="steps-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">SO LÄUFT ES AB</p>
+          <h2 id="steps-title" class="brt-h2">Drei Schritte bis zur Klarheit</h2>
+        </header>
+        <ul class="brt-step-cards brt-stagger">
+          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 1</span><h3 class="brt-h3">Termin wählen</h3><p class="brt-body">Sie buchen einen 30-Minuten-Slot, der Ihnen passt.</p></li>
+          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 2</span><h3 class="brt-h3">Gespräch</h3><p class="brt-body">Wir zeigen Ihnen die Methode und gehen auf Ihre Situation ein. Kein Verkaufsdruck.</p></li>
+          <li class="brt-step-card"><span class="brt-step-card__num">Schritt 3</span><h3 class="brt-h3">Sie entscheiden</h3><p class="brt-body">Mit DIY-Anleitung im Gepäck entscheiden Sie in Ruhe, ob und wie wir zusammenarbeiten.</p></li>
+        </ul>
+      </div>
+    </section>
+    <section class="brt-section" aria-label="Vertrauen">
+      <div class="brt-container brt-centered-cta brt-fade-up">
+        <p class="brt-body">Kein Sales-Pitch. Kostenlos. Und falls wir später zusammenarbeiten: mit doppelter Garantie – <a href="{pre}relevanz-garantie/">Relevanz</a> und <a href="{pre}nutzen-garantie/">Nutzen</a>, sonst Geld zurück.</p>
+      </div>
+    </section>"""
+        + faq_section_html([
+            ("Was kostet das Erstgespräch?", "Nichts. 30 Minuten, kostenlos und unverbindlich — kein Verkaufsgespräch."),
+            ("Wie lange dauert das Erstgespräch?", "Ca. 30 Minuten. Sie bekommen die Methode erklärt und gehen mit konkreten ersten Schritten raus."),
+            ("Muss ich mich danach entscheiden?", "Nein. Sie entscheiden in Ruhe — mit einer DIY-Anleitung im Gepäck, egal wie Sie sich entscheiden."),
+        ], title="Häufige Fragen zum Erstgespräch", section_id="faq", alt=True)
+    )
+    kontakt_faq = [
+        ("Was kostet das Erstgespräch?", "Nichts. 30 Minuten, kostenlos und unverbindlich — kein Verkaufsgespräch."),
+        ("Wie lange dauert das Erstgespräch?", "Ca. 30 Minuten. Sie bekommen die Methode erklärt und gehen mit konkreten ersten Schritten raus."),
+        ("Muss ich mich danach entscheiden?", "Nein. Sie entscheiden in Ruhe — mit einer DIY-Anleitung im Gepäck, egal wie Sie sich entscheiden."),
+    ]
+    write(
+        "kontakt/index.html",
+        shell(
+            depth=1,
+            title="Kostenloses Erstgespräch buchen | Beraterium",
+            description="30 Minuten, kostenlos, kein Sales-Pitch: Buchen Sie Ihr Erstgespräch mit Till und Peter und machen Sie Ihre größten Risiken sichtbar.",
+            canonical="/kontakt/",
+            active_nav=None,
+            main=main,
+            json_ld=page_schema(faq_page_schema(kontakt_faq)),
+        ).replace(
+            f'<script src="{pre}js/brt-analytics.js?v={BRT_ASSET_VERSION}"></script>\n<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
+            f'<script src="{pre}js/brt-analytics.js?v={BRT_ASSET_VERSION}"></script>\n<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>\n<script src="{pre}js/brt-site.js?v={BRT_ASSET_VERSION}"></script>',
+        ),
+    )
+
+
+def gen_kontaktformular() -> None:
+    pre = "../"
+    main = f"""
+    <section class="brt-page-hero brt-page-hero--dark brt-page-hero--compact" aria-labelledby="page-hero-title">
+      <div class="brt-container">
+        <div class="brt-fade-up">
+          <p class="brt-tag">KONTAKT</p>
+          <h1 id="page-hero-title" class="brt-h1">Kontaktformular</h1>
+          <p class="brt-lead brt-lead--on-dark">Schreiben Sie uns – wir melden uns in der Regel innerhalb eines Werktags.</p>
+        </div>
+      </div>
+    </section>
+    <section class="brt-section" aria-labelledby="form-title">
+      <div class="brt-container brt-contact-form-wrap brt-fade-up">
+        <header class="brt-section__header">
+          <h2 id="form-title" class="brt-h2">Kontaktieren Sie uns direkt</h2>
+          <p class="brt-body">Kontaktieren Sie uns direkt über unser Kontaktformular. Für ein kostenloses Erstgespräch können Sie alternativ direkt einen Termin buchen.</p>
+          <p class="brt-meta"><a href="{pre}kontakt/">Zum Termin buchen →</a></p>
+        </header>
+        <form class="brt-form brt-form--contact" action="https://formsubmit.co/till.blania@beraterium.de" method="POST" novalidate>
+          <input type="hidden" name="_subject" value="Neue Kontaktanfrage – Beraterium">
+          <input type="hidden" name="_next" value="https://www.beraterium.de/danke/">
+          <input type="hidden" name="_template" value="table">
+          <input type="text" name="_honey" class="brt-form__honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label>Name *
+            <input type="text" name="name" required autocomplete="name">
+          </label>
+          <label>E-Mail *
+            <input type="email" name="email" required autocomplete="email">
+          </label>
+          <label>Unternehmen
+            <input type="text" name="company" autocomplete="organization">
+          </label>
+          <label>Ich bin …
+            <select name="type">
+              <option value="">Bitte wählen</option>
+              <option>Startup</option>
+              <option>KMU</option>
+              <option>Solo-Selbstständige</option>
+              <option>Sonstiges</option>
+            </select>
+          </label>
+          <label>Ihre Nachricht *
+            <textarea name="message" required placeholder="Worum geht es?"></textarea>
+          </label>
+          <fieldset class="brt-form__legal">
+            <legend class="brt-form__legal-legend">Bestätigungen</legend>
+            <div class="brt-form__check-group">
+              <label class="brt-form__check" for="agb_accepted">
+                <input type="checkbox" id="agb_accepted" name="agb_accepted" value="Ja">
+                <span>Ich habe die <a href="{pre}agb/">AGB</a> gelesen und akzeptiere sie.</span>
+              </label>
+              <p class="brt-form__error" id="agb-error" role="alert" hidden>Bitte bestätigen Sie die AGB.</p>
+            </div>
+            <div class="brt-form__check-group">
+              <label class="brt-form__check" for="privacy_accepted">
+                <input type="checkbox" id="privacy_accepted" name="privacy_accepted" value="Ja">
+                <span>Ich habe die <a href="{pre}datenschutz/">Datenschutzerklärung</a> gelesen und stimme der Verarbeitung meiner Daten&nbsp;zu.</span>
+              </label>
+              <p class="brt-form__error" id="privacy-error" role="alert" hidden>Bitte bestätigen Sie die Datenschutzerklärung.</p>
+            </div>
+          </fieldset>
+          <button class="brt-btn" type="submit">Nachricht senden</button>
+          <p class="brt-meta">Antwort i. d. R. innerhalb eines Werktags.</p>
+        </form>
+      </div>
+    </section>"""
+    write(
+        "kontaktformular/index.html",
+        shell(
+            depth=1,
+            title="Kontaktformular | Beraterium",
+            description="Kontaktieren Sie Beraterium direkt über unser Kontaktformular. Wir melden uns in der Regel innerhalb eines Werktags.",
+            canonical="/kontaktformular/",
+            active_nav=None,
+            main=main,
+        ),
+    )
+
+
+def gen_impressum() -> None:
+    sections = (SITE / "_content" / "impressum_sections.html").read_text()
+    main = f"""
+    <section class="brt-section" aria-labelledby="legal-title">
+      <div class="brt-container brt-legal">
+        <h1 id="legal-title" class="brt-h2">Impressum</h1>
+{sections}
+      </div>
+    </section>"""
+    write(
+        "impressum/index.html",
+        shell(
+            depth=1,
+            title="Impressum | Beraterium",
+            description="Impressum und Anbieterkennzeichnung der Beraterium GbR — Kontakt, Umsatzsteuer-ID und rechtliche Hinweise.",
+            canonical="/impressum/",
+            active_nav=None,
+            main=main,
+        ),
+    )
+
+
+def gen_datenschutz() -> None:
+    sections = (SITE / "_content" / "datenschutz_sections.html").read_text()
+    main = f"""
+    <section class="brt-section" aria-labelledby="legal-title">
+      <div class="brt-container brt-legal">
+        <h1 id="legal-title" class="brt-h2">Datenschutzerklärung</h1>
+{sections}
+      </div>
+    </section>"""
+    write(
+        "datenschutz/index.html",
+        shell(
+            depth=1,
+            title="Datenschutzerklärung | Beraterium",
+            description="Informationen zur Verarbeitung personenbezogener Daten auf beraterium.de — DSGVO-konform, Stand 2026.",
+            canonical="/datenschutz/",
+            active_nav=None,
+            main=main,
+        ),
+    )
+
+
+def gen_agb() -> None:
+    sections = (SITE / "_content" / "agb_sections.html").read_text()
+    main = f"""
+    <section class="brt-section" aria-labelledby="legal-title">
+      <div class="brt-container brt-legal">
+        <h1 id="legal-title" class="brt-h2">Allgemeine Geschäftsbedingungen (AGB)</h1>
+{sections}
+      </div>
+    </section>"""
+    write(
+        "agb/index.html",
+        shell(
+            depth=1,
+            title="Allgemeine Geschäftsbedingungen | Beraterium",
+            description="Allgemeine Geschäftsbedingungen von Beraterium GbR für Beratungsleistungen in Risikomanagement, HR, Management und Prozessoptimierung.",
+            canonical="/agb/",
+            active_nav=None,
+            main=main,
+        ),
+    )
+
+
+def gen_barrierefreiheit() -> None:
+    main = """
+    <section class="brt-section" aria-labelledby="a11y-title">
+      <div class="brt-container brt-legal">
+        <h1 id="a11y-title" class="brt-h2">Barrierefreiheitserklärung</h1>
+        <p>Wir arbeiten kontinuierlich daran, die Inhalte und Funktionen auf beraterium.de barrierefrei zugänglich zu machen und orientieren uns dabei an den Anforderungen der WCAG 2.1 auf Konformitätsstufe AA.</p>
+        <h2 class="brt-h3">Stand der Vereinbarkeit</h2>
+        <p>Diese Website ist teilweise mit den Anforderungen der WCAG 2.1 AA vereinbar. Es bestehen aktuell noch einzelne Einschränkungen, die wir sukzessive beheben.</p>
+        <h2 class="brt-h3">Erstellungs- und Prüfverfahren</h2>
+        <p>Die Bewertung basiert auf einer Kombination aus automatisierten Tests (eigene Prüfstrecke mit Playwright + axe-core) und manuellen Tastatur-, Fokus- und Strukturprüfungen auf repräsentativen Seitentypen.</p>
+        <h2 class="brt-h3">Bekannte Einschränkungen</h2>
+        <ul>
+          <li>Einzelne ältere Inhaltsblöcke können noch unvollständige semantische Struktur oder kontrastkritische Details enthalten.</li>
+          <li>Eingebundene Drittanbieter-Inhalte (z. B. externe Widgets) liegen nur teilweise in unserem direkten Einflussbereich.</li>
+        </ul>
+        <h2 class="brt-h3">Feedback und Kontakt</h2>
+        <p>Wenn Sie auf Barrieren stoßen oder Hinweise zur Verbesserung haben, schreiben Sie uns bitte an <a href="mailto:info@beraterium.de">info@beraterium.de</a> oder nutzen Sie das <a href="../kontaktformular/">Kontaktformular</a>.</p>
+        <p>Wir prüfen Ihr Anliegen und melden uns so schnell wie möglich zurück.</p>
+        <h2 class="brt-h3">Stand dieser Erklärung</h2>
+        <p>Diese Erklärung wurde am 26.06.2026 erstellt und wird regelmäßig aktualisiert.</p>
+      </div>
+    </section>"""
+    write(
+        "barrierefreiheit/index.html",
+        shell(
+            depth=1,
+            title="Barrierefreiheitserklärung | Beraterium",
+            description="Informationen zur digitalen Barrierefreiheit auf beraterium.de, unserem Prüfverfahren sowie Kontaktmöglichkeiten bei Barrieren.",
+            canonical="/barrierefreiheit/",
+            active_nav=None,
+            main=main,
+        ),
+    )
+
+
+def gen_legal(slug: str, title: str, h1: str, sections: str, noindex: bool = False) -> None:
+    pre = "../"
+    main = f"""
+    <section class="brt-section" aria-labelledby="legal-title">
+      <div class="brt-container brt-legal">
+        <h1 id="legal-title" class="brt-h2">{h1}</h1>
+{sections}
+      </div>
+    </section>"""
+    write(f"{slug}/index.html", shell(depth=1, title=title, description=title,
+          canonical=f"/{slug}/", active_nav=None, main=main, noindex=noindex))
+
+
+def gen_404() -> None:
+    pre = ""
+    main = """
+    <section class="brt-page-hero brt-page-hero--dark brt-page-hero--compact" aria-labelledby="not-found-title">
+      <div class="brt-container brt-centered-cta brt-fade-up">
+        <p class="brt-tag">404</p>
+        <h1 id="not-found-title" class="brt-h1">Diese Seite gibt es nicht (mehr)</h1>
+        <p class="brt-lead brt-lead--on-dark">Vielleicht hat sich die Adresse geändert oder ein Tippfehler eingeschlichen. Hier kommen Sie weiter:</p>
+        <div class="brt-page-hero__actions" style="justify-content: center;">
+          <a class="brt-btn brt-btn--on-dark" href="./">Zur Startseite</a>
+          <a class="brt-btn brt-btn--outline" href="angebote/" style="color:#fff;border-color:rgba(255,255,255,.5);">Angebote</a>
+          <a class="brt-btn brt-btn--outline" href="methode/" style="color:#fff;border-color:rgba(255,255,255,.5);">Methode</a>
+          <a class="brt-btn brt-btn--outline" href="kontakt/" style="color:#fff;border-color:rgba(255,255,255,.5);">Kontakt</a>
+        </div>
+      </div>
+    </section>"""
+    write("404.html", shell(depth=0, title="Seite nicht gefunden | Beraterium", description="Die angeforderte Seite existiert nicht.",
+          canonical="/404", active_nav=None, main=main, noindex=True))
+
+
+def gen_danke() -> None:
+    pre = "../"
+    main = f"""
+    <section class="brt-section" aria-labelledby="danke-title">
+      <div class="brt-container brt-centered-cta brt-fade-up">
+        <p class="brt-tag">DANKE</p>
+        <h1 id="danke-title" class="brt-h2">Danke – wir freuen uns auf das Gespräch!</h1>
+        <p class="brt-body">Ihre Nachricht ist angekommen. Till oder Peter meldet sich in der Regel innerhalb eines Werktags bei Ihnen.</p>
+        <ul class="brt-step-cards" style="margin-top: var(--space-8); text-align: left;">
+          <li class="brt-step-card"><p class="brt-body">Schauen Sie sich in der Zwischenzeit unsere <a href="{pre}methode/">Methode</a> an.</p></li>
+        </ul>
+        <p class="brt-section__cta">
+          <a class="brt-btn brt-btn--outline" href="{pre}">Zurück zur Startseite</a>
+        </p>
+      </div>
+    </section>"""
+    write("danke/index.html", shell(depth=1, title="Danke – wir melden uns | Beraterium",
+          description="Vielen Dank für Ihre Anfrage. Wir melden uns in Kürze bei Ihnen.", canonical="/danke/",
+          active_nav=None, main=main, noindex=True))
+
+
 if __name__ == "__main__":
     print("Generating pages...")
-    blindspot_selfcheck()
-    ra_prep_selfcheck()
     gen_ueber_uns()
     gen_team()
     gen_mission_vision()
@@ -5692,13 +5967,14 @@ if __name__ == "__main__":
     gen_nutzen_garantie()
     gen_relevanz_garantie()
     gen_angebote()
-    gen_pricing()
-    gen_schulungen_index()
-    for _sch_cfg in SCHULUNG_CONFIGS:
-        gen_schulung(_sch_cfg)
+    gen_preise()
     gen_international_index(locale="en")
     for _int_cfg in en_offer_configs():
         gen_international_offer(_int_cfg, locale="en")
+    gen_all_international_stages(locale="en")
+    gen_schulungen_index()
+    for _sch_cfg in SCHULUNG_CONFIGS:
+        gen_schulung(_sch_cfg)
     gen_lp_startups()
     gen_lp_kmu()
     gen_lp_solo()
@@ -5707,6 +5983,8 @@ if __name__ == "__main__":
     for _st_cfg in STANDORT_CONFIGS:
         gen_standort(_st_cfg)
     gen_risikoradar()
+    blindspot_selfcheck()
+    ra_prep_selfcheck()
     gen_tools_index()
     gen_blindspot_check()
     gen_ra_prep()
@@ -5718,7 +5996,6 @@ if __name__ == "__main__":
     gen_home_blog_teaser()
     gen_home_nav()
     gen_home_analytics()
-    gen_home_seo()
     gen_home_scripts()
     gen_home_tools_teaser()
     gen_home_footer()
@@ -5727,8 +6004,11 @@ if __name__ == "__main__":
     gen_impressum()
     gen_datenschutz()
     gen_agb()
-    gen_accessibility()
+    gen_barrierefreiheit()
     gen_danke()
     gen_404()
     write_sitemap()
+    from scripts.gen_legacy_redirects import main as gen_legacy_htaccess
+
+    gen_legacy_htaccess()
     print("Done.")
