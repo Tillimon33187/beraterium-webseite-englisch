@@ -1435,6 +1435,16 @@ a.brt-int-matrix__stage-link:focus-visible {
   font-size: 0.875rem;
 }
 
+/* Preistabelle: ausgeklappte Details ohne weißen Kasten */
+.brt-table tbody tr.brt-table__subrow {
+  background: var(--color-bg-alt);
+}
+
+.brt-table .brt-price-details.brt-faq__item,
+.brt-table .brt-price-details .brt-faq__answer {
+  background: transparent;
+}
+
 /* INT index: team with RU-native badge */
 .brt-int-team .brt-section__header {
   max-width: 42rem;
