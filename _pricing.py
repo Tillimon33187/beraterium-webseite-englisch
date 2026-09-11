@@ -645,6 +645,17 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
                 "details_html": "<p>Unser meistgebuchtes Gründungspaket — Planung, Umsetzung und Risiko-Check.</p>",
             },
             {
+                "nr": "INT-01-P3",
+                "name": "↳ Paket Gründung 360° + Förder-Check",
+                "desc": "Gründung 360° plus Fördermittel-Recherche und Bewerbungsvorbereitung.",
+                "price": 7990,
+                "duration": "Paket",
+                "slug": "gruendung-deutschland",
+                "parent_slug": "gruendung-deutschland",
+                "sub": True,
+                "details_html": "<p>Premium-Paket: kompletter Gründungsweg plus strukturierte Fördermittel-Recherche für Ihr Vorhaben.</p>",
+            },
+            {
                 "nr": "INT-02",
                 "name": "Leben & Arbeiten in Deutschland",
                 "desc": "1-zu-1: Kultur, Behörden, ELSTER — Stunde, Modul oder 6-Monats-Begleitung.",
@@ -701,15 +712,19 @@ PRICE_CATEGORIES: list[dict[str, Any]] = [
             {
                 "nr": "INT-04",
                 "name": "Expansion / Tochtergesellschaft DE",
-                "desc": "EU-Markteintritt: Markt-Check, Setup, KYC — Retainer für Vertrieb und Management.",
-                "price_from": 2900,
-                "price_detail": "Markt-Check 2.900 € · Setup-Paket 12.900 € · Retainer ab 4.500 €/Monat",
-                "duration": "Setup 8–16 Wochen + Retainer",
+                "desc": "Individuelles Expansionsprojekt — Umfang, Team und Budget gemeinsam im Strategiegespräch.",
+                "price_from": 30000,
+                "price_detail": (
+                    "Typisches Projektvolumen 30.000–100.000 € netto — je nach Scope, Dauer und Experten. "
+                    "Festes Angebot nach Strategiegespräch. Anwalt/Steuerberater koordiniert."
+                ),
+                "duration": "Individuell — meist mehrere Monate",
                 "slug": "expansion-tochtergesellschaft",
                 "details_html": (
                     "<p>Für etablierte Unternehmen im Ausland — Fulfillment kann im Heimatland bleiben.</p>"
-                    "<ul><li>Markt- & Risiko-Check, Setup Tochtergesellschaft, KYC/Sanktions-Modul</li>"
-                    "<li>Go-to-Market und Retainer ab 4.500 €/Monat</li></ul>"
+                    "<ul><li>Projektmanagement: Markt, Setup, Compliance, Go-to-Market, Management</li>"
+                    "<li>Koordination Anwalt, Notar, Steuerberater und weiterer Experten je Projekt</li>"
+                    "<li>Keine festen Paketpreise — individuelles Angebot</li></ul>"
                 ),
             },
         ],
