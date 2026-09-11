@@ -1429,15 +1429,17 @@ a.brt-int-matrix__stage-link:focus-visible {
 .brt-table__subrow th[scope="row"] {
   padding-left: var(--space-8);
   font-weight: 500;
+  background: var(--color-bg-alt);
 }
 
 .brt-table__subrow .brt-compare__muted {
   font-size: 0.875rem;
 }
 
-/* Preistabelle: ausgeklappte Details ohne weißen Kasten */
-.brt-table tbody tr.brt-table__subrow {
-  background: var(--color-bg-alt);
+/* Preistabelle: nur linke Spalte bei Unterzeilen grau; Preis/Dauer weiß */
+.brt-table tbody tr:not(.brt-table__subrow) th[scope="row"],
+.brt-table tbody td {
+  background: #fff;
 }
 
 .brt-table .brt-price-details.brt-faq__item,

@@ -102,7 +102,7 @@ from _cms import (
 )
 
 SITE = Path(__file__).parent
-BRT_ASSET_VERSION = "20260911-price-details-bg-v1"
+BRT_ASSET_VERSION = "20260911-price-table-columns-v2"
 
 ALT_TILL = "Till Manfred Blania, Geschäftsführer Beraterium"
 ALT_PETER = "Peter Münstermann, Beraterium"
