@@ -1429,22 +1429,55 @@ a.brt-int-matrix__stage-link:focus-visible {
 .brt-table__subrow th[scope="row"] {
   padding-left: var(--space-8);
   font-weight: 500;
-  background: var(--color-bg-alt);
 }
 
 .brt-table__subrow .brt-compare__muted {
   font-size: 0.875rem;
 }
 
-/* Preistabelle: nur linke Spalte bei Unterzeilen grau; Preis/Dauer weiß */
-.brt-table tbody tr:not(.brt-table__subrow) th[scope="row"],
+/* Preistabelle: Kopf + linke Unterzeilen-Spalte grau; Preis/Dauer immer weiß */
+.brt-table thead th {
+  background: var(--color-bg-alt);
+}
+
+.brt-table tbody tr,
+.brt-table tbody tr.brt-table__subrow {
+  background: transparent;
+}
+
+.brt-table tbody th[scope="row"],
 .brt-table tbody td {
   background: #fff;
 }
 
-.brt-table .brt-price-details.brt-faq__item,
+.brt-table__subrow th[scope="row"] {
+  background: var(--color-bg-alt);
+}
+
+.brt-table__subrow td {
+  background: #fff;
+}
+
+/* Akkordeon in Tabelle: kein extra Grau/Blau — Zelle bestimmt den Hintergrund */
+.brt-table .brt-price-details.brt-faq__item {
+  background: transparent;
+  border: 0;
+}
+
+.brt-table .brt-price-details > .brt-faq__summary {
+  background: transparent;
+  padding: var(--space-2) 0 0;
+  margin-top: var(--space-2);
+}
+
+.brt-table .brt-price-details:hover > .brt-faq__summary,
+.brt-table .brt-price-details[open] > .brt-faq__summary {
+  background: transparent;
+}
+
 .brt-table .brt-price-details .brt-faq__answer {
   background: transparent;
+  padding-left: calc(1.25rem + var(--space-4));
 }
 
 /* INT index: team with RU-native badge */
