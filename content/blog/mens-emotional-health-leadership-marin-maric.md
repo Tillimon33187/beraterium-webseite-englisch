@@ -147,4 +147,4 @@ This text is not medical or therapeutic advice. In depression, suicidal thoughts
 
 ### In conversation: Marin Maric
 
-Marin Maric is a sparring partner for entrepreneurs and executives on dating, relationships and separation; a TÜV-certified systemic coach. Website: [selbstbestimmtmann.de](https://www.selbstbestimmtmann.de). Social: [marinmachtmann](https://www.instagram.com/marinmachtmann/). Monthly digital men’s circle (DACH) and an in-person meeting on the last Thursday of the month, Klosterraum Stuttgart.
+Marin Maric is a sparring partner for entrepreneurs and executives on dating, relationships and separation; a TÜV-certified systemic coach. Website: [selbstbestimmtmann.de](https://www.selbstbestimmtmann.de). Social: [marin.macht.mann](https://www.instagram.com/marin.macht.mann/). Monthly digital men’s circle (DACH) and an in-person meeting on the last Thursday of the month, Klosterraum Stuttgart.
