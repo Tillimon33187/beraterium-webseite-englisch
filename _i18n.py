@@ -98,6 +98,7 @@ BLOG_SLUG_MAP: dict[str, str] = {
     "zeit-als-risikofaktor-unternehmer-risikomanagement": "time-as-risk-factor-entrepreneurs-risk-management",
     "notfallplan-unternehmen-payment-ausfall": "business-emergency-plan-payment-outage-smb",
     "gruender-risikomanagement-medtech-christian-senfleben": "founder-risk-management-medtech-christian-senfleben",
+    "emotionale-gesundheit-maenner-fuehrung-marin-maric": "mens-emotional-health-leadership-marin-maric",
 }
 
 EN_STATIC_ROUTE_MAP: dict[str, str] = {v: k for k, v in STATIC_ROUTE_MAP.items()}
