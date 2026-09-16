@@ -1,0 +1,83 @@
+{
+  "title": "Risk management value prevention SME blog hero",
+  "slug": "risikomanagement-nutzen-vorsorge-kmu-hero",
+  "language": "en",
+  "intent": "editorial",
+  "subject": "A calm German SME workshop table in soft daylight: an open paper risk map, a notebook and a mug, no alarm or disaster mood — overview instead of panic.",
+  "context": "Beraterium standalone blog hero (DE/EN) on why early risk management creates clarity rather than scare tactics. Professional B2B editorial, not stock photo.",
+  "platform_website": {
+    "orientation": "landscape",
+    "primary_export_px": {
+      "width": 1920,
+      "height": 1080
+    },
+    "aspect_ratio": "16:9 (blog hero — displayed full-width above article)",
+    "upload_source_png": "Webseite/site/img/blog/risikomanagement-nutzen-vorsorge-kmu-hero.png",
+    "optimized_variants_en": "Build creates {slug}-hero.webp plus -480w, -960w, -1440w responsive WebP from the PNG source",
+    "best_practice_notes_en": "Wide 16:9 hero for article header; single clear focal point; generous negative space in upper third; motif readable at thumbnail and at full 1440px width.",
+    "safe_zone_en": "Keep main subject in central 90% width; avoid critical detail in extreme left/right 5% and bottom 10% except the small AI-disclosure label bottom right."
+  },
+  "composition": {
+    "shot_type": "wide",
+    "camera_angle": "eye-level",
+    "depth": "foreground mug and notebook, midground open risk map on table, background quiet office window light",
+    "aspect_ratios": ["16:9", "4:3", "1:1"]
+  },
+  "lighting": {
+    "style": "soft natural window light with gentle cinematic falloff",
+    "direction": "from left",
+    "contrast": "medium"
+  },
+  "color_palette": {
+    "primary": "#1F2A44",
+    "secondary": "#00A3FF",
+    "accent": "#F2B134",
+    "background": "#F5F7FA"
+  },
+  "style": {
+    "visual_style": "clean editorial realism",
+    "detail_level": "medium-high",
+    "mood": "thoughtful, credible, professionally calm — not alarmist"
+  },
+  "optional_text_overlay": {
+    "recommended_for_blog_hero": false,
+    "display_language": "de",
+    "line_1_optional": "",
+    "typography_en": "Prefer no text on image — article H1 renders above hero.",
+    "prompt_instruction_en": "Prefer no text on image except the small AI-disclosure label bottom right."
+  },
+  "negative_prompt": [
+    "no watermarks or text except the small AI-disclosure label bottom right",
+    "no distorted hands",
+    "no extra fingers",
+    "no unreadable text",
+    "no logo of third-party brands",
+    "no low-resolution artifacts",
+    "no identifiable real persons or celebrities",
+    "no Beraterium logo unless brand-approved",
+    "no generic stock photo look",
+    "no cluttered composition",
+    "no fire, sirens, panic faces, red alert screens"
+  ],
+  "seo": {
+    "target_keyword": "why risk management matters SME",
+    "alt_text": "Calm SME workshop table with an open risk map and notebook in soft daylight, no alarm mood",
+    "caption": "Early risk management as calm overview, not scare tactics.",
+    "filename": "risikomanagement-nutzen-vorsorge-kmu-hero-16x9.webp",
+    "image_title": "Why risk management matters - clarity not panic"
+  },
+  "generation_prompt_single_block_en": "Editorial landscape photograph 1920x1080 16:9, clean editorial realism. Calm German SME workshop table in soft window light from the left, navy charcoal and pale grey palette with a small cyan or amber accent (hex #1F2A44, #00A3FF, #F2B134, #F5F7FA). Open paper risk map and notebook in the centre, mug in the foreground, quiet office in the background. Mood: trustworthy, focused, calm overview — not alarm. No people or unidentifiable blur of people. No fire, sirens, red alerts. No third-party logos. Small legible caption text 'KI-generiertes Bild' in the bottom-right corner: small clean sans-serif, white at about 70 percent opacity on a dark navy rounded badge, unobtrusive but readable at thumbnail size. Keep the main subject in the central 90 percent; generous negative space in the upper third.",
+  "post_processing_fallback": {
+    "when": "Falls Generator Logo oder KI-Vermerk unleserlich weglasst",
+    "ki_label_text": "KI-generiertes Bild",
+    "ki_label_position": "bottom-right, white text on dark navy rounded badge (#1F2A44, ~70% opacity)",
+    "script": "Webseite/site/.venv/bin/python .cursor/skills/artikel-schreiben/scripts/apply_ki_image_label.py Webseite/site/img/blog/risikomanagement-nutzen-vorsorge-kmu-hero.png"
+  },
+  "ai_disclosure": {
+    "required": true,
+    "label_de": "KI-generiertes Bild",
+    "label_en": "AI-generated image",
+    "placement": "small legible label in the bottom-right corner of the image",
+    "prompt_instruction": "Exact caption 'KI-generiertes Bild' bottom-right on dark navy badge, readable at thumbnail size."
+  }
+}

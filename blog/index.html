@@ -5,7 +5,7 @@
   <!-- Start cookieyes banner -->
   <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/d36bc57a067448f51ec9da2968bc257a/script.js"></script>
   <!-- End cookieyes banner -->
-  <!-- Google Consent Mode v2 + GA4 (CookieYes sets analytics_storage) -->
+  <!-- Google Consent Mode v2 + GA4 (CookieYes setzt analytics_storage) -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -20,13 +20,28 @@
       wait_for_update: 500
     });
   </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BM435GHE6W"></script>
   <script>
-    gtag('js', new Date());
-    gtag('config', 'G-BM435GHE6W', {
-      linker: { domains: ['beraterium.de', 'beraterium.com'] }
-    });
+    window.brtGa4Local = (function () {
+      var h = location.hostname;
+      return h === 'localhost' || h === '127.0.0.1';
+    })();
+    if (!window.brtGa4Local) {
+      var _brtGa4 = document.createElement('script');
+      _brtGa4.async = true;
+      _brtGa4.src = 'https://www.googletagmanager.com/gtag/js?id=G-BM435GHE6W';
+      document.head.appendChild(_brtGa4);
+    }
+  </script>
+  <script>
+    if (!window.brtGa4Local) {
+      gtag('js', new Date());
+      gtag('config', 'G-BM435GHE6W', {
+        linker: { domains: ['beraterium.de', 'beraterium.com'] },
+        ignore_referrer: /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\b/i.test(document.referrer || '')
+      });
+    }
     function brtGrantAnalyticsConsent() {
+      if (window.brtGa4Local) return;
       gtag('consent', 'update', { analytics_storage: 'granted' });
     }
     document.addEventListener('cookieyes_consent_update', function (event) {
@@ -146,7 +161,7 @@
         <header class="brt-section__header brt-section__header--row brt-fade-up">
           <div>
             <h2 id="blog-grid" class="brt-h2">All articles</h2>
-            <p class="brt-body">35 articles on risk management, leadership and business practice.</p>
+            <p class="brt-body">36 articles on risk management, leadership and business practice.</p>
           </div>
         </header>
         <nav class="brt-blog-filters" aria-label="Categories">
@@ -158,7 +173,20 @@
           <a href="#" data-filter="solo" class="">Solo</a>
         </nav>
         <ul class="brt-blog-grid brt-stagger" id="blog-grid-list">
-<li class="brt-card brt-card--blog brt-hover-lift brt-card--featured" data-category="hr-culture">
+        <li class="brt-card brt-card--blog brt-hover-lift brt-card--featured" data-category="smb">
+          <a class="brt-card__link" href="../blog/risk-management-value-prevention-sme/">
+<div class="brt-card__thumb"><img src="../img/blog/risikomanagement-nutzen-vorsorge-kmu-hero.webp" alt="Calm SME workshop table with an open risk map and notebook in soft daylight, no alarm mood" class="brt-card__thumb-img" width="1280" height="720" srcset="../img/blog/risikomanagement-nutzen-vorsorge-kmu-hero-480w.webp 480w, ../img/blog/risikomanagement-nutzen-vorsorge-kmu-hero-960w.webp 960w, ../img/blog/risikomanagement-nutzen-vorsorge-kmu-hero.webp 1280w" sizes="(max-width: 768px) 100vw, 960px" loading="lazy" decoding="async"><span class="brt-ki-image-label">AI-generated image</span></div>
+            <div class="brt-card__body">
+              <span class="brt-tag brt-tag--small">SME</span>
+              <h3 class="brt-h3">Why risk management matters — clarity, not scare tactics</h3>
+              <p class="brt-meta">16 September 2026 · approx. 9 min.</p>
+              <p class="brt-body brt-card__excerpt">Why risk management matters: early prevention creates clarity instead of panic and helps SMEs stop damage before it becomes existential in practice.</p>
+              <span class="brt-btn brt-btn--ghost">Read more →</span>
+            </div>
+          </a>
+        </li>
+        
+<li class="brt-card brt-card--blog brt-hover-lift " data-category="hr-culture">
           <a class="brt-card__link" href="../blog/mens-emotional-health-leadership-marin-maric/">
 <div class="brt-card__thumb"><img src="../img/blog/emotionale-gesundheit-maenner-fuehrung-marin-maric-hero.webp" alt="Quiet morning light on a man at a window, standing still with presence rather than posing or collapsing" class="brt-card__thumb-img" width="1280" height="720" srcset="../img/blog/emotionale-gesundheit-maenner-fuehrung-marin-maric-hero-480w.webp 480w, ../img/blog/emotionale-gesundheit-maenner-fuehrung-marin-maric-hero-960w.webp 960w, ../img/blog/emotionale-gesundheit-maenner-fuehrung-marin-maric-hero.webp 1280w" sizes="(max-width: 768px) 100vw, 960px" loading="lazy" decoding="async"><span class="brt-ki-image-label">AI-generated image</span></div>
             <div class="brt-card__body">
