@@ -148,11 +148,12 @@ COOKIEYES_HEAD = """  <!-- Start cookieyes banner -->
 
 GA4_MEASUREMENT_ID = "G-BM435GHE6W"
 
-GA4_ANALYTICS_HEAD = f"""  <!-- Google Consent Mode v2 + GA4 (CookieYes setzt analytics_storage) -->
+GA4_ANALYTICS_HEAD = (
+    """  <!-- Google Consent Mode v2 + GA4 (CookieYes setzt analytics_storage) -->
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){{dataLayer.push(arguments);}}
-    gtag('consent', 'default', {{
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
       ad_storage: 'denied',
       ad_user_data: 'denied',
       ad_personalization: 'denied',
@@ -161,31 +162,51 @@ GA4_ANALYTICS_HEAD = f"""  <!-- Google Consent Mode v2 + GA4 (CookieYes setzt an
       personalization_storage: 'denied',
       security_storage: 'granted',
       wait_for_update: 500
-    }});
+    });
   </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id={GA4_MEASUREMENT_ID}"></script>
   <script>
-    gtag('js', new Date());
-    gtag('config', '{GA4_MEASUREMENT_ID}', {{
-      linker: {{ domains: ['beraterium.de', 'beraterium.com'] }}
-    }});
-    function brtGrantAnalyticsConsent() {{
-      gtag('consent', 'update', {{ analytics_storage: 'granted' }});
-    }}
-    document.addEventListener('cookieyes_consent_update', function (event) {{
+    window.brtGa4Local = (function () {
+      var h = location.hostname;
+      return h === 'localhost' || h === '127.0.0.1';
+    })();
+    if (!window.brtGa4Local) {
+      var _brtGa4 = document.createElement('script');
+      _brtGa4.async = true;
+      _brtGa4.src = 'https://www.googletagmanager.com/gtag/js?id="""
+    + GA4_MEASUREMENT_ID
+    + """';
+      document.head.appendChild(_brtGa4);
+    }
+  </script>
+  <script>
+    if (!window.brtGa4Local) {
+      gtag('js', new Date());
+      gtag('config', '"""
+    + GA4_MEASUREMENT_ID
+    + """', {
+        linker: { domains: ['beraterium.de', 'beraterium.com'] },
+        ignore_referrer: /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?\\b/i.test(document.referrer || '')
+      });
+    }
+    function brtGrantAnalyticsConsent() {
+      if (window.brtGa4Local) return;
+      gtag('consent', 'update', { analytics_storage: 'granted' });
+    }
+    document.addEventListener('cookieyes_consent_update', function (event) {
       var accepted = (event.detail && event.detail.accepted) || [];
       if (accepted.indexOf('analytics') !== -1) brtGrantAnalyticsConsent();
-    }});
-    document.addEventListener('DOMContentLoaded', function () {{
-      setTimeout(function () {{
-        try {{
-          if (typeof getCkyConsent === 'function' && getCkyConsent().categories.analytics) {{
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(function () {
+        try {
+          if (typeof getCkyConsent === 'function' && getCkyConsent().categories.analytics) {
             brtGrantAnalyticsConsent();
-          }}
-        }} catch (e) {{}}
-      }}, 800);
-    }});
+          }
+        } catch (e) {}
+      }, 800);
+    });
   </script>"""
+)
 
 NAV = [
     ("angebote", "Angebote"),

@@ -1118,9 +1118,26 @@
   }
 
   function initCalendlyEmbed() {
-    var embed = document.querySelector("[data-calendly-embed]");
-    if (!embed) return;
+    var embeds = document.querySelectorAll("[data-calendly-embed]");
+    if (!embeds.length) return;
 
+    var pagePath = (location.pathname || "/").replace(/^\/+|\/+$/g, "") || "home";
+    var utm =
+      "utm_source=beraterium.com&utm_medium=inline&utm_campaign=erstgespraech&utm_content=" +
+      encodeURIComponent(pagePath);
+
+    embeds.forEach(function (embed) {
+      var widget = embed.querySelector(".calendly-inline-widget");
+      if (!widget) return;
+      var base = widget.getAttribute("data-url") || widget.dataset.url;
+      if (!base) return;
+      var join = base.indexOf("?") >= 0 ? "&" : "?";
+      if (base.indexOf("utm_source=") < 0) {
+        widget.setAttribute("data-url", base + join + utm);
+      }
+    });
+
+    var embed = embeds[0];
     var widget = embed.querySelector(".calendly-inline-widget");
     if (!widget) return;
 
