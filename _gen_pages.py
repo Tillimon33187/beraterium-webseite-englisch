@@ -207,6 +207,7 @@ GA4_ANALYTICS_HEAD = (
     });
   </script>"""
 )
+
 NAV = [
     ("angebote", "Angebote"),
     ("methode", "Methode"),

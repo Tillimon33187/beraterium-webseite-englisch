@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+  <!-- Start cookieyes banner -->
+  <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/d36bc57a067448f51ec9da2968bc257a/script.js"></script>
+  <!-- End cookieyes banner -->
+  <!-- Google Consent Mode v2 + GA4 (CookieYes setzt analytics_storage) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted',
+      wait_for_update: 500
+    });
+  </script>
+  <script>
+    window.brtGa4Local = (function () {
+      var h = location.hostname;
+      return h === 'localhost' || h === '127.0.0.1';
+    })();
+    if (!window.brtGa4Local) {
+      var _brtGa4 = document.createElement('script');
+      _brtGa4.async = true;
+      _brtGa4.src = 'https://www.googletagmanager.com/gtag/js?id=G-BM435GHE6W';
+      document.head.appendChild(_brtGa4);
+    }
+  </script>
+  <script>
+    if (!window.brtGa4Local) {
+      gtag('js', new Date());
+      gtag('config', 'G-BM435GHE6W', {
+        linker: { domains: ['beraterium.de', 'beraterium.com'] },
+        ignore_referrer: /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\b/i.test(document.referrer || '')
+      });
+    }
+    function brtGrantAnalyticsConsent() {
+      if (window.brtGa4Local) return;
+      gtag('consent', 'update', { analytics_storage: 'granted' });
+    }
+    document.addEventListener('cookieyes_consent_update', function (event) {
+      var accepted = (event.detail && event.detail.accepted) || [];
+      if (accepted.indexOf('analytics') !== -1) brtGrantAnalyticsConsent();
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(function () {
+        try {
+          if (typeof getCkyConsent === 'function' && getCkyConsent().categories.analytics) {
+            brtGrantAnalyticsConsent();
+          }
+        } catch (e) {}
+      }, 800);
+    });
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RA-Vorbereitung – Fragebogen | Beraterium</title>
+  <meta name="description" content="Vorbereitungsfragebogen für Ihre Risikoanalyse bei Beraterium: Unternehmensdaten, Ziele und Workshop-Vorbereitung in 15–20 Minuten.">
+  <link rel="canonical" href="https://www.beraterium.com/tools/ra-vorbereitung/">
+  <meta name="robots" content="noindex">
+  <link rel="alternate" hreflang="de" href="https://www.beraterium.de/tools/ra-vorbereitung/">
+  <link rel="alternate" hreflang="en" href="https://www.beraterium.com/tools/ra-preparation/">
+  <link rel="alternate" hreflang="x-default" href="https://www.beraterium.de/tools/ra-vorbereitung/">
+
+  <meta property="og:title" content="RA-Vorbereitung – Fragebogen | Beraterium">
+  <meta property="og:description" content="Vorbereitungsfragebogen für Ihre Risikoanalyse bei Beraterium: Unternehmensdaten, Ziele und Workshop-Vorbereitung in 15–20 Minuten.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.beraterium.com/tools/ra-vorbereitung/">
+  <meta property="og:locale" content="de_DE">
+
+  <link rel="icon" href="../../favicon.ico" sizes="any">
+  <link rel="icon" href="../../icon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0E1116">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <link rel="stylesheet" href="../../css/brt.css?v=20260911-price-table-columns-v3" data-brt-css>
+  <link rel="stylesheet" href="../../css/brt-fallback.css?v=20260911-price-table-columns-v3">
+  <link rel="stylesheet" href="../../css/brt-layout-fix.css?v=20260911-price-table-columns-v3">
+  <link rel="stylesheet" href="../../css/brt-print.css?v=20260911-price-table-columns-v3" media="print">
+  <link rel="stylesheet" href="../../css/brt-ra-prep.css?v=20260911-price-table-columns-v3">
+  <script src="../../js/brt-init.js"></script>
+</head>
+
+<body class="brt-page brt-page--inner">
+
+<a class="brt-skip-link" href="#main-content">Zum Inhalt springen</a>
+
+<header class="site-header site-header--solid" aria-label="Hauptnavigation">
+  <div class="site-header__inner">
+    <a class="site-header__logo" href="../../" aria-label="Beraterium homepage">
+      <img class="site-header__logo-img site-header__logo-img--light" src="../../img/logo-en/logo-white.png" alt="Beraterium" width="4444" height="1238" decoding="async">
+      <img class="site-header__logo-img site-header__logo-img--dark" src="../../img/logo-en/logo-black.png" alt="" aria-hidden="true" width="4444" height="1238" decoding="async">
+    </a>
+    <button class="site-header__toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menü</button>
+    <nav id="site-nav" class="site-header__nav" aria-label="Primäre Navigation">
+      <ul>
+        <li class="site-header__item site-header__item--has-menu">
+          <a href="../../angebote/" class="site-header__parent-link" aria-expanded="false">
+            Angebote
+            <svg class="site-header__caret" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <ul class="site-header__submenu" aria-label="Angebote">
+            <li><a href="../../angebote/startups/">Startups</a></li>
+            <li><a href="../../angebote/kmu/">KMU</a></li>
+            <li><a href="../../angebote/solo/">Solo-Selbstständige</a></li>
+            <li><a href="../../schulungen/">Schulungen</a></li>
+            <li><a href="../../internationale-angebote/">Internationale Angebote</a></li>
+            <li><a href="../../preise/">Preise</a></li>
+          </ul>
+        </li>
+        <li><a href="../../methode/">Methode</a></li>
+        <li class="site-header__item site-header__item--has-menu">
+          <a href="../../ueber-uns/" class="site-header__parent-link" aria-expanded="false">
+            Über uns
+            <svg class="site-header__caret" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <ul class="site-header__submenu" aria-label="Über uns">
+            <li><a href="../../ueber-uns/">Über das Unternehmen</a></li>
+            <li><a href="../../team/">Unser Team</a></li>
+          </ul>
+        </li>
+        <li><a href="../../risikoradar/">RisikoRadar</a></li>
+        <li class="site-header__item site-header__item--has-menu">
+          <a href="../../tools/" class="site-header__parent-link" aria-expanded="false">
+            Tools
+            <svg class="site-header__caret" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <ul class="site-header__submenu" aria-label="Tools">
+            <li><a href="../../tools/blindspot-check/">Blindspot Check</a></li>
+          </ul>
+        </li>
+        <li><a href="../../blog/">Blog</a></li>
+      </ul>
+<div class="site-header__lang" role="navigation" aria-label="Language"><span class="site-header__lang-current" aria-current="true">DE</span><span class="site-header__lang-sep" aria-hidden="true">|</span><a class="site-header__lang-link" href="https://www.beraterium.com/tools/ra-preparation/" hreflang="en">EN</a></div>
+      <a class="brt-btn brt-btn--outline site-header__cta" href="../../kontakt/">Erstgespräch buchen</a>
+    </nav>
+  </div>
+</header>
+
+<div class="brt">
+  <main id="main-content">
+
+    <section class="brt-page-hero brt-page-hero--dark brt-page-hero--compact" aria-labelledby="page-hero-title">
+      <div class="brt-container">
+        <div class="brt-fade-up">
+          <p class="brt-tag">RISIKOANALYSE</p>
+          <h1 id="page-hero-title" class="brt-h1">Vorbereitung für Ihre Risikoanalyse</h1>
+          <p class="brt-lead brt-lead--on-dark">Mit diesem Fragebogen bereiten Sie den Workshop bei Beraterium optimal vor. Ihre Angaben helfen uns, den Termin zielgerichtet zu planen — Dauer etwa 15–20 Minuten.</p>
+        <div class="brt-page-hero__actions"><a class="brt-btn brt-btn--on-dark brt-btn--lg" href="#brt-ra-prep">Fragebogen starten</a></div>
+        </div>
+      </div>
+    </section>
+    <section class="brt-section" aria-labelledby="rap-warum-title">
+      <div class="brt-container brt-split">
+        <div class="brt-split__text brt-fade-up">
+          <h2 id="rap-warum-title" class="brt-h2">Warum dieser Fragebogen?</h2>
+          <p class="brt-body">Eine gute Risikoanalyse beginnt nicht im Termin — sondern mit dem richtigen Kontext. Ihre Antworten helfen uns, Schwerpunkte zu setzen, passende Beispiele vorzubereiten und den Workshop an Ihre Branche, Größe und aktuelle Lage anzupassen.</p>
+          <p class="brt-body">Je konkreter Ihre Angaben, desto weniger Zeit verbringen wir mit Standardfragen — und desto mehr mit den Themen, die für Ihr Unternehmen wirklich zählen.</p>
+          <ul class="rap-intro__meta" aria-label="Hinweise zum Fragebogen">
+            <li><span class="rap-intro__meta-label">Dauer</span> 15–20&nbsp;Minuten</li>
+            <li><span class="rap-intro__meta-label">Pflicht</span> Kontakt, Datenschutz, AGB</li>
+            <li><span class="rap-intro__meta-label">Felder</span> nur ausfüllen, was zutrifft</li>
+          </ul>
+        </div>
+                <div class="brt-split__media brt-fade-up" style="--fade-delay: 120ms">
+          <img src="../../img/tools/ra-prep-vorbereitung.webp" alt="Berater und Unternehmer bereiten gemeinsam eine Risikoanalyse vor — strukturierte Vorbereitung am Workshop-Tisch" class="brt-split__media-img--contain" width="1536" height="1024" srcset="../../img/tools/ra-prep-vorbereitung-480w.webp 480w, ../../img/tools/ra-prep-vorbereitung-960w.webp 960w, ../../img/tools/ra-prep-vorbereitung-1440w.webp 1440w, ../../img/tools/ra-prep-vorbereitung.webp 1536w" sizes="(max-width: 768px) 100vw, 960px" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </section>
+    <section id="fragebogen" class="brt-section brt-section--alt" aria-labelledby="rap-title">
+      <div class="brt-container">
+        <header class="brt-section__header brt-fade-up">
+          <p class="brt-tag">FRAGEBOGEN</p>
+          <h2 id="rap-title" class="brt-h2">Online ausfüllen</h2>
+          <p class="brt-body brt-section__lede">Der Fragebogen führt Sie Schritt für Schritt durch fünf Themenbereiche. Sie können jederzeit zurückspringen und am Ende alles prüfen, bevor Sie absenden.</p>
+        </header>
+        <ul class="rap-topics brt-stagger" aria-label="Themenbereiche im Fragebogen">
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">01</p>
+            <h3 class="rap-topic__title brt-h3">Unternehmen &amp; Organisation</h3>
+            <p class="rap-topic__desc">Angebot, Rechtsform, Mitarbeitende, Standorte</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">02</p>
+            <h3 class="rap-topic__title brt-h3">Tätigkeit &amp; Außenwirkung</h3>
+            <p class="rap-topic__desc">Räumlichkeiten, Reichweite, Website, Social Media</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">03</p>
+            <h3 class="rap-topic__title brt-h3">Ziele &amp; Schwerpunkte</h3>
+            <p class="rap-topic__desc">Erwartungen, aktuelle Sorgen, kritische Bereiche</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">04</p>
+            <h3 class="rap-topic__title brt-h3">Erfahrung &amp; Vorsorge</h3>
+            <p class="rap-topic__desc">Störungen, Schutzmaßnahmen, Szenarien</p>
+          </li>
+          <li class="rap-topic brt-card">
+            <p class="rap-topic__num" aria-hidden="true">05</p>
+            <h3 class="rap-topic__title brt-h3">Workshop</h3>
+            <p class="rap-topic__desc">Teilnehmende, Ansprechpartner, Besonderheiten</p>
+          </li>
+        </ul>
+        <div id="brt-ra-prep" class="rap-widget brt-fade-up" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="site-footer" aria-label="Footer">
+  <div class="site-footer__inner">
+    <section>
+      <h2>Beraterium</h2>
+      <p>Konzern-Risikomanagement, übersetzt für den Mittelstand.</p>
+      <a href="https://www.linkedin.com/company/beraterium">LinkedIn</a>
+      <a href="https://www.youtube.com/@Beraterium">YouTube</a>
+    </section>
+    <section>
+      <h2>Angebote</h2>
+      <ul>
+        <li><a href="../../angebote/startups/">Startups</a></li>
+        <li><a href="../../angebote/kmu/">KMU</a></li>
+        <li><a href="../../angebote/solo/">Solo-Selbstständige</a></li>
+        <li><a href="../../angebote/">Übersicht</a></li>
+        <li><a href="../../preise/">Preise &amp; Leistungen</a></li>
+        <li><a href="../../schulungen/">Schulungen</a></li>
+        <li><a href="../../internationale-angebote/">Internationale Angebote</a></li>
+      </ul>
+    </section>
+    <section>
+      <h2>Lösungen</h2>
+      <ul>
+        <li><a href="../../loesungen/nis2/">NIS2-Betroffenheit</a></li>
+        <li><a href="../../loesungen/nachfolge/">Unternehmensnachfolge</a></li>
+        <li><a href="../../loesungen/cyberangriff/">Cyberangriff</a></li>
+        <li><a href="../../loesungen/selbststaendig-absichern/">Selbstständig absichern</a></li>
+        <li><a href="../../loesungen/schluesselperson-risiko/">Schlüsselperson-Risiko</a></li>
+        <li><a href="../../loesungen/investor-due-diligence/">Investor Due Diligence</a></li>
+        <li><a href="../../loesungen/risikoanalyse-startup/">Risikoanalyse Startup</a></li>
+        <li><a href="../../loesungen/risikoanalyse-kmu/">Risikoanalyse KMU</a></li>
+        <li><a href="../../loesungen/risikoanalyse-solo/">Risikoanalyse Selbstständige</a></li>
+      </ul>
+    </section>
+    <section>
+      <h2>Beraterium vor Ort</h2>
+      <ul>
+        <li><a href="../../standort/muenchen/">München</a></li>
+        <li><a href="../../standort/sachsen/">Sachsen</a></li>
+        <li><a href="../../standort/nrw/">NRW</a></li>
+      </ul>
+    </section>
+    <section>
+      <h2>Unternehmen</h2>
+      <ul>
+        <li><a href="../../ueber-uns/">Über uns</a></li>
+        <li><a href="../../team/">Team</a></li>
+        <li><a href="../../mission-vision/">Mission &amp; Vision</a></li>
+        <li><a href="../../methode/">Methode</a></li>
+        <li><a href="../../nutzen-garantie/">Nutzen-Garantie</a></li>
+        <li><a href="../../relevanz-garantie/">Relevanz-Garantie</a></li>
+      </ul>
+    </section>
+    <section>
+      <h2>Kontakt</h2>
+      <ul>
+        <li><a href="../../kontakt/">Erstgespräch buchen</a></li>
+        <li><a href="../../kontaktformular/">Kontaktformular</a></li>
+        <li><a href="../../barrierefreiheit/">Barrierefreiheit</a></li>
+        <li><a href="../../impressum/">Impressum</a></li>
+        <li><a href="../../datenschutz/">Datenschutz</a></li>
+        <li><a href="../../agb/">AGB</a></li>
+      </ul>
+    </section>
+  </div>
+  <p class="site-footer__legal">© Beraterium 2026</p>
+</footer>
+
+<script src="../../js/brt-analytics.js?v=20260911-price-table-columns-v3"></script>
+<script src="../../js/brt-site.js?v=20260911-price-table-columns-v3"></script>
+<script type="application/json" id="brt-ra-prep-config">{"locale": "de", "submitUrl": "https://script.google.com/macros/s/AKfycbzJDCClA9HKNK99xIjsvt9S9hCYDPtFd9nF4OlV3YPxqqzK9uOXyRz9AdLlXsEfy9gq/exec", "privacyUrl": "../../datenschutz/", "termsUrl": "../../agb/", "steps": [{"id": "contact", "title": "Ihre Kontaktdaten", "intro": "Bitte geben Sie Ihre Kontaktdaten an, damit wir Ihre Angaben zuordnen und den Eingang bestätigen können.", "fields": [{"id": "anrede", "type": "select", "label": "Anrede", "required": true, "options": [{"value": "herr", "label": "Herr"}, {"value": "frau", "label": "Frau"}]}, {"id": "vorname", "type": "text", "label": "Vorname", "required": true, "autocomplete": "given-name"}, {"id": "nachname", "type": "text", "label": "Nachname", "required": true, "autocomplete": "family-name"}, {"id": "unternehmen", "type": "text", "label": "Unternehmen", "required": true, "autocomplete": "organization"}, {"id": "email", "type": "email", "label": "E-Mail-Adresse", "required": true, "autocomplete": "email"}, {"id": "telefon", "type": "tel", "label": "Telefon", "required": true, "autocomplete": "tel"}]}, {"id": "business", "title": "Unternehmen & Angebot", "intro": "Womit beschäftigt sich Ihr Unternehmen? Was bieten Sie an?", "fields": [{"id": "unternehmen_beschreibung", "type": "textarea", "label": "Womit beschäftigt sich Ihr Unternehmen? Was bieten Sie an?", "hint": "Welche Produkte oder Dienstleistungen stehen im Mittelpunkt?", "required": true, "rows": 5}]}, {"id": "organisation", "title": "Organisation", "intro": "Wie ist Ihr Unternehmen organisiert?", "fields": [{"id": "rechtsform", "type": "text", "label": "Rechtsform", "required": true}, {"id": "gruendungsjahr", "type": "text", "label": "Gründungsjahr", "required": true}, {"id": "mitarbeiter", "type": "text", "label": "Anzahl der Mitarbeitenden (inkl. Teilzeit/Freiberufler)", "required": true}]}, {"id": "taetigkeit", "title": "Tätigkeitsgebiet", "intro": "Wo sind Sie tätig?", "fields": [{"id": "standorte", "type": "textarea", "label": "Standort(e)", "required": true, "rows": 3}, {"id": "raeume", "type": "checkbox_group", "label": "Räumlichkeiten", "required": true, "options": [{"value": "eigene", "label": "Eigene Räume"}, {"value": "gemietet", "label": "Gemietet"}, {"value": "kunde", "label": "Beim Kunden vor Ort"}]}, {"id": "reichweite", "type": "checkbox_group", "label": "Geografische Reichweite", "required": true, "options": [{"value": "regional", "label": "Regional"}, {"value": "dach", "label": "DACH-Raum"}, {"value": "deutschland", "label": "Deutschlandweit"}, {"value": "europa", "label": "Europa"}, {"value": "international", "label": "International"}]}]}, {"id": "quellen", "title": "Informationsquellen", "intro": "Wo können wir uns vorab über Ihr Unternehmen informieren?", "fields": [{"id": "website", "type": "text", "label": "Internetseite", "hint": "Adresse oder Domain reicht — ein vollständiger https://-Link ist nicht nötig.", "required": true}, {"id": "social_media", "type": "checkbox_group", "label": "Social-Media-Auftritte", "hint": "Auf welchen Plattformen sind Sie aktiv? Links zu Profilen sind nicht nötig.", "required": true, "options": [{"value": "keine", "label": "Kein Social-Media-Auftritt"}, {"value": "linkedin", "label": "LinkedIn"}, {"value": "instagram", "label": "Instagram"}, {"value": "facebook", "label": "Facebook"}, {"value": "x", "label": "X (Twitter)"}, {"value": "youtube", "label": "YouTube"}, {"value": "tiktok", "label": "TikTok"}, {"value": "weitere", "label": "Weitere"}], "detail_field": "social_media_weitere"}, {"id": "social_media_weitere", "linked_group": "social_media", "type": "textarea", "label": "Weitere Plattformen", "hint": "Mehrere Einträge möglich — z. B. zeilenweise. Beim Ausfüllen wird „Weitere“ automatisch ausgewählt.", "required": false, "rows": 3, "linked_auto_value": "weitere"}, {"id": "imagebroschuere", "type": "text", "label": "Imagebroschüre oder Präsentation (falls vorhanden)", "required": false}]}, {"id": "ziele", "title": "Ziele der Risikoanalyse", "intro": "Was möchten Sie mit der Risikoanalyse erreichen?", "fields": [{"id": "ziele", "type": "checkbox_group", "label": "Ziele (Mehrfachauswahl)", "required": true, "options": [{"value": "sicherheit", "label": "Sicherheit gewinnen"}, {"value": "wachstum", "label": "Wachstum vorbereiten"}, {"value": "risiken", "label": "Risiken erkennen"}, {"value": "versicherungen", "label": "Versicherungen überprüfen"}, {"value": "investitionen", "label": "Investitionen absichern"}, {"value": "unternehmenswert", "label": "Unternehmenswert steigern"}, {"value": "weitere", "label": "Weitere"}], "detail_field": "ziele_weitere"}, {"id": "ziele_weitere", "linked_group": "ziele", "type": "textarea", "label": "Weitere Ziele", "hint": "Mehrere Einträge möglich — z. B. zeilenweise. Beim Ausfüllen wird „Weitere“ automatisch ausgewählt.", "required": false, "rows": 3, "linked_auto_value": "weitere"}]}, {"id": "sorgen", "title": "Aktuelle Sorgen", "intro": "Welche Themen oder Probleme beschäftigen Sie derzeit besonders?", "fields": [{"id": "sorgen", "type": "textarea", "label": "Was bereitet Ihnen aktuell die meisten Sorgen? Wo sehen Sie die größten Herausforderungen?", "required": false, "rows": 5}]}, {"id": "kritisch", "title": "Kritische Bereiche", "intro": "Welche Bereiche sind für den Erfolg besonders kritisch?", "fields": [{"id": "kritische_bereiche", "type": "checkbox_group", "label": "Bereiche", "required": true, "options": [{"value": "kunden", "label": "Kunden"}, {"value": "personal", "label": "Personal"}, {"value": "technik", "label": "Technik"}, {"value": "produktion", "label": "Produktion"}, {"value": "it", "label": "IT"}, {"value": "lieferanten", "label": "Lieferanten"}, {"value": "finanzen", "label": "Finanzen"}, {"value": "wissen", "label": "Wissen"}, {"value": "weitere", "label": "Weitere"}], "detail_field": "kritische_bereiche_weitere"}, {"id": "kritische_bereiche_weitere", "linked_group": "kritische_bereiche", "type": "textarea", "label": "Weitere kritische Bereiche", "hint": "Mehrere Einträge möglich — z. B. zeilenweise. Beim Ausfüllen wird „Weitere“ automatisch ausgewählt.", "required": false, "rows": 3, "linked_auto_value": "weitere"}]}, {"id": "stoerungen", "title": "Störungen & Schäden", "intro": "Gab es in den letzten Jahren bereits Störungen oder Schäden?", "fields": [{"id": "stoerungen", "type": "checkbox_group", "label": "Art der Vorfälle", "required": true, "options": [{"value": "beinahe", "label": "Beinahe-Unfälle"}, {"value": "ausfaelle", "label": "Ausfälle"}, {"value": "cyber", "label": "Cybervorfälle"}, {"value": "reklamationen", "label": "Reklamationen"}, {"value": "rechtsstreit", "label": "Rechtsstreitigkeiten"}, {"value": "personalausfall", "label": "Personalausfälle"}, {"value": "finanzverlust", "label": "Größere finanzielle Verluste"}, {"value": "keine", "label": "Keine der genannten Vorfälle"}, {"value": "weitere", "label": "Weitere"}], "detail_field": "stoerungen_details"}, {"id": "stoerungen_details", "linked_group": "stoerungen", "type": "textarea", "label": "Details zu Störungen oder Schäden", "hint": "Mehrere Einträge möglich — z. B. zeilenweise. Beim Ausfüllen wird „Weitere“ automatisch ausgewählt.", "required": false, "rows": 4, "linked_auto_value": "weitere"}]}, {"id": "schutz", "title": "Bestehende Schutzmaßnahmen", "intro": "Welche Schutzmaßnahmen bestehen bereits? (nur grob)", "fields": [{"id": "schutz", "type": "checkbox_group", "label": "Maßnahmen", "required": true, "options": [{"value": "versicherungen", "label": "Versicherungen"}, {"value": "datensicherung", "label": "Datensicherung"}, {"value": "notfallplaene", "label": "Notfallpläne"}, {"value": "vertretung", "label": "Vertretungsregelungen"}, {"value": "arbeitsschutz", "label": "Arbeitsschutz"}, {"value": "qm", "label": "Qualitätsmanagement"}, {"value": "weitere", "label": "Weitere"}], "detail_field": "schutz_weitere"}, {"id": "schutz_weitere", "linked_group": "schutz", "type": "textarea", "label": "Weitere Schutzmaßnahmen", "hint": "Mehrere Einträge möglich — z. B. zeilenweise. Beim Ausfüllen wird „Weitere“ automatisch ausgewählt.", "required": false, "rows": 3, "linked_auto_value": "weitere"}]}, {"id": "teilnehmer", "title": "Workshop-Teilnehmer", "intro": "Wer sollte am Workshop teilnehmen?", "fields": [{"id": "teilnehmer", "type": "checkbox_group", "label": "Teilnehmende", "required": true, "options": [{"value": "inhaber", "label": "Inhaber"}, {"value": "fuehrung", "label": "Führungskräfte"}, {"value": "mitarbeitende", "label": "Mitarbeitende"}, {"value": "externe", "label": "Externe Partner"}]}]}, {"id": "kenntnis", "title": "Unternehmenskenntnis", "intro": "Wer kennt das Unternehmen am besten?", "fields": [{"id": "wer_kennt", "type": "textarea", "label": "Namen / Rollen", "required": false, "rows": 4}]}, {"id": "szenario", "title": "Szenario", "intro": "Welches Szenario möchten wir betrachten?", "fields": [{"id": "szenario", "type": "checkbox_group", "label": "Szenario", "required": true, "options": [{"value": "heute", "label": "Heutiger Unternehmensstand"}, {"value": "wachstum", "label": "Geplantes Wachstum"}, {"value": "standort", "label": "Neuer Standort"}, {"value": "produkte", "label": "Neue Produkte"}, {"value": "nachfolge", "label": "Unternehmensnachfolge"}, {"value": "existenz", "label": "Existenzsicherung"}, {"value": "weitere", "label": "Weitere"}], "detail_field": "szenario_weitere"}, {"id": "szenario_weitere", "linked_group": "szenario", "type": "textarea", "label": "Weitere Szenarien", "hint": "Mehrere Einträge möglich — z. B. zeilenweise. Beim Ausfüllen wird „Weitere“ automatisch ausgewählt.", "required": false, "rows": 3, "linked_auto_value": "weitere"}]}, {"id": "besonderheiten", "title": "Besonderheiten", "intro": "Gibt es Besonderheiten, die wir kennen sollten? Alles, was den Workshop beeinflussen könnte.", "fields": [{"id": "besonderheiten", "type": "textarea", "label": "Geplante Investitionen, laufende Veränderungen, Abhängigkeiten, besondere Kunden oder Auflagen …", "required": false, "rows": 5}]}, {"id": "consent", "title": "Absenden", "intro": "Bitte bestätigen Sie die rechtlichen Hinweise und senden Sie Ihre Angaben ab.", "fields": [{"id": "consent_privacy", "type": "consent_privacy", "required": true}, {"id": "consent_terms", "type": "consent_terms", "required": true}, {"id": "newsletter_opt_in", "type": "newsletter", "required": false}]}], "strings": {"intro_title": "Vorbereitung für Ihre Risikoanalyse", "intro_text": "Klicken Sie auf „Fragebogen starten“ — die Angaben dauern etwa 15–20 Minuten.", "start": "Fragebogen starten", "progress": "Schritt {current} von {total}", "back": "Zurück", "next": "Weiter", "submit": "Angaben absenden", "sending_headline": "Bitte warten — Ihre Angaben werden übermittelt", "sending_text": "Das dauert nur einen Moment. Bitte schließen Sie diese Seite nicht.", "success_title": "Vielen Dank!", "success_text": "Wir haben Ihre Angaben erhalten und senden Ihnen in Kürze eine Bestätigung per E-Mail. Wir melden uns, falls noch etwas fehlt.", "consent_privacy": "Ich stimme zu, dass meine Angaben zur Vorbereitung der Risikoanalyse verarbeitet werden. Weitere Informationen in der ", "consent_terms": "Ich habe die Allgemeinen Geschäftsbedingungen gelesen und akzeptiere sie.", "consent_newsletter": "Ich möchte zusätzlich den Beraterium Newsletter erhalten und kann mich jederzeit wieder abmelden.", "privacy_link": "Datenschutzerklärung", "terms_link": "AGB", "validation_checkbox": "Bitte wählen Sie mindestens eine Option.", "validation_required": "Bitte füllen Sie dieses Pflichtfeld aus.", "validation_salutation": "Bitte wählen Sie eine Anrede.", "validation_email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.", "validation_phone": "Bitte geben Sie eine Telefonnummer an.", "validation_privacy": "Bitte stimmen Sie der Datenschutzerklärung zu.", "validation_terms": "Bitte akzeptieren Sie die AGB.", "error_submit": "Ihre Angaben konnten gerade nicht übermittelt werden. Bitte versuchen Sie es später erneut oder schreiben Sie uns.", "error_unavailable": "Der Fragebogen ist vorübergehend nicht erreichbar. Bitte schreiben Sie uns direkt."}}</script>
+<script src="../../js/brt-ra-prep.js?v=20260911-price-table-columns-v3"></script>
+
+</body>
+</html>
